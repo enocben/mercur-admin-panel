@@ -1,4 +1,13 @@
-import { zodResolver } from "@hookform/resolvers/zod"
+import type { ComponentPropsWithoutRef } from "react";
+import { forwardRef } from "react";
+
+import {
+  ArrowDownMini,
+  ArrowUpMini,
+  EllipsisVertical,
+  Trash,
+} from "@medusajs/icons";
+import type { FetchError } from "@medusajs/js-sdk";
 import {
   Button,
   DropdownMenu,
@@ -7,51 +16,50 @@ import {
   InlineTip,
   clx,
   toast,
-} from "@medusajs/ui"
-import { useFieldArray, useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+} from "@medusajs/ui";
 
-import {
-  ArrowDownMini,
-  ArrowUpMini,
-  EllipsisVertical,
-  Trash,
-} from "@medusajs/icons"
-import { FetchError } from "@medusajs/js-sdk"
-import { ComponentPropsWithoutRef, forwardRef } from "react"
-import { ConditionalTooltip } from "../../common/conditional-tooltip"
-import { Form } from "../../common/form"
-import { Skeleton } from "../../common/skeleton"
-import { RouteDrawer, useRouteModal } from "../../modals"
-import { KeyboundForm } from "../../utilities/keybound-form"
-import { useDocumentDirection } from "../../../hooks/use-document-direction"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+import { ConditionalTooltip } from "@components//common/conditional-tooltip";
+import { Form } from "@components/common/form";
+import { Skeleton } from "@components/common/skeleton";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useDocumentDirection } from "@hooks/use-document-direction";
 
 type MetaDataSubmitHook<TRes> = (
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: { metadata?: Record<string, any> | null },
-  callbacks: { onSuccess: () => void; onError: (error: FetchError) => void }
-) => Promise<TRes>
+  callbacks: { onSuccess: () => void; onError: (error: FetchError) => void },
+) => Promise<TRes>;
 
 type MetadataFormProps<TRes> = {
-  metadata?: Record<string, any> | null
-  hook: MetaDataSubmitHook<TRes>
-  isPending: boolean
-  isMutating: boolean
-}
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata?: Record<string, any> | null;
+  hook: MetaDataSubmitHook<TRes>;
+  isPending: boolean;
+  isMutating: boolean;
+};
 
 const MetadataFieldSchema = z.object({
   key: z.string(),
   disabled: z.boolean().optional(),
   value: z.any(),
-})
+});
 
 const MetadataSchema = z.object({
   metadata: z.array(MetadataFieldSchema),
-})
+});
 
 export const MetadataForm = <TRes,>(props: MetadataFormProps<TRes>) => {
-  const { t } = useTranslation()
-  const { isPending, ...innerProps } = props
+  const { t } = useTranslation();
+  const { isPending, ...innerProps } = props;
 
   return (
     <RouteDrawer>
@@ -65,31 +73,31 @@ export const MetadataForm = <TRes,>(props: MetadataFormProps<TRes>) => {
       </RouteDrawer.Header>
       {isPending ? <PlaceholderInner /> : <InnerForm {...innerProps} />}
     </RouteDrawer>
-  )
-}
+  );
+};
 
-const METADATA_KEY_LABEL_ID = "metadata-form-key-label"
-const METADATA_VALUE_LABEL_ID = "metadata-form-value-label"
+const METADATA_KEY_LABEL_ID = "metadata-form-key-label";
+const METADATA_VALUE_LABEL_ID = "metadata-form-value-label";
 
 const InnerForm = <TRes,>({
   metadata,
   hook,
   isMutating,
 }: Omit<MetadataFormProps<TRes>, "isPending">) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
-  const hasUneditableRows = getHasUneditableRows(metadata)
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const direction = useDocumentDirection();
+  const hasUneditableRows = getHasUneditableRows(metadata);
 
   const form = useForm<z.infer<typeof MetadataSchema>>({
     defaultValues: {
       metadata: getDefaultValues(metadata),
     },
     resolver: zodResolver(MetadataSchema),
-  })
+  });
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const parsedData = parseValues(data, metadata)
+    const parsedData = parseValues(data, metadata);
 
     await hook(
       {
@@ -97,23 +105,23 @@ const InnerForm = <TRes,>({
       },
       {
         onSuccess: () => {
-          toast.success(t("metadata.edit.successToast"))
-          handleSuccess()
+          toast.success(t("metadata.edit.successToast"));
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   const { fields, insert, remove } = useFieldArray({
     control: form.control,
     name: "metadata",
-  })
+  });
 
   function deleteRow(index: number) {
-    remove(index)
+    remove(index);
 
     // If the last row is deleted, add a new blank row
     if (fields.length === 1) {
@@ -121,7 +129,7 @@ const InnerForm = <TRes,>({
         key: "",
         value: "",
         disabled: false,
-      })
+      });
     }
   }
 
@@ -130,7 +138,7 @@ const InnerForm = <TRes,>({
       key: "",
       value: "",
       disabled: false,
-    })
+    });
   }
 
   return (
@@ -140,29 +148,29 @@ const InnerForm = <TRes,>({
         className="flex flex-1 flex-col overflow-hidden"
       >
         <RouteDrawer.Body className="flex flex-1 flex-col gap-y-8 overflow-y-auto">
-          <div className="bg-ui-bg-base shadow-elevation-card-rest grid grid-cols-1 divide-y rounded-lg">
-            <div className="bg-ui-bg-subtle grid grid-cols-2 divide-x rounded-t-lg">
-              <div className="txt-compact-small-plus text-ui-fg-subtle px-2 py-1.5">
+          <div className="grid grid-cols-1 divide-y rounded-lg bg-ui-bg-base shadow-elevation-card-rest">
+            <div className="grid grid-cols-2 divide-x rounded-t-lg bg-ui-bg-subtle">
+              <div className="txt-compact-small-plus px-2 py-1.5 text-ui-fg-subtle">
                 <label id={METADATA_KEY_LABEL_ID}>
                   {t("metadata.edit.labels.key")}
                 </label>
               </div>
-              <div className="txt-compact-small-plus text-ui-fg-subtle px-2 py-1.5">
+              <div className="txt-compact-small-plus px-2 py-1.5 text-ui-fg-subtle">
                 <label id={METADATA_VALUE_LABEL_ID}>
                   {t("metadata.edit.labels.value")}
                 </label>
               </div>
             </div>
             {fields.map((field, index) => {
-              const isDisabled = field.disabled || false
-              let placeholder = "-"
+              const isDisabled = field.disabled || false;
+              let placeholder = "-";
 
               if (typeof field.value === "object") {
-                placeholder = "{ ... }"
+                placeholder = "{ ... }";
               }
 
               if (Array.isArray(field.value)) {
-                placeholder = "[ ... ]"
+                placeholder = "[ ... ]";
               }
 
               return (
@@ -181,50 +189,44 @@ const InnerForm = <TRes,>({
                       <Form.Field
                         control={form.control}
                         name={`metadata.${index}.key`}
-                        render={({ field }) => {
-                          return (
-                            <Form.Item>
-                              <Form.Control>
-                                <GridInput
-                                  aria-labelledby={METADATA_KEY_LABEL_ID}
-                                  {...field}
-                                  disabled={isDisabled}
-                                  placeholder="Key"
-                                />
-                              </Form.Control>
-                            </Form.Item>
-                          )
-                        }}
+                        render={({ field }) => (
+                          <Form.Item>
+                            <Form.Control>
+                              <GridInput
+                                aria-labelledby={METADATA_KEY_LABEL_ID}
+                                {...field}
+                                disabled={isDisabled}
+                                placeholder="Key"
+                              />
+                            </Form.Control>
+                          </Form.Item>
+                        )}
                       />
                       <Form.Field
                         control={form.control}
                         name={`metadata.${index}.value`}
-                        render={({ field: { value, ...field } }) => {
-                          return (
-                            <Form.Item>
-                              <Form.Control>
-                                <GridInput
-                                  aria-labelledby={METADATA_VALUE_LABEL_ID}
-                                  {...field}
-                                  value={isDisabled ? placeholder : value}
-                                  disabled={isDisabled}
-                                  placeholder="Value"
-                                />
-                              </Form.Control>
-                            </Form.Item>
-                          )
-                        }}
+                        render={({ field: { value, ...field } }) => (
+                          <Form.Item>
+                            <Form.Control>
+                              <GridInput
+                                aria-labelledby={METADATA_VALUE_LABEL_ID}
+                                {...field}
+                                value={isDisabled ? placeholder : value}
+                                disabled={isDisabled}
+                                placeholder="Value"
+                              />
+                            </Form.Control>
+                          </Form.Item>
+                        )}
                       />
                     </div>
-                    <DropdownMenu
-                      dir={direction}
-                    >
+                    <DropdownMenu dir={direction}>
                       <DropdownMenu.Trigger
                         className={clx(
                           "invisible absolute inset-y-0 -end-2.5 my-auto group-hover/table:visible data-[state='open']:visible",
                           {
                             hidden: isDisabled,
-                          }
+                          },
                         )}
                         disabled={isDisabled}
                         asChild
@@ -260,7 +262,7 @@ const InnerForm = <TRes,>({
                     </DropdownMenu>
                   </div>
                 </ConditionalTooltip>
-              )
+              );
             })}
           </div>
           {hasUneditableRows && (
@@ -291,47 +293,45 @@ const InnerForm = <TRes,>({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};
 
 const GridInput = forwardRef<
   HTMLInputElement,
   ComponentPropsWithoutRef<"input">
->(({ className, ...props }, ref) => {
-  return (
-    <input
-      ref={ref}
-      {...props}
-      autoComplete="off"
-      className={clx(
-        "txt-compact-small text-ui-fg-base placeholder:text-ui-fg-muted disabled:text-ui-fg-disabled disabled:bg-ui-bg-base bg-transparent px-2 py-1.5 outline-none",
-        className
-      )}
-    />
-  )
-})
-GridInput.displayName = "MetadataForm.GridInput"
+>(({ className, ...props }, ref) => (
+  <input
+    ref={ref}
+    {...props}
+    autoComplete="off"
+    className={clx(
+      "txt-compact-small bg-transparent px-2 py-1.5 text-ui-fg-base outline-none placeholder:text-ui-fg-muted disabled:bg-ui-bg-base disabled:text-ui-fg-disabled",
+      className,
+    )}
+  />
+));
+GridInput.displayName = "MetadataForm.GridInput";
 
-const PlaceholderInner = () => {
-  return (
-    <div className="flex flex-1 flex-col overflow-hidden">
-      <RouteDrawer.Body>
-        <Skeleton className="h-[148ox] w-full rounded-lg" />
-      </RouteDrawer.Body>
-      <RouteDrawer.Footer>
-        <div className="flex items-center justify-end gap-x-2">
-          <Skeleton className="h-7 w-12 rounded-md" />
-          <Skeleton className="h-7 w-12 rounded-md" />
-        </div>
-      </RouteDrawer.Footer>
-    </div>
-  )
-}
+const PlaceholderInner = () => (
+  <div className="flex flex-1 flex-col overflow-hidden">
+    <RouteDrawer.Body>
+      <Skeleton className="h-[148ox] w-full rounded-lg" />
+    </RouteDrawer.Body>
+    <RouteDrawer.Footer>
+      <div className="flex items-center justify-end gap-x-2">
+        <Skeleton className="h-7 w-12 rounded-md" />
+        <Skeleton className="h-7 w-12 rounded-md" />
+      </div>
+    </RouteDrawer.Footer>
+  </div>
+);
 
-const EDITABLE_TYPES = ["string", "number", "boolean"]
+const EDITABLE_TYPES = ["string", "number", "boolean"];
 
 function getDefaultValues(
-  metadata?: Record<string, any> | null
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata?: Record<string, any> | null,
 ): z.infer<typeof MetadataFieldSchema>[] {
   if (!metadata || !Object.keys(metadata).length) {
     return [
@@ -340,7 +340,7 @@ function getDefaultValues(
         value: "",
         disabled: false,
       },
-    ]
+    ];
   }
 
   return Object.entries(metadata).map(([key, value]) => {
@@ -349,90 +349,99 @@ function getDefaultValues(
         key,
         value: value,
         disabled: true,
-      }
+      };
     }
 
-    let stringValue = value
+    let stringValue = value;
 
     if (typeof value !== "string") {
-      stringValue = JSON.stringify(value)
+      stringValue = JSON.stringify(value);
     }
 
     return {
       key,
       value: stringValue,
       original_key: key,
-    }
-  })
+    };
+  });
 }
 
 function parseValues(
   values: z.infer<typeof MetadataSchema>,
-  original?: Record<string, any> | null
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  original?: Record<string, any> | null,
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Record<string, any> | null {
-  const metadata = values.metadata
+  const metadata = values.metadata;
 
   const isEmpty =
     !metadata.length ||
-    (metadata.length === 1 && !metadata[0].key && !metadata[0].value)
+    (metadata.length === 1 && !metadata[0].key && !metadata[0].value);
 
   if (isEmpty) {
-    return null
+    return null;
   }
 
-  const update: Record<string, any> = {}
+  // @todo fix type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const update: Record<string, any> = {};
 
   // First, handle removed keys from original
   if (original) {
     Object.keys(original).forEach((originalKey) => {
-      const exists = metadata.some((field) => field.key === originalKey)
+      const exists = metadata.some((field) => field.key === originalKey);
       if (!exists) {
-        update[originalKey] = ""
+        update[originalKey] = "";
       }
-    })
+    });
   }
 
   metadata.forEach((field) => {
-    let key = field.key
-    let value = field.value
-    const disabled = field.disabled
+    let key = field.key;
+    let value = field.value;
+    const disabled = field.disabled;
 
     if (!key) {
-      return
+      return;
     }
 
     if (disabled) {
-      update[key] = value
-      return
+      update[key] = value;
+
+      return;
     }
 
-    key = key.trim()
-    value = value?.trim() ?? ""
+    key = key.trim();
+    value = value?.trim() ?? "";
 
     // We try to cast the value to a boolean or number if possible
     if (value === "true") {
-      update[key] = true
+      update[key] = true;
     } else if (value === "false") {
-      update[key] = false
+      update[key] = false;
     } else {
-      const isNumeric = /^-?\d*\.?\d+$/.test(value)
+      const isNumeric = /^-?\d*\.?\d+$/.test(value);
       if (isNumeric) {
-        update[key] = parseFloat(value)
+        update[key] = parseFloat(value);
       } else {
-        update[key] = value
+        update[key] = value;
       }
     }
-  })
+  });
 
-  return update
+  return update;
 }
 
+// @todo fix type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getHasUneditableRows(metadata?: Record<string, any> | null) {
   if (!metadata) {
-    return false
+    return false;
   }
 
   return Object.values(metadata).some(
-    (value) => !EDITABLE_TYPES.includes(typeof value)
-  )
+    (value) => !EDITABLE_TYPES.includes(typeof value),
+  );
 }
