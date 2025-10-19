@@ -1,10 +1,13 @@
+import type { CSSProperties, MouseEvent } from "react";
+import { Suspense, useState } from "react";
+
 import {
   ArrowUpRightOnBox,
   Check,
   SquareTwoStack,
   TriangleDownMini,
   XMarkMini,
-} from "@medusajs/icons"
+} from "@medusajs/icons";
 import {
   Badge,
   Container,
@@ -12,19 +15,19 @@ import {
   Heading,
   IconButton,
   Kbd,
-} from "@medusajs/ui"
-import Primitive from "@uiw/react-json-view"
-import { CSSProperties, MouseEvent, Suspense, useState } from "react"
-import { Trans, useTranslation } from "react-i18next"
+} from "@medusajs/ui";
+
+import Primitive from "@uiw/react-json-view";
+import { Trans, useTranslation } from "react-i18next";
 
 type JsonViewSectionProps = {
-  data: object
-  title?: string
-}
+  data: object;
+  title?: string;
+};
 
 export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
-  const { t } = useTranslation()
-  const numberOfKeys = Object.keys(data).length
+  const { t } = useTranslation();
+  const numberOfKeys = Object.keys(data).length;
 
   return (
     <Container className="flex items-center justify-between px-6 py-4">
@@ -48,7 +51,7 @@ export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
         </Drawer.Trigger>
         <Drawer.Content
           dir="ltr"
-          className="bg-ui-contrast-bg-base text-ui-code-fg-subtle !shadow-elevation-commandbar overflow-hidden border border-none max-md:inset-x-2 max-md:max-w-[calc(100%-16px)]"
+          className="text-ui-code-fg-subtle overflow-hidden border border-none bg-ui-contrast-bg-base !shadow-elevation-commandbar max-md:inset-x-2 max-md:max-w-[calc(100%-16px)]"
         >
           <div className="bg-ui-code-bg-base flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-x-4">
@@ -68,14 +71,14 @@ export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
               </Drawer.Description>
             </div>
             <div className="flex items-center gap-x-2">
-              <Kbd className="bg-ui-contrast-bg-subtle border-ui-contrast-border-base text-ui-contrast-fg-secondary">
+              <Kbd className="border-ui-contrast-border-base bg-ui-contrast-bg-subtle text-ui-contrast-fg-secondary">
                 esc
               </Kbd>
               <Drawer.Close asChild>
                 <IconButton
                   size="small"
                   variant="transparent"
-                  className="text-ui-contrast-fg-secondary hover:text-ui-contrast-fg-primary hover:bg-ui-contrast-bg-base-hover active:bg-ui-contrast-bg-base-pressed focus-visible:bg-ui-contrast-bg-base-hover focus-visible:shadow-borders-interactive-with-active"
+                  className="text-ui-contrast-fg-secondary hover:bg-ui-contrast-bg-base-hover hover:text-ui-contrast-fg-primary focus-visible:bg-ui-contrast-bg-base-hover focus-visible:shadow-borders-interactive-with-active active:bg-ui-contrast-bg-base-pressed"
                 >
                   <XMarkMini />
                 </IconButton>
@@ -83,7 +86,7 @@ export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
             </div>
           </div>
           <Drawer.Body className="flex flex-1 flex-col overflow-hidden px-[5px] py-0 pb-[5px]">
-            <div className="bg-ui-contrast-bg-subtle flex-1 overflow-auto rounded-b-[4px] rounded-t-lg p-3">
+            <div className="flex-1 overflow-auto rounded-b-[4px] rounded-t-lg bg-ui-contrast-bg-subtle p-3">
               <Suspense
                 fallback={<div className="flex size-full flex-col"></div>}
               >
@@ -130,24 +133,24 @@ export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
                   <Primitive.CountInfo
                     render={(_props, { value }) => {
                       return (
-                        <span className="text-ui-contrast-fg-secondary ml-2">
+                        <span className="ml-2 text-ui-contrast-fg-secondary">
                           {t("general.items", {
                             count: Object.keys(value as object).length,
                           })}
                         </span>
-                      )
+                      );
                     }}
                   />
                   <Primitive.Arrow>
-                    <TriangleDownMini className="text-ui-contrast-fg-secondary -ml-[0.5px]" />
+                    <TriangleDownMini className="-ml-[0.5px] text-ui-contrast-fg-secondary" />
                   </Primitive.Arrow>
                   <Primitive.Colon>
                     <span className="mr-1">:</span>
                   </Primitive.Colon>
                   <Primitive.Copied
-                    render={({ style }, { value }) => {
-                      return <Copied style={style} value={value} />
-                    }}
+                    render={({ style }, { value }) => (
+                      <Copied style={style} value={value} />
+                    )}
                   />
                 </Primitive>
               </Suspense>
@@ -156,46 +159,42 @@ export const JsonViewSection = ({ data }: JsonViewSectionProps) => {
         </Drawer.Content>
       </Drawer>
     </Container>
-  )
-}
+  );
+};
 
 type CopiedProps = {
-  style?: CSSProperties
-  value: object | undefined
-}
+  style?: CSSProperties;
+  value: object | undefined;
+};
 
 const Copied = ({ style, value }: CopiedProps) => {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const handler = (e: MouseEvent<HTMLSpanElement>) => {
-    e.stopPropagation()
-    setCopied(true)
+    e.stopPropagation();
+    setCopied(true);
 
-    if (typeof value === "string") {
-      navigator.clipboard.writeText(value)
-    } else {
-      const json = JSON.stringify(value, null, 2)
-      navigator.clipboard.writeText(json)
-    }
+    const json = JSON.stringify(value, null, 2);
+    navigator.clipboard.writeText(json);
 
     setTimeout(() => {
-      setCopied(false)
-    }, 2000)
-  }
+      setCopied(false);
+    }, 2000);
+  };
 
-  const styl = { whiteSpace: "nowrap", width: "20px" }
+  const styl = { whiteSpace: "nowrap", width: "20px" };
 
   if (copied) {
     return (
       <span style={{ ...style, ...styl }}>
         <Check className="text-ui-contrast-fg-primary" />
       </span>
-    )
+    );
   }
 
   return (
-    <span style={{ ...style, ...styl }} onClick={handler}>
+    <button style={{ ...style, ...styl }} onClick={handler}>
       <SquareTwoStack className="text-ui-contrast-fg-secondary" />
-    </span>
-  )
-}
+    </button>
+  );
+};
