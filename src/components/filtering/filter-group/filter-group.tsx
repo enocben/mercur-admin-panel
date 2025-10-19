@@ -1,28 +1,31 @@
-import { Button, DropdownMenu } from "@medusajs/ui"
-import { ReactNode } from "react"
-import { useSearchParams } from "react-router-dom"
-import { useDocumentDirection } from "../../../hooks/use-document-direction"
+import type { ReactNode } from "react";
+
+import { Button, DropdownMenu } from "@medusajs/ui";
+
+import { useSearchParams } from "react-router-dom";
+
+import { useDocumentDirection } from "@hooks/use-document-direction";
 
 type FilterGroupProps = {
   filters: {
-    [key: string]: ReactNode
-  }
-}
+    [key: string]: ReactNode;
+  };
+};
 
 export const FilterGroup = ({ filters }: FilterGroupProps) => {
-  const [searchParams] = useSearchParams()
-  const filterKeys = Object.keys(filters)
+  const [searchParams] = useSearchParams();
+  const filterKeys = Object.keys(filters);
 
   if (filterKeys.length === 0) {
-    return null
+    return null;
   }
 
-  const isClearable = filterKeys.some((key) => searchParams.get(key))
-  const hasMore = !filterKeys.every((key) => searchParams.get(key))
-  const availableKeys = filterKeys.filter((key) => !searchParams.get(key))
+  const isClearable = filterKeys.some((key) => searchParams.get(key));
+  const hasMore = !filterKeys.every((key) => searchParams.get(key));
+  const availableKeys = filterKeys.filter((key) => !searchParams.get(key));
 
   return (
-    <div className="flex items-center flex-wrap gap-2">
+    <div className="flex flex-wrap items-center gap-2">
       {hasMore && <AddFilterMenu availableKeys={availableKeys} />}
       {isClearable && (
         <Button variant="transparent" size="small">
@@ -30,19 +33,18 @@ export const FilterGroup = ({ filters }: FilterGroupProps) => {
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 type AddFilterMenuProps = {
-  availableKeys: string[]
-}
+  availableKeys: string[];
+};
 
 const AddFilterMenu = ({ availableKeys }: AddFilterMenuProps) => {
-  const direction = useDocumentDirection()
+  const direction = useDocumentDirection();
+
   return (
-    <DropdownMenu
-      dir={direction}
-    >
+    <DropdownMenu dir={direction}>
       <DropdownMenu.Trigger asChild>
         <Button variant="secondary" size="small">
           Add filter
@@ -54,5 +56,5 @@ const AddFilterMenu = ({ availableKeys }: AddFilterMenuProps) => {
         ))}
       </DropdownMenu.Content>
     </DropdownMenu>
-  )
-}
+  );
+};
