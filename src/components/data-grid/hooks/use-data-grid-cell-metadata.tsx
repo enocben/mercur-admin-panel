@@ -1,16 +1,22 @@
-import { useCallback } from "react"
-import { FieldValues } from "react-hook-form"
-import { DataGridMatrix } from "../models"
-import { CellErrorMetadata, CellMetadata, DataGridCoordinates } from "../types"
-import { generateCellId } from "../utils"
+import { useCallback } from "react";
+
+import type { FieldValues } from "react-hook-form";
+
+import type { DataGridMatrix } from "@components/data-grid/models";
+import type {
+  CellErrorMetadata,
+  CellMetadata,
+  DataGridCoordinates,
+} from "@components/data-grid/types";
+import { generateCellId } from "@components/data-grid/utils";
 
 type UseDataGridCellMetadataOptions<TData, TFieldValues extends FieldValues> = {
-  matrix: DataGridMatrix<TData, TFieldValues>
-}
+  matrix: DataGridMatrix<TData, TFieldValues>;
+};
 
 export const useDataGridCellMetadata = <
   TData,
-  TFieldValues extends FieldValues
+  TFieldValues extends FieldValues,
 >({
   matrix,
 }: UseDataGridCellMetadataOptions<TData, TFieldValues>) => {
@@ -19,14 +25,14 @@ export const useDataGridCellMetadata = <
    */
   const getCellMetadata = useCallback(
     (coords: DataGridCoordinates): CellMetadata => {
-      const { row, col } = coords
+      const { row, col } = coords;
 
-      const id = generateCellId(coords)
-      const field = matrix.getCellField(coords)
-      const type = matrix.getCellType(coords)
+      const id = generateCellId(coords);
+      const field = matrix.getCellField(coords);
+      const type = matrix.getCellType(coords);
 
       if (!field || !type) {
-        throw new Error(`'field' or 'type' is null for cell ${id}`)
+        throw new Error(`'field' or 'type' is null for cell ${id}`);
       }
 
       const inputAttributes = {
@@ -34,11 +40,11 @@ export const useDataGridCellMetadata = <
         "data-col": col,
         "data-cell-id": id,
         "data-field": field,
-      }
+      };
 
       const innerAttributes = {
         "data-container-id": id,
-      }
+      };
 
       return {
         id,
@@ -46,10 +52,10 @@ export const useDataGridCellMetadata = <
         type,
         inputAttributes,
         innerAttributes,
-      }
+      };
     },
-    [matrix]
-  )
+    [matrix],
+  );
 
   /**
    * Creates error metadata for a cell. This is used to display error messages
@@ -57,19 +63,19 @@ export const useDataGridCellMetadata = <
    */
   const getCellErrorMetadata = useCallback(
     (coords: DataGridCoordinates): CellErrorMetadata => {
-      const accessor = matrix.getRowAccessor(coords.row)
-      const field = matrix.getCellField(coords)
+      const accessor = matrix.getRowAccessor(coords.row);
+      const field = matrix.getCellField(coords);
 
       return {
         accessor,
         field,
-      }
+      };
     },
-    [matrix]
-  )
+    [matrix],
+  );
 
   return {
     getCellMetadata,
     getCellErrorMetadata,
-  }
-}
+  };
+};

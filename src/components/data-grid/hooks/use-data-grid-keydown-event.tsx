@@ -1,53 +1,58 @@
-import React, { useCallback } from "react"
+import type React from "react";
+import { useCallback } from "react";
+
 import type {
   FieldValues,
   Path,
   PathValue,
   UseFormGetValues,
   UseFormSetValue,
-} from "react-hook-form"
-import {
-  DataGridBulkUpdateCommand,
+} from "react-hook-form";
+
+import type {
   DataGridMatrix,
   DataGridQueryTool,
+} from "@components/data-grid/models";
+import {
+  DataGridBulkUpdateCommand,
   DataGridUpdateCommand,
-} from "../models"
-import { DataGridCoordinates } from "../types"
+} from "@components/data-grid/models";
+import type { DataGridCoordinates } from "@components/data-grid/types";
 
 type UseDataGridKeydownEventOptions<TData, TFieldValues extends FieldValues> = {
-  containerRef: React.RefObject<HTMLDivElement>
-  matrix: DataGridMatrix<TData, TFieldValues>
-  anchor: DataGridCoordinates | null
-  rangeEnd: DataGridCoordinates | null
-  isEditing: boolean
+  containerRef: React.RefObject<HTMLDivElement>;
+  matrix: DataGridMatrix<TData, TFieldValues>;
+  anchor: DataGridCoordinates | null;
+  rangeEnd: DataGridCoordinates | null;
+  isEditing: boolean;
   scrollToCoordinates: (
     coords: DataGridCoordinates,
-    direction: "horizontal" | "vertical" | "both"
-  ) => void
-  setTrapActive: (active: boolean) => void
-  setSingleRange: (coordinates: DataGridCoordinates | null) => void
-  setRangeEnd: (coordinates: DataGridCoordinates | null) => void
-  onEditingChangeHandler: (value: boolean) => void
-  getValues: UseFormGetValues<TFieldValues>
-  setValue: UseFormSetValue<TFieldValues>
-  execute: (command: DataGridUpdateCommand | DataGridBulkUpdateCommand) => void
-  undo: () => void
-  redo: () => void
-  queryTool: DataGridQueryTool | null
+    direction: "horizontal" | "vertical" | "both",
+  ) => void;
+  setTrapActive: (active: boolean) => void;
+  setSingleRange: (coordinates: DataGridCoordinates | null) => void;
+  setRangeEnd: (coordinates: DataGridCoordinates | null) => void;
+  onEditingChangeHandler: (value: boolean) => void;
+  getValues: UseFormGetValues<TFieldValues>;
+  setValue: UseFormSetValue<TFieldValues>;
+  execute: (command: DataGridUpdateCommand | DataGridBulkUpdateCommand) => void;
+  undo: () => void;
+  redo: () => void;
+  queryTool: DataGridQueryTool | null;
   getSelectionValues: (
-    fields: string[]
-  ) => PathValue<TFieldValues, Path<TFieldValues>>[]
-  setSelectionValues: (fields: string[], values: string[]) => void
-  restoreSnapshot: () => void
-  createSnapshot: (coords: DataGridCoordinates) => void
-}
+    fields: string[],
+  ) => PathValue<TFieldValues, Path<TFieldValues>>[];
+  setSelectionValues: (fields: string[], values: string[]) => void;
+  restoreSnapshot: () => void;
+  createSnapshot: (coords: DataGridCoordinates) => void;
+};
 
-const ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]
-const VERTICAL_KEYS = ["ArrowUp", "ArrowDown"]
+const ARROW_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+const VERTICAL_KEYS = ["ArrowUp", "ArrowDown"];
 
 export const useDataGridKeydownEvent = <
   TData,
-  TFieldValues extends FieldValues
+  TFieldValues extends FieldValues,
 >({
   containerRef,
   matrix,
@@ -73,10 +78,10 @@ export const useDataGridKeydownEvent = <
   const handleKeyboardNavigation = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor) {
-        return
+        return;
       }
 
-      const type = matrix.getCellType(anchor)
+      const type = matrix.getCellType(anchor);
 
       /**
        * If the user is currently editing a cell, we don't want to
@@ -87,12 +92,12 @@ export const useDataGridKeydownEvent = <
        * away from the cell directly, as you cannot "enter" a boolean cell.
        */
       if (isEditing && type !== "boolean") {
-        return
+        return;
       }
 
       const direction = VERTICAL_KEYS.includes(e.key)
         ? "vertical"
-        : "horizontal"
+        : "horizontal";
 
       /**
        * If the user performs a horizontal navigation, we want to
@@ -104,37 +109,37 @@ export const useDataGridKeydownEvent = <
        * we want to use the anchor as the basis.
        */
       const basis =
-        direction === "horizontal" ? anchor : e.shiftKey ? rangeEnd : anchor
+        direction === "horizontal" ? anchor : e.shiftKey ? rangeEnd : anchor;
 
       const updater =
         direction === "horizontal"
           ? setSingleRange
           : e.shiftKey
-          ? setRangeEnd
-          : setSingleRange
+            ? setRangeEnd
+            : setSingleRange;
 
       if (!basis) {
-        return
+        return;
       }
 
-      const { row, col } = basis
+      const { row, col } = basis;
 
       const handleNavigation = (coords: DataGridCoordinates) => {
-        e.preventDefault()
-        e.stopPropagation()
+        e.preventDefault();
+        e.stopPropagation();
 
-        scrollToCoordinates(coords, direction)
-        updater(coords)
-      }
+        scrollToCoordinates(coords, direction);
+        updater(coords);
+      };
 
       const next = matrix.getValidMovement(
         row,
         col,
         e.key,
-        e.metaKey || e.ctrlKey
-      )
+        e.metaKey || e.ctrlKey,
+      );
 
-      handleNavigation(next)
+      handleNavigation(next);
     },
     [
       isEditing,
@@ -144,86 +149,87 @@ export const useDataGridKeydownEvent = <
       setSingleRange,
       setRangeEnd,
       matrix,
-    ]
-  )
+    ],
+  );
 
   const handleTabKey = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor) {
-        return
+        return;
       }
 
-      e.preventDefault()
-      e.stopPropagation()
+      e.preventDefault();
+      e.stopPropagation();
 
-      const { row, col } = anchor
+      const { row, col } = anchor;
 
-      const key = e.shiftKey ? "ArrowLeft" : "ArrowRight"
-      const direction = "horizontal"
+      const key = e.shiftKey ? "ArrowLeft" : "ArrowRight";
+      const direction = "horizontal";
 
       const next = matrix.getValidMovement(
         row,
         col,
         key,
-        e.metaKey || e.ctrlKey
-      )
+        e.metaKey || e.ctrlKey,
+      );
 
-      scrollToCoordinates(next, direction)
-      setSingleRange(next)
+      scrollToCoordinates(next, direction);
+      setSingleRange(next);
     },
-    [anchor, scrollToCoordinates, setSingleRange, matrix]
-  )
+    [anchor, scrollToCoordinates, setSingleRange, matrix],
+  );
 
   const handleUndo = useCallback(
     (e: KeyboardEvent) => {
-      e.preventDefault()
+      e.preventDefault();
 
       if (e.shiftKey) {
-        redo()
-        return
+        redo();
+
+        return;
       }
 
-      undo()
+      undo();
     },
-    [redo, undo]
-  )
+    [redo, undo],
+  );
 
   const handleSpaceKeyBoolean = useCallback(
     (anchor: DataGridCoordinates) => {
-      const end = rangeEnd ?? anchor
+      const end = rangeEnd ?? anchor;
 
-      const fields = matrix.getFieldsInSelection(anchor, end)
+      const fields = matrix.getFieldsInSelection(anchor, end);
 
-      const prev = getSelectionValues(fields) as boolean[]
+      const prev = getSelectionValues(fields) as boolean[];
 
-      const allChecked = prev.every((value) => value === true)
-      const next = Array.from({ length: prev.length }, () => !allChecked)
+      const allChecked = prev.every((value) => value);
+      const next = Array.from({ length: prev.length }, () => !allChecked);
 
       const command = new DataGridBulkUpdateCommand({
         fields,
         next,
         prev,
         setter: setSelectionValues,
-      })
+      });
 
-      execute(command)
+      execute(command);
     },
-    [rangeEnd, matrix, getSelectionValues, setSelectionValues, execute]
-  )
+    [rangeEnd, matrix, getSelectionValues, setSelectionValues, execute],
+  );
 
   const handleSpaceKeyTextOrNumber = useCallback(
     (anchor: DataGridCoordinates) => {
-      const field = matrix.getCellField(anchor)
-      const input = queryTool?.getInput(anchor)
+      const field = matrix.getCellField(anchor);
+      const input = queryTool?.getInput(anchor);
 
       if (!field || !input) {
-        return
+        return;
       }
 
-      createSnapshot(anchor)
+      createSnapshot(anchor);
 
-      const current = getValues(field as Path<TFieldValues>)
-      const next = ""
+      const current = getValues(field as Path<TFieldValues>);
+      const next = "";
 
       const command = new DataGridUpdateCommand({
         next,
@@ -232,37 +238,37 @@ export const useDataGridKeydownEvent = <
           setValue(field as Path<TFieldValues>, value, {
             shouldDirty: true,
             shouldTouch: true,
-          })
+          });
         },
-      })
+      });
 
-      execute(command)
+      execute(command);
 
-      input.focus()
+      input.focus();
     },
-    [matrix, queryTool, getValues, execute, setValue, createSnapshot]
-  )
+    [matrix, queryTool, getValues, execute, setValue, createSnapshot],
+  );
 
   const handleSpaceKeyTogglableNumber = useCallback(
     (anchor: DataGridCoordinates) => {
-      const field = matrix.getCellField(anchor)
-      const input = queryTool?.getInput(anchor)
+      const field = matrix.getCellField(anchor);
+      const input = queryTool?.getInput(anchor);
 
       if (!field || !input) {
-        return
+        return;
       }
 
-      createSnapshot(anchor)
+      createSnapshot(anchor);
 
-      const current = getValues(field as Path<TFieldValues>)
-      let checked = current.checked
+      const current = getValues(field as Path<TFieldValues>);
+      let checked = current.checked;
 
       // If the toggle is not disabled, then we want to uncheck the toggle.
       if (!current.disabledToggle) {
-        checked = false
+        checked = false;
       }
 
-      const next = { ...current, quantity: "", checked }
+      const next = { ...current, quantity: "", checked };
 
       const command = new DataGridUpdateCommand({
         next,
@@ -271,42 +277,42 @@ export const useDataGridKeydownEvent = <
           setValue(field as Path<TFieldValues>, value, {
             shouldDirty: true,
             shouldTouch: true,
-          })
+          });
         },
-      })
+      });
 
-      execute(command)
+      execute(command);
 
-      input.focus()
+      input.focus();
     },
-    [matrix, queryTool, getValues, execute, setValue, createSnapshot]
-  )
+    [matrix, queryTool, getValues, execute, setValue, createSnapshot],
+  );
 
   const handleSpaceKey = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor || isEditing) {
-        return
+        return;
       }
 
-      e.preventDefault()
+      e.preventDefault();
 
-      const type = matrix.getCellType(anchor)
+      const type = matrix.getCellType(anchor);
 
       if (!type) {
-        return
+        return;
       }
 
       switch (type) {
         case "boolean":
-          handleSpaceKeyBoolean(anchor)
-          break
+          handleSpaceKeyBoolean(anchor);
+          break;
         case "togglable-number":
-          handleSpaceKeyTogglableNumber(anchor)
-          break
+          handleSpaceKeyTogglableNumber(anchor);
+          break;
         case "number":
         case "text":
-          handleSpaceKeyTextOrNumber(anchor)
-          break
+          handleSpaceKeyTextOrNumber(anchor);
+          break;
       }
     },
     [
@@ -316,31 +322,31 @@ export const useDataGridKeydownEvent = <
       handleSpaceKeyBoolean,
       handleSpaceKeyTextOrNumber,
       handleSpaceKeyTogglableNumber,
-    ]
-  )
+    ],
+  );
 
   const handleMoveOnEnter = useCallback(
     (e: KeyboardEvent, anchor: DataGridCoordinates) => {
-      const direction = e.shiftKey ? "ArrowUp" : "ArrowDown"
+      const direction = e.shiftKey ? "ArrowUp" : "ArrowDown";
 
       const pos = matrix.getValidMovement(
         anchor.row,
         anchor.col,
         direction,
-        false
-      )
+        false,
+      );
 
       if (anchor.row !== pos.row || anchor.col !== pos.col) {
-        setSingleRange(pos)
-        scrollToCoordinates(pos, "vertical")
+        setSingleRange(pos);
+        scrollToCoordinates(pos, "vertical");
       } else {
         // If the the user is at the last cell, we want to focus the container of the cell.
-        const container = queryTool?.getContainer(anchor)
+        const container = queryTool?.getContainer(anchor);
 
-        container?.focus()
+        container?.focus();
       }
 
-      onEditingChangeHandler(false)
+      onEditingChangeHandler(false);
     },
     [
       queryTool,
@@ -348,22 +354,22 @@ export const useDataGridKeydownEvent = <
       scrollToCoordinates,
       setSingleRange,
       onEditingChangeHandler,
-    ]
-  )
+    ],
+  );
 
   const handleEditOnEnter = useCallback(
     (anchor: DataGridCoordinates) => {
-      const input = queryTool?.getInput(anchor)
+      const input = queryTool?.getInput(anchor);
 
       if (!input) {
-        return
+        return;
       }
 
-      input.focus()
-      onEditingChangeHandler(true)
+      input.focus();
+      onEditingChangeHandler(true);
     },
-    [queryTool, onEditingChangeHandler]
-  )
+    [queryTool, onEditingChangeHandler],
+  );
 
   /**
    * Handles the enter key for text and number cells.
@@ -375,14 +381,15 @@ export const useDataGridKeydownEvent = <
   const handleEnterKeyTextOrNumber = useCallback(
     (e: KeyboardEvent, anchor: DataGridCoordinates) => {
       if (isEditing) {
-        handleMoveOnEnter(e, anchor)
-        return
+        handleMoveOnEnter(e, anchor);
+
+        return;
       }
 
-      handleEditOnEnter(anchor)
+      handleEditOnEnter(anchor);
     },
-    [handleMoveOnEnter, handleEditOnEnter, isEditing]
-  )
+    [handleMoveOnEnter, handleEditOnEnter, isEditing],
+  );
 
   /**
    * Handles the enter key for boolean cells.
@@ -394,20 +401,14 @@ export const useDataGridKeydownEvent = <
    */
   const handleEnterKeyBoolean = useCallback(
     (e: KeyboardEvent, anchor: DataGridCoordinates) => {
-      const field = matrix.getCellField(anchor)
+      const field = matrix.getCellField(anchor);
 
       if (!field) {
-        return
+        return;
       }
 
-      const current = getValues(field as Path<TFieldValues>)
-      let next: boolean
-
-      if (typeof current === "boolean") {
-        next = !current
-      } else {
-        next = true
-      }
+      const current = getValues(field as Path<TFieldValues>);
+      const next = true;
 
       const command = new DataGridUpdateCommand({
         next,
@@ -416,125 +417,125 @@ export const useDataGridKeydownEvent = <
           setValue(field as Path<TFieldValues>, value, {
             shouldDirty: true,
             shouldTouch: true,
-          })
+          });
         },
-      })
+      });
 
-      execute(command)
-      handleMoveOnEnter(e, anchor)
+      execute(command);
+      handleMoveOnEnter(e, anchor);
     },
-    [execute, getValues, handleMoveOnEnter, matrix, setValue]
-  )
+    [execute, getValues, handleMoveOnEnter, matrix, setValue],
+  );
 
   const handleEnterKey = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor) {
-        return
+        return;
       }
 
-      e.preventDefault()
+      e.preventDefault();
 
-      const type = matrix.getCellType(anchor)
+      const type = matrix.getCellType(anchor);
 
       switch (type) {
         case "togglable-number":
         case "text":
         case "number":
-          handleEnterKeyTextOrNumber(e, anchor)
-          break
+          handleEnterKeyTextOrNumber(e, anchor);
+          break;
         case "boolean": {
-          handleEnterKeyBoolean(e, anchor)
-          break
+          handleEnterKeyBoolean(e, anchor);
+          break;
         }
       }
     },
-    [anchor, matrix, handleEnterKeyTextOrNumber, handleEnterKeyBoolean]
-  )
+    [anchor, matrix, handleEnterKeyTextOrNumber, handleEnterKeyBoolean],
+  );
 
   const handleDeleteKeyTogglableNumber = useCallback(
     (anchor: DataGridCoordinates, rangeEnd: DataGridCoordinates) => {
-      const fields = matrix.getFieldsInSelection(anchor, rangeEnd)
-      const prev = getSelectionValues(fields)
+      const fields = matrix.getFieldsInSelection(anchor, rangeEnd);
+      const prev = getSelectionValues(fields);
 
       const next = prev.map((value) => ({
         ...value,
         quantity: "",
         checked: value.disableToggle ? value.checked : false,
-      }))
+      }));
 
       const command = new DataGridBulkUpdateCommand({
         fields,
         next,
         prev,
         setter: setSelectionValues,
-      })
+      });
 
-      execute(command)
+      execute(command);
     },
-    [matrix, getSelectionValues, setSelectionValues, execute]
-  )
+    [matrix, getSelectionValues, setSelectionValues, execute],
+  );
 
   const handleDeleteKeyTextOrNumber = useCallback(
     (anchor: DataGridCoordinates, rangeEnd: DataGridCoordinates) => {
-      const fields = matrix.getFieldsInSelection(anchor, rangeEnd)
-      const prev = getSelectionValues(fields)
-      const next = Array.from({ length: prev.length }, () => "")
+      const fields = matrix.getFieldsInSelection(anchor, rangeEnd);
+      const prev = getSelectionValues(fields);
+      const next = Array.from({ length: prev.length }, () => "");
 
       const command = new DataGridBulkUpdateCommand({
         fields,
         next,
         prev,
         setter: setSelectionValues,
-      })
+      });
 
-      execute(command)
+      execute(command);
     },
-    [matrix, getSelectionValues, setSelectionValues, execute]
-  )
+    [matrix, getSelectionValues, setSelectionValues, execute],
+  );
 
   const handleDeleteKeyBoolean = useCallback(
     (anchor: DataGridCoordinates, rangeEnd: DataGridCoordinates) => {
-      const fields = matrix.getFieldsInSelection(anchor, rangeEnd)
-      const prev = getSelectionValues(fields)
-      const next = Array.from({ length: prev.length }, () => false)
+      const fields = matrix.getFieldsInSelection(anchor, rangeEnd);
+      const prev = getSelectionValues(fields);
+      const next = Array.from({ length: prev.length }, () => false);
 
       const command = new DataGridBulkUpdateCommand({
         fields,
         next,
         prev,
         setter: setSelectionValues,
-      })
+      });
 
-      execute(command)
+      execute(command);
     },
-    [execute, getSelectionValues, matrix, setSelectionValues]
-  )
+    [execute, getSelectionValues, matrix, setSelectionValues],
+  );
 
   const handleDeleteKey = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor || !rangeEnd || isEditing) {
-        return
+        return;
       }
 
-      e.preventDefault()
+      e.preventDefault();
 
-      const type = matrix.getCellType(anchor)
+      const type = matrix.getCellType(anchor);
 
       if (!type) {
-        return
+        return;
       }
 
       switch (type) {
         case "text":
         case "number":
-          handleDeleteKeyTextOrNumber(anchor, rangeEnd)
-          break
+          handleDeleteKeyTextOrNumber(anchor, rangeEnd);
+          break;
         case "boolean":
-          handleDeleteKeyBoolean(anchor, rangeEnd)
-          break
+          handleDeleteKeyBoolean(anchor, rangeEnd);
+          break;
         case "togglable-number":
-          handleDeleteKeyTogglableNumber(anchor, rangeEnd)
-          break
+          handleDeleteKeyTogglableNumber(anchor, rangeEnd);
+          break;
       }
     },
     [
@@ -545,92 +546,99 @@ export const useDataGridKeydownEvent = <
       handleDeleteKeyTextOrNumber,
       handleDeleteKeyBoolean,
       handleDeleteKeyTogglableNumber,
-    ]
-  )
+    ],
+  );
 
   const handleEscapeKey = useCallback(
     (e: KeyboardEvent) => {
       if (!anchor || !isEditing) {
-        return
+        return;
       }
 
-      e.preventDefault()
-      e.stopPropagation()
+      e.preventDefault();
+      e.stopPropagation();
 
       // try to restore the previous value
-      restoreSnapshot()
+      restoreSnapshot();
 
       // Restore focus to the container element
-      const container = queryTool?.getContainer(anchor)
-      container?.focus()
+      const container = queryTool?.getContainer(anchor);
+      container?.focus();
     },
-    [queryTool, isEditing, anchor, restoreSnapshot]
-  )
+    [queryTool, isEditing, anchor, restoreSnapshot],
+  );
 
   const handleSpecialFocusKeys = useCallback(
     (e: KeyboardEvent) => {
       if (!containerRef || isEditing) {
-        return
+        return;
       }
 
-      const focusableElements = getFocusableElements(containerRef)
+      const focusableElements = getFocusableElements(containerRef);
 
       const focusElement = (element: HTMLElement | null) => {
         if (element) {
-          setTrapActive(false)
-          element.focus()
+          setTrapActive(false);
+          element.focus();
         }
-      }
+      };
 
       switch (e.key) {
         case ".":
-          focusElement(focusableElements.cancel)
-          break
+          focusElement(focusableElements.cancel);
+          break;
         case ",":
-          focusElement(focusableElements.shortcuts)
-          break
+          focusElement(focusableElements.shortcuts);
+          break;
         default:
-          break
+          break;
       }
     },
-    [isEditing, setTrapActive, containerRef]
-  )
+    [isEditing, setTrapActive, containerRef],
+  );
 
   const handleKeyDownEvent = useCallback(
     (e: KeyboardEvent) => {
       if (ARROW_KEYS.includes(e.key)) {
-        handleKeyboardNavigation(e)
-        return
+        handleKeyboardNavigation(e);
+
+        return;
       }
 
       if (e.key === "z" && (e.metaKey || e.ctrlKey)) {
-        handleUndo(e)
-        return
+        handleUndo(e);
+
+        return;
       }
 
       if (e.key === " ") {
-        handleSpaceKey(e)
-        return
+        handleSpaceKey(e);
+
+        return;
       }
 
       if (e.key === "Delete" || e.key === "Backspace") {
-        handleDeleteKey(e)
-        return
+        handleDeleteKey(e);
+
+        return;
       }
 
       if (e.key === "Enter") {
-        handleEnterKey(e)
-        return
+        handleEnterKey(e);
+
+        return;
       }
 
       if (e.key === "Escape") {
-        handleEscapeKey(e)
-        return
+        handleEscapeKey(e);
+
+        return;
       }
 
       if (e.key === "Tab") {
-        handleTabKey(e)
-        return
+        handleTabKey(e);
+
+        return;
       }
     },
     [
@@ -641,34 +649,34 @@ export const useDataGridKeydownEvent = <
       handleEnterKey,
       handleDeleteKey,
       handleTabKey,
-    ]
-  )
+    ],
+  );
 
   return {
     handleKeyDownEvent,
     handleSpecialFocusKeys,
-  }
-}
+  };
+};
 
 function getFocusableElements(ref: React.RefObject<HTMLDivElement>) {
   const focusableElements = Array.from(
     document.querySelectorAll<HTMLElement>(
-      "[tabindex], a, button, input, select, textarea"
-    )
-  )
+      "[tabindex], a, button, input, select, textarea",
+    ),
+  );
 
-  const currentElementIndex = focusableElements.indexOf(ref.current!)
+  const currentElementIndex = focusableElements.indexOf(ref.current!);
 
   const shortcuts =
-    currentElementIndex > 0 ? focusableElements[currentElementIndex - 1] : null
+    currentElementIndex > 0 ? focusableElements[currentElementIndex - 1] : null;
 
-  let cancel = null
+  let cancel = null;
   for (let i = currentElementIndex + 1; i < focusableElements.length; i++) {
     if (!ref.current!.contains(focusableElements[i])) {
-      cancel = focusableElements[i]
-      break
+      cancel = focusableElements[i];
+      break;
     }
   }
 
-  return { shortcuts, cancel }
+  return { shortcuts, cancel };
 }
