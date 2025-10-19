@@ -1,14 +1,17 @@
-import { HttpTypes } from "@medusajs/types"
-import { createDataTableFilterHelper } from "@medusajs/ui"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { useDataTableDateFilters } from "../general/use-data-table-date-filters"
+import { useMemo } from "react";
 
-const filterHelper = createDataTableFilterHelper<HttpTypes.AdminSalesChannel>()
+import type { HttpTypes } from "@medusajs/types";
+import { createDataTableFilterHelper } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { useDataTableDateFilters } from "@components/data-table/helpers/general/use-data-table-date-filters";
+
+const filterHelper = createDataTableFilterHelper<HttpTypes.AdminSalesChannel>();
 
 export const useSalesChannelTableFilters = () => {
-  const { t } = useTranslation()
-  const dateFilters = useDataTableDateFilters()
+  const { t } = useTranslation();
+  const dateFilters = useDataTableDateFilters();
 
   return useMemo(
     () => [
@@ -28,6 +31,6 @@ export const useSalesChannelTableFilters = () => {
       }),
       ...dateFilters,
     ],
-    [dateFilters, t]
-  )
-}
+    [dateFilters, t],
+  );
+};

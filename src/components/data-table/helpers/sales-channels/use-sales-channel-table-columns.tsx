@@ -1,16 +1,18 @@
-import { HttpTypes } from "@medusajs/types"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo } from "react";
 
-import { createDataTableColumnHelper, Tooltip } from "@medusajs/ui"
-import { DataTableStatusCell } from "../../components/data-table-status-cell/data-table-status-cell"
-import { useDataTableDateColumns } from "../general/use-data-table-date-columns"
+import type { HttpTypes } from "@medusajs/types";
+import { Tooltip, createDataTableColumnHelper } from "@medusajs/ui";
 
-const columnHelper = createDataTableColumnHelper<HttpTypes.AdminSalesChannel>()
+import { useTranslation } from "react-i18next";
+
+import { DataTableStatusCell } from "@components/data-table/components";
+import { useDataTableDateColumns } from "@components/data-table/helpers/general/use-data-table-date-columns.tsx";
+
+const columnHelper = createDataTableColumnHelper<HttpTypes.AdminSalesChannel>();
 
 export const useSalesChannelTableColumns = () => {
-  const { t } = useTranslation()
-  const dateColumns = useDataTableDateColumns<HttpTypes.AdminSalesChannel>()
+  const { t } = useTranslation();
+  const dateColumns = useDataTableDateColumns<HttpTypes.AdminSalesChannel>();
 
   return useMemo(
     () => [
@@ -30,7 +32,7 @@ export const useSalesChannelTableColumns = () => {
                 <span className="truncate">{getValue()}</span>
               </div>
             </Tooltip>
-          )
+          );
         },
         enableSorting: true,
         sortLabel: t("fields.description"),
@@ -46,16 +48,17 @@ export const useSalesChannelTableColumns = () => {
         sortAscLabel: t("filters.sorting.alphabeticallyAsc"),
         sortDescLabel: t("filters.sorting.alphabeticallyDesc"),
         cell: ({ getValue }) => {
-          const value = getValue()
+          const value = getValue();
+
           return (
             <DataTableStatusCell color={value ? "grey" : "green"}>
               {value ? t("general.disabled") : t("general.enabled")}
             </DataTableStatusCell>
-          )
+          );
         },
       }),
       ...dateColumns,
     ],
-    [t, dateColumns]
-  )
-}
+    [t, dateColumns],
+  );
+};

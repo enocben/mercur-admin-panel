@@ -1,9 +1,11 @@
-import { DataTableEmptyStateProps } from "@medusajs/ui"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo } from "react";
+
+import type { DataTableEmptyStateProps } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
 
 export const useSalesChannelTableEmptyState = (): DataTableEmptyStateProps => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return useMemo(() => {
     const content: DataTableEmptyStateProps = {
@@ -15,8 +17,8 @@ export const useSalesChannelTableEmptyState = (): DataTableEmptyStateProps => {
         heading: t("salesChannels.list.filtered.heading"),
         description: t("salesChannels.list.filtered.description"),
       },
-    }
+    };
 
-    return content
-  }, [t])
-}
+    return content;
+  }, [t]);
+};
