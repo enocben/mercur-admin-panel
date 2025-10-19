@@ -1,52 +1,54 @@
-import { Avatar, Copy, Text } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { HttpTypes } from "@medusajs/types"
-import { getFormattedAddress, isSameAddress } from "../../../lib/addresses"
+import type { HttpTypes } from "@medusajs/types";
+import { Avatar, Copy, Text } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { getFormattedAddress, isSameAddress } from "@lib/addresses.ts";
 
 const ID = ({ data }: { data: HttpTypes.AdminOrder }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const id = data.customer_id
-  const name = getOrderCustomer(data)
-  const email = data.email
-  const fallback = (name || email || "").charAt(0).toUpperCase()
+  const id = data.customer_id;
+  const name = getOrderCustomer(data);
+  const email = data.email;
+  const fallback = (name || email || "").charAt(0).toUpperCase();
 
   return (
-    <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
+    <div className="grid grid-cols-2 items-center px-6 py-4 text-ui-fg-subtle">
       <Text size="small" leading="compact" weight="plus">
         {t("fields.id")}
       </Text>
       <Link
         to={`/customers/${id}`}
-        className="focus:shadow-borders-focus rounded-[4px] outline-none transition-shadow"
+        className="rounded-[4px] outline-none transition-shadow focus:shadow-borders-focus"
       >
         <div className="flex items-center gap-x-2 overflow-hidden">
           <Avatar size="2xsmall" fallback={fallback} />
           <Text
             size="small"
             leading="compact"
-            className="text-ui-fg-subtle hover:text-ui-fg-base transition-fg truncate"
+            className="truncate text-ui-fg-subtle transition-fg hover:text-ui-fg-base"
           >
             {name || email}
           </Text>
         </div>
       </Link>
     </div>
-  )
-}
+  );
+};
 
 const Company = ({ data }: { data: HttpTypes.AdminOrder }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const company =
-    data.shipping_address?.company || data.billing_address?.company
+    data.shipping_address?.company || data.billing_address?.company;
 
   if (!company) {
-    return null
+    return null;
   }
 
   return (
-    <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
+    <div className="grid grid-cols-2 items-center px-6 py-4 text-ui-fg-subtle">
       <Text size="small" leading="compact" weight="plus">
         {t("fields.company")}
       </Text>
@@ -54,17 +56,17 @@ const Company = ({ data }: { data: HttpTypes.AdminOrder }) => {
         {company}
       </Text>
     </div>
-  )
-}
+  );
+};
 
 const Contact = ({ data }: { data: HttpTypes.AdminOrder }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const phone = data.shipping_address?.phone || data.billing_address?.phone
-  const email = data.email || ""
+  const phone = data.shipping_address?.phone || data.billing_address?.phone;
+  const email = data.email || "";
 
   return (
-    <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
+    <div className="grid grid-cols-2 items-start px-6 py-4 text-ui-fg-subtle">
       <Text size="small" leading="compact" weight="plus">
         {t("orders.customer.contactLabel")}
       </Text>
@@ -99,8 +101,8 @@ const Contact = ({ data }: { data: HttpTypes.AdminOrder }) => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const AddressPrint = ({
   address,
@@ -108,13 +110,13 @@ const AddressPrint = ({
 }: {
   address:
     | HttpTypes.AdminOrder["shipping_address"]
-    | HttpTypes.AdminOrder["billing_address"]
-  type: "shipping" | "billing"
+    | HttpTypes.AdminOrder["billing_address"];
+  type: "shipping" | "billing";
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
-    <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
+    <div className="grid grid-cols-2 items-start px-6 py-4 text-ui-fg-subtle">
       <Text size="small" leading="compact" weight="plus">
         {type === "shipping"
           ? t("addresses.shippingAddress.label")
@@ -129,7 +131,7 @@ const AddressPrint = ({
                   {line}
                   <br />
                 </span>
-              )
+              );
             })}
           </Text>
           <div className="flex justify-end">
@@ -145,11 +147,11 @@ const AddressPrint = ({
         </Text>
       )}
     </div>
-  )
-}
+  );
+};
 
 const Addresses = ({ data }: { data: HttpTypes.AdminOrder }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <div className="divide-y">
@@ -172,8 +174,8 @@ const Addresses = ({ data }: { data: HttpTypes.AdminOrder }) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
 export const CustomerInfo = Object.assign(
   {},
@@ -182,21 +184,19 @@ export const CustomerInfo = Object.assign(
     Company,
     Contact,
     Addresses,
-  }
-)
+  },
+);
 
 const getOrderCustomer = (obj: HttpTypes.AdminOrder) => {
   const { first_name: sFirstName, last_name: sLastName } =
-    obj.shipping_address || {}
+    obj.shipping_address || {};
   const { first_name: bFirstName, last_name: bLastName } =
-    obj.billing_address || {}
-  const { first_name: cFirstName, last_name: cLastName } = obj.customer || {}
+    obj.billing_address || {};
+  const { first_name: cFirstName, last_name: cLastName } = obj.customer || {};
 
-  const customerName = [cFirstName, cLastName].filter(Boolean).join(" ")
-  const shippingName = [sFirstName, sLastName].filter(Boolean).join(" ")
-  const billingName = [bFirstName, bLastName].filter(Boolean).join(" ")
+  const customerName = [cFirstName, cLastName].filter(Boolean).join(" ");
+  const shippingName = [sFirstName, sLastName].filter(Boolean).join(" ");
+  const billingName = [bFirstName, bLastName].filter(Boolean).join(" ");
 
-  const name = customerName || shippingName || billingName
-
-  return name
-}
+  return customerName || shippingName || billingName;
+};
