@@ -3,7 +3,6 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { ArrowUturnLeft, MinusMini } from "@medusajs/icons";
 import { Divider, IconButton, Text, clx } from "@medusajs/ui";
 
-import { useExtension } from "@providers/extension-provider";
 import { Collapsible as RadixCollapsible } from "radix-ui";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation } from "react-router-dom";
@@ -12,13 +11,13 @@ import { type INavItem, NavItem } from "@components/layout/nav-item";
 import { Shell } from "@components/layout/shell";
 import { UserMenu } from "@components/layout/user-menu";
 
-export const SettingsLayout = () => {
-  return (
-    <Shell>
-      <SettingsSidebar />
-    </Shell>
-  );
-};
+import { useExtension } from "@providers/extension-provider";
+
+export const SettingsLayout = () => (
+  <Shell>
+    <SettingsSidebar />
+  </Shell>
+);
 
 const useSettingRoutes = (): INavItem[] => {
   const { t } = useTranslation();
@@ -238,41 +237,37 @@ const RadixCollapsibleSection = ({
 }: {
   label: string;
   items: INavItem[];
-}) => {
-  return (
-    <RadixCollapsible.Root defaultOpen className="py-3">
-      <div className="px-3">
-        <div className="flex h-7 items-center justify-between px-2 text-ui-fg-muted">
-          <Text size="small" leading="compact">
-            {label}
-          </Text>
-          <RadixCollapsible.Trigger asChild>
-            <IconButton size="2xsmall" variant="transparent" className="static">
-              <MinusMini className="text-ui-fg-muted" />
-            </IconButton>
-          </RadixCollapsible.Trigger>
-        </div>
+}) => (
+  <RadixCollapsible.Root defaultOpen className="py-3">
+    <div className="px-3">
+      <div className="flex h-7 items-center justify-between px-2 text-ui-fg-muted">
+        <Text size="small" leading="compact">
+          {label}
+        </Text>
+        <RadixCollapsible.Trigger asChild>
+          <IconButton size="2xsmall" variant="transparent" className="static">
+            <MinusMini className="text-ui-fg-muted" />
+          </IconButton>
+        </RadixCollapsible.Trigger>
       </div>
-      <RadixCollapsible.Content>
-        <div className="pt-0.5">
-          <nav className="flex flex-col gap-y-0.5">
-            {items.map((setting) => (
-              <NavItem key={setting.to} type="setting" {...setting} />
-            ))}
-          </nav>
-        </div>
-      </RadixCollapsible.Content>
-    </RadixCollapsible.Root>
-  );
-};
-
-const UserSection = () => {
-  return (
-    <div>
-      <div className="px-3">
-        <Divider variant="dashed" />
-      </div>
-      <UserMenu />
     </div>
-  );
-};
+    <RadixCollapsible.Content>
+      <div className="pt-0.5">
+        <nav className="flex flex-col gap-y-0.5">
+          {items.map((setting) => (
+            <NavItem key={setting.to} type="setting" {...setting} />
+          ))}
+        </nav>
+      </div>
+    </RadixCollapsible.Content>
+  </RadixCollapsible.Root>
+);
+
+const UserSection = () => (
+  <div>
+    <div className="px-3">
+      <Divider variant="dashed" />
+    </div>
+    <UserMenu />
+  </div>
+);
