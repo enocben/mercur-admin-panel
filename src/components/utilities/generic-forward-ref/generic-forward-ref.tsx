@@ -1,7 +1,10 @@
-import { ReactNode, Ref, RefAttributes, forwardRef } from "react"
+import type { ReactNode, Ref, RefAttributes } from "react";
+import { forwardRef } from "react";
 
-export function genericForwardRef<T, P = {}>(
-  render: (props: P, ref: Ref<T>) => ReactNode
+export function genericForwardRef<T, P = object>(
+  render: (props: P, ref: Ref<T>) => ReactNode,
 ): (props: P & RefAttributes<T>) => ReactNode {
-  return forwardRef(render) as any
+  // @todo fix type error
+  // @ts-expect-error Generic forwarding ref is not properly typed
+  return forwardRef(render) as unknown;
 }
