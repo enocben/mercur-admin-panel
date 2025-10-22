@@ -1,24 +1,25 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { EllipsisHorizontal } from "@medusajs/icons";
 import {
+  Badge,
+  Button,
   Container,
+  DropdownMenu,
   Heading,
   Text,
   toast,
-  DropdownMenu,
-  Button,
-  Badge,
 } from "@medusajs/ui";
-import { useParams, useNavigate } from "react-router-dom";
-import { EllipsisHorizontal } from "@medusajs/icons";
-import { PossibleValuesTable } from "../attribute-edit-possible-value/components/possible-values-table";
 
-import { SingleColumnLayout } from "../../../components/layout/single-column";
-import {
-  attributeQueryKeys,
-  useAttribute,
-} from "../../../hooks/api/attributes";
-import { sdk } from "../../../lib/client";
-import { SectionRow } from "../../../components/common/section";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { SectionRow } from "@components/common/section";
+import { SingleColumnLayout } from "@components/layout/single-column";
+
+import { attributeQueryKeys, useAttribute } from "@hooks/api/attributes.tsx";
+
+import { sdk } from "@lib/client";
+
+import { PossibleValuesTable } from "@routes/attributes/attribute-edit-possible-value/components/possible-values-table.tsx";
 
 export const AttributeDetail = () => {
   const { id } = useParams();
@@ -32,13 +33,13 @@ export const AttributeDetail = () => {
       fields:
         "name, description, handle, product_categories.name, possible_values.*,is_filterable,is_required,ui_component",
     },
-    { enabled: !!id }
+    { enabled: !!id },
   );
 
   if (isLoading) {
     return (
       <Container>
-        <div className="flex items-center justify-center h-[200px]">
+        <div className="flex h-[200px] items-center justify-center">
           <Text>Loading...</Text>
         </div>
       </Container>
@@ -48,7 +49,7 @@ export const AttributeDetail = () => {
   if (!attribute) {
     return (
       <Container>
-        <div className="flex items-center justify-center h-[200px]">
+        <div className="flex h-[200px] items-center justify-center">
           <Text>Attribute not found</Text>
         </div>
       </Container>
@@ -121,7 +122,7 @@ export const AttributeDetail = () => {
                       <Badge size="xsmall" key={category.id}>
                         {category.name}
                       </Badge>
-                    )
+                    ),
                   )}
                 </>
               }
