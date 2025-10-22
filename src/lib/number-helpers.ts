@@ -17,6 +17,7 @@ export function getNumberOfDecimalPlaces(num: number): number {
     return 0;
   }
   // Return the length of the part after the decimal point
+
   return str.split(".")[1].length;
 }
 
@@ -26,8 +27,9 @@ export const getDecimalDigits = (currency: string) => {
 
 export const isAmountLessThenRoundingError = (
   amount: number,
-  currencyCode: string
+  currencyCode: string,
 ) => {
   const decimalDigits = getDecimalDigits(currencyCode);
+
   return Math.abs(amount) < 1 / 10 ** decimalDigits / 2;
 };

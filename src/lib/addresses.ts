@@ -1,13 +1,13 @@
-import { HttpTypes } from "@medusajs/types"
+import type { HttpTypes } from "@medusajs/types";
 
-import { countries, getCountryByIso2 } from "./data/countries"
+import { countries, getCountryByIso2 } from "./data/countries";
 
 export const isSameAddress = (
   a?: HttpTypes.AdminOrderAddress | null,
-  b?: HttpTypes.AdminOrderAddress | null
+  b?: HttpTypes.AdminOrderAddress | null,
 ) => {
   if (!a || !b) {
-    return false
+    return false;
   }
 
   return (
@@ -19,16 +19,16 @@ export const isSameAddress = (
     a.postal_code === b.postal_code &&
     a.province === b.province &&
     a.country_code === b.country_code
-  )
-}
+  );
+};
 
 export const getFormattedAddress = ({
   address,
 }: {
-  address?: HttpTypes.AdminOrderAddress | null
+  address?: HttpTypes.AdminOrderAddress | null;
 }) => {
   if (!address) {
-    return []
+    return [];
   }
 
   const {
@@ -42,56 +42,57 @@ export const getFormattedAddress = ({
     province,
     country,
     country_code,
-  } = address
+  } = address;
 
-  const name = [first_name, last_name].filter(Boolean).join(" ")
+  const name = [first_name, last_name].filter(Boolean).join(" ");
 
-  const formattedAddress: string[] = []
+  const formattedAddress: string[] = [];
 
   if (name) {
-    formattedAddress.push(name)
+    formattedAddress.push(name);
   }
 
   if (company) {
-    formattedAddress.push(company)
+    formattedAddress.push(company);
   }
 
   if (address_1) {
-    formattedAddress.push(address_1)
+    formattedAddress.push(address_1);
   }
 
   if (address_2) {
-    formattedAddress.push(address_2)
+    formattedAddress.push(address_2);
   }
 
   const cityProvincePostal = [city, province, postal_code]
     .filter(Boolean)
-    .join(" ")
+    .join(" ");
 
   if (cityProvincePostal) {
-    formattedAddress.push(cityProvincePostal)
+    formattedAddress.push(cityProvincePostal);
   }
 
   if (country) {
-    formattedAddress.push(country.display_name!)
+    formattedAddress.push(country.display_name!);
   } else if (country_code) {
-    const country = getCountryByIso2(country_code)
+    const country = getCountryByIso2(country_code);
 
     if (country) {
-      formattedAddress.push(country.display_name)
+      formattedAddress.push(country.display_name);
     } else {
-      formattedAddress.push(country_code.toUpperCase())
+      formattedAddress.push(country_code.toUpperCase());
     }
   }
 
-  return formattedAddress
-}
+  return formattedAddress;
+};
 
 export const getFormattedCountry = (countryCode: string | null | undefined) => {
   if (!countryCode) {
-    return ""
+    return "";
   }
 
-  const country = countries.find((c) => c.iso_2 === countryCode)
-  return country ? country.display_name : countryCode
-}
+  const country = countries.find((c) => c.iso_2 === countryCode);
+
+  return country ? country.display_name : countryCode;
+};

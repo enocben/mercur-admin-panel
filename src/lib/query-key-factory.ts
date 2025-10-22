@@ -1,21 +1,26 @@
-import { QueryKey, UseQueryOptions } from "@tanstack/react-query"
+import type { QueryKey, UseQueryOptions } from "@tanstack/react-query";
 
+// @todo fix any type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type TQueryKey<TKey, TListQuery = any, TDetailQuery = string> = {
-  all: readonly [TKey]
-  lists: () => readonly [...TQueryKey<TKey>["all"], "list"]
+  all: readonly [TKey];
+  lists: () => readonly [...TQueryKey<TKey>["all"], "list"];
   list: (
-    query?: TListQuery
-  ) => readonly [...ReturnType<TQueryKey<TKey>["lists"]>, { query: TListQuery }]
-  details: () => readonly [...TQueryKey<TKey>["all"], "detail"]
+    query?: TListQuery,
+  ) => readonly [
+    ...ReturnType<TQueryKey<TKey>["lists"]>,
+    { query: TListQuery },
+  ];
+  details: () => readonly [...TQueryKey<TKey>["all"], "detail"];
   detail: (
     id: TDetailQuery,
-    query?: TListQuery
+    query?: TListQuery,
   ) => readonly [
     ...ReturnType<TQueryKey<TKey>["details"]>,
     TDetailQuery,
-    { query: TListQuery }
-  ]
-}
+    { query: TListQuery },
+  ];
+};
 
 export type UseQueryOptionsWrapper<
   // Return type of queryFn
@@ -23,31 +28,34 @@ export type UseQueryOptionsWrapper<
   // Type thrown in case the queryFn rejects
   E = Error,
   // Query key type
-  TQueryKey extends QueryKey = QueryKey
+  TQueryKey extends QueryKey = QueryKey,
 > = Omit<
   UseQueryOptions<TQueryFn, E, TQueryFn, TQueryKey>,
   "queryKey" | "queryFn"
->
+>;
 
 export const queryKeysFactory = <
   T,
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TListQueryType = any,
-  TDetailQueryType = string
+  TDetailQueryType = string,
 >(
-  globalKey: T
+  globalKey: T,
 ) => {
   const queryKeyFactory: TQueryKey<T, TListQueryType, TDetailQueryType> = {
     all: [globalKey],
     lists: () => [...queryKeyFactory.all, "list"],
     list: (query?: TListQueryType) =>
       [...queryKeyFactory.lists(), query ? { query } : undefined].filter(
-        (k) => !!k
+        (k) => !!k,
       ),
     details: () => [...queryKeyFactory.all, "detail"],
     detail: (id: TDetailQueryType, query?: TListQueryType) =>
       [...queryKeyFactory.details(), id, query ? { query } : undefined].filter(
-        (k) => !!k
+        (k) => !!k,
       ),
-  }
-  return queryKeyFactory
-}
+  };
+
+  return queryKeyFactory;
+};

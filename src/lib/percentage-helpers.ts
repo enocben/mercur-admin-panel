@@ -2,7 +2,7 @@ const formatter = new Intl.NumberFormat([], {
   style: "percent",
   minimumFractionDigits: 2,
   maximumFractionDigits: 4,
-})
+});
 
 /**
  * Formats a number as a percentage
@@ -16,13 +16,13 @@ const formatter = new Intl.NumberFormat([], {
  */
 export const formatPercentage = (
   value?: number | null,
-  isPercentageValue = false
+  isPercentageValue = false,
 ) => {
-  let val = value || 0
+  let val = value || 0;
 
   if (!isPercentageValue) {
-    val = val / 100
+    val = val / 100;
   }
 
-  return formatter.format(val)
-}
+  return formatter.format(val);
+};
