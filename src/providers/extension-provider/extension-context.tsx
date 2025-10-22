@@ -1,8 +1,9 @@
-import { createContext } from "react"
-import { DashboardApp } from "../../dashboard-app"
+import { createContext } from "react";
 
-type ExtensionContextValue = DashboardApp["api"]
+import type { DashboardApp } from "@/dashboard-app";
+
+type ExtensionContextValue = DashboardApp["api"];
 
 export const ExtensionContext = createContext<ExtensionContextValue | null>(
-  null
-)
+  null,
+);
