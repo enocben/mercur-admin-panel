@@ -1,18 +1,20 @@
-import { useParams } from "react-router-dom"
-import { MetadataForm } from "../../../components/forms/metadata-form/metadata-form"
-import { useCollection, useUpdateCollection } from "../../../hooks/api"
+import { useParams } from "react-router-dom";
+
+import { MetadataForm } from "@components/forms/metadata-form";
+
+import { useCollection, useUpdateCollection } from "@hooks/api";
 
 export const CollectionMetadata = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { collection, isPending, isError, error } = useCollection(id!)
+  const { collection, isPending, isError, error } = useCollection(id!);
 
   const { mutateAsync, isPending: isMutating } = useUpdateCollection(
-    collection?.id!
-  )
+    collection?.id!,
+  );
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -22,5 +24,5 @@ export const CollectionMetadata = () => {
       isPending={isPending}
       isMutating={isMutating}
     />
-  )
-}
+  );
+};

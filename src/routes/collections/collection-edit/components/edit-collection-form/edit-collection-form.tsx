@@ -1,27 +1,29 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Input, Text } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input, Text } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateCollection } from "../../../../../hooks/api/collections"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateCollection } from "@hooks/api";
 
 type EditCollectionFormProps = {
-  collection: HttpTypes.AdminCollection
-}
+  collection: HttpTypes.AdminCollection;
+};
 
 const EditCollectionSchema = zod.object({
   title: zod.string().min(1),
   handle: zod.string().min(1),
-})
+});
 
 export const EditCollectionForm = ({ collection }: EditCollectionFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof EditCollectionSchema>>({
     defaultValues: {
@@ -29,17 +31,17 @@ export const EditCollectionForm = ({ collection }: EditCollectionFormProps) => {
       handle: collection.handle,
     },
     resolver: zodResolver(EditCollectionSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateCollection(collection.id)
+  const { mutateAsync, isPending } = useUpdateCollection(collection.id);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(data, {
       onSuccess: () => {
-        handleSuccess()
+        handleSuccess();
       },
-    })
-  })
+    });
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -49,46 +51,42 @@ export const EditCollectionForm = ({ collection }: EditCollectionFormProps) => {
             <Form.Field
               control={form.control}
               name="title"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label>{t("fields.title")}</Form.Label>
-                    <Form.Control>
-                      <Input {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label>{t("fields.title")}</Form.Label>
+                  <Form.Control>
+                    <Input {...field} />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="handle"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label tooltip={t("collections.handleTooltip")}>
-                      {t("fields.handle")}
-                    </Form.Label>
-                    <Form.Control>
-                      <div className="relative">
-                        <div className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-center border-r">
-                          <Text
-                            className="text-ui-fg-muted"
-                            size="small"
-                            leading="compact"
-                            weight="plus"
-                          >
-                            /
-                          </Text>
-                        </div>
-                        <Input {...field} className="pl-10" />
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label tooltip={t("collections.handleTooltip")}>
+                    {t("fields.handle")}
+                  </Form.Label>
+                  <Form.Control>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 z-10 flex w-8 items-center justify-center border-r">
+                        <Text
+                          className="text-ui-fg-muted"
+                          size="small"
+                          leading="compact"
+                          weight="plus"
+                        >
+                          /
+                        </Text>
                       </div>
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+                      <Input {...field} className="pl-10" />
+                    </div>
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
           </div>
         </RouteDrawer.Body>
@@ -106,5 +104,5 @@ export const EditCollectionForm = ({ collection }: EditCollectionFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

@@ -1,9 +1,11 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { CollectionListTable } from "./components/collection-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { CollectionListTable } from "@routes/collections/collection-list/components/collection-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const CollectionList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -14,5 +16,5 @@ export const CollectionList = () => {
     >
       <CollectionListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};

@@ -1,23 +1,26 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading, Text, usePrompt } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteCollection } from "../../../../../hooks/api/collections"
-import { useNavigate } from "react-router-dom"
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading, Text, usePrompt } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+
+import { useDeleteCollection } from "@hooks/api";
 
 type CollectionGeneralSectionProps = {
-  collection: HttpTypes.AdminCollection
-}
+  collection: HttpTypes.AdminCollection;
+};
 
 export const CollectionGeneralSection = ({
   collection,
 }: CollectionGeneralSectionProps) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const navigate = useNavigate();
 
-  const { mutateAsync } = useDeleteCollection(collection.id!)
+  const { mutateAsync } = useDeleteCollection(collection.id!);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -26,15 +29,15 @@ export const CollectionGeneralSection = ({
         count: 1,
         title: collection.title,
       }),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
-    await mutateAsync()
-    navigate("../", { replace: true })
-  }
+    await mutateAsync();
+    navigate("../", { replace: true });
+  };
 
   return (
     <Container className="divide-y p-0">
@@ -65,12 +68,12 @@ export const CollectionGeneralSection = ({
           ]}
         />
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
+      <div className="grid grid-cols-2 items-center px-6 py-4 text-ui-fg-subtle">
         <Text size="small" leading="compact" weight="plus">
           {t("fields.handle")}
         </Text>
         <Text size="small">/{collection.handle}</Text>
       </div>
     </Container>
-  )
-}
+  );
+};

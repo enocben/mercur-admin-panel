@@ -1,24 +1,30 @@
-import { Button, Container, Heading, Text } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { useMemo } from "react";
 
-import { HttpTypes } from "@medusajs/types"
-import { keepPreviousData } from "@tanstack/react-query"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useCollections } from "../../../../../hooks/api/collections"
-import { useCollectionTableColumns } from "../../../../../hooks/table/columns/use-collection-table-columns"
-import { useCollectionTableFilters } from "../../../../../hooks/table/filters"
-import { useCollectionTableQuery } from "../../../../../hooks/table/query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
-import { CollectionRowActions } from "./collection-row-actions"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Container, Heading, Text } from "@medusajs/ui";
 
-const PAGE_SIZE = 20
+import { keepPreviousData } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { _DataTable } from "@components/table/data-table";
+
+import { useCollections } from "@hooks/api";
+import { useCollectionTableColumns } from "@hooks/table/columns";
+import { useCollectionTableFilters } from "@hooks/table/filters";
+import { useCollectionTableQuery } from "@hooks/table/query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import { CollectionRowActions } from "./collection-row-actions";
+
+const PAGE_SIZE = 20;
 
 export const CollectionListTable = () => {
-  const { t } = useTranslation()
-  const { searchParams, raw } = useCollectionTableQuery({ pageSize: PAGE_SIZE })
+  const { t } = useTranslation();
+  const { searchParams, raw } = useCollectionTableQuery({
+    pageSize: PAGE_SIZE,
+  });
   const { collections, count, isError, error, isLoading } = useCollections(
     {
       ...searchParams,
@@ -26,11 +32,11 @@ export const CollectionListTable = () => {
     },
     {
       placeholderData: keepPreviousData,
-    }
-  )
+    },
+  );
 
-  const filters = useCollectionTableFilters()
-  const columns = useColumns()
+  const filters = useCollectionTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: collections ?? [],
@@ -39,10 +45,10 @@ export const CollectionListTable = () => {
     enablePagination: true,
     getRowId: (row, index) => row.id ?? `${index}`,
     pageSize: PAGE_SIZE,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -78,13 +84,13 @@ export const CollectionListTable = () => {
         isLoading={isLoading}
       />
     </Container>
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCollection>()
+const columnHelper = createColumnHelper<HttpTypes.AdminCollection>();
 
 const useColumns = () => {
-  const base = useCollectionTableColumns()
+  const base = useCollectionTableColumns();
 
   return useMemo(
     () => [
@@ -94,6 +100,6 @@ const useColumns = () => {
         cell: ({ row }) => <CollectionRowActions collection={row.original} />,
       }),
     ],
-    [base]
-  )
-}
+    [base],
+  );
+};
