@@ -1,37 +1,40 @@
-import { PencilSquare } from "@medusajs/icons"
-import { Button, Container, Heading } from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
+import { useMemo } from "react";
 
-import { HttpTypes } from "@medusajs/types"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useCustomers } from "../../../../../hooks/api/customers"
-import { useCustomerTableColumns } from "../../../../../hooks/table/columns/use-customer-table-columns"
-import { useCustomerTableFilters } from "../../../../../hooks/table/filters/use-customer-table-filters"
-import { useCustomerTableQuery } from "../../../../../hooks/table/query/use-customer-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
+import { PencilSquare } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Container, Heading } from "@medusajs/ui";
 
-const PAGE_SIZE = 20
+import { keepPreviousData } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { _DataTable } from "@components/table/data-table";
+
+import { useCustomers } from "@hooks/api";
+import { useCustomerTableColumns } from "@hooks/table/columns";
+import { useCustomerTableFilters } from "@hooks/table/filters";
+import { useCustomerTableQuery } from "@hooks/table/query";
+import { useDataTable } from "@hooks/use-data-table";
+
+const PAGE_SIZE = 20;
 
 export const CustomerListTable = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const { searchParams, raw } = useCustomerTableQuery({ pageSize: PAGE_SIZE })
+  const { searchParams, raw } = useCustomerTableQuery({ pageSize: PAGE_SIZE });
   const { customers, count, isLoading, isError, error } = useCustomers(
     {
       ...searchParams,
     },
     {
       placeholderData: keepPreviousData,
-    }
-  )
+    },
+  );
 
-  const filters = useCustomerTableFilters()
-  const columns = useColumns()
+  const filters = useCustomerTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: customers ?? [],
@@ -40,10 +43,10 @@ export const CustomerListTable = () => {
     enablePagination: true,
     getRowId: (row) => row.id,
     pageSize: PAGE_SIZE,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -79,15 +82,15 @@ export const CustomerListTable = () => {
         }}
       />
     </Container>
-  )
-}
+  );
+};
 
 const CustomerActions = ({
   customer,
 }: {
-  customer: HttpTypes.AdminCustomer
+  customer: HttpTypes.AdminCustomer;
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <ActionMenu
@@ -103,13 +106,13 @@ const CustomerActions = ({
         },
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCustomer>()
+const columnHelper = createColumnHelper<HttpTypes.AdminCustomer>();
 
 const useColumns = () => {
-  const columns = useCustomerTableColumns()
+  const columns = useCustomerTableColumns();
 
   return useMemo(
     () => [
@@ -119,6 +122,6 @@ const useColumns = () => {
         cell: ({ row }) => <CustomerActions customer={row.original} />,
       }),
     ],
-    [columns]
-  )
-}
+    [columns],
+  );
+};

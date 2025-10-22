@@ -1,35 +1,39 @@
-import { useLoaderData, useParams } from "react-router-dom"
+import { useLoaderData, useParams } from "react-router-dom";
 
-import { SingleColumnPageSkeleton } from "../../../components/common/skeleton"
-import { TwoColumnPage } from "../../../components/layout/pages"
-import { useCustomer } from "../../../hooks/api/customers"
-import { useExtension } from "../../../providers/extension-provider"
-import { CustomerAddressSection } from "./components/customer-address-section/customer-address-section"
-import { CustomerGeneralSection } from "./components/customer-general-section"
-import { CustomerGroupSection } from "./components/customer-group-section"
-import { CustomerOrderSection } from "./components/customer-order-section"
-import { customerLoader } from "./loader"
+import { SingleColumnPageSkeleton } from "@components/common/skeleton";
+import { TwoColumnPage } from "@components/layout/pages";
+
+import { useCustomer } from "@hooks/api";
+
+import { CustomerAddressSection } from "@routes/customers/customer-detail/components/customer-address-section";
+import { CustomerGeneralSection } from "@routes/customers/customer-detail/components/customer-general-section";
+import { CustomerGroupSection } from "@routes/customers/customer-detail/components/customer-group-section";
+import { CustomerOrderSection } from "@routes/customers/customer-detail/components/customer-order-section";
+
+import { useExtension } from "@providers/extension-provider";
+
+import type { customerLoader } from "./loader";
 
 export const CustomerDetail = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
   const initialData = useLoaderData() as Awaited<
     ReturnType<typeof customerLoader>
-  >
+  >;
   const { customer, isLoading, isError, error } = useCustomer(
     id!,
     { fields: "+*addresses" },
-    { initialData }
-  )
+    { initialData },
+  );
 
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   if (isLoading || !customer) {
-    return <SingleColumnPageSkeleton sections={2} showJSON showMetadata />
+    return <SingleColumnPageSkeleton sections={2} showJSON showMetadata />;
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -54,5 +58,5 @@ export const CustomerDetail = () => {
         <CustomerAddressSection customer={customer} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
+  );
+};

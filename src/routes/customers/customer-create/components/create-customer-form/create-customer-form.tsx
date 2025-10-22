@@ -1,16 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Heading, Input, Text, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { Button, Heading, Input, Text, toast } from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useCreateCustomer } from "../../../../../hooks/api/customers"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useCreateCustomer } from "@hooks/api";
 
 const CreateCustomerSchema = zod.object({
   email: zod.string().email(),
@@ -18,13 +17,13 @@ const CreateCustomerSchema = zod.object({
   last_name: zod.string().optional(),
   company_name: zod.string().optional(),
   phone: zod.string().optional(),
-})
+});
 
 export const CreateCustomerForm = () => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
-  const { mutateAsync, isPending } = useCreateCustomer()
+  const { mutateAsync, isPending } = useCreateCustomer();
 
   const form = useForm<zod.infer<typeof CreateCustomerSchema>>({
     defaultValues: {
@@ -35,7 +34,7 @@ export const CreateCustomerForm = () => {
       company_name: "",
     },
     resolver: zodResolver(CreateCustomerSchema),
-  })
+  });
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -51,16 +50,16 @@ export const CreateCustomerForm = () => {
           toast.success(
             t("customers.create.successToast", {
               email: customer.email,
-            })
-          )
-          handleSuccess(`/customers/${customer.id}`)
+            }),
+          );
+          handleSuccess(`/customers/${customer.id}`);
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -81,77 +80,67 @@ export const CreateCustomerForm = () => {
               <Form.Field
                 control={form.control}
                 name="first_name"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label optional>{t("fields.firstName")}</Form.Label>
-                      <Form.Control>
-                        <Input autoComplete="off" {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label optional>{t("fields.firstName")}</Form.Label>
+                    <Form.Control>
+                      <Input autoComplete="off" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="last_name"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label optional>{t("fields.lastName")}</Form.Label>
-                      <Form.Control>
-                        <Input autoComplete="off" {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label optional>{t("fields.lastName")}</Form.Label>
+                    <Form.Control>
+                      <Input autoComplete="off" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="email"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.email")}</Form.Label>
-                      <Form.Control>
-                        <Input autoComplete="off" {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.email")}</Form.Label>
+                    <Form.Control>
+                      <Input autoComplete="off" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="company_name"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label optional>{t("fields.company")}</Form.Label>
-                      <Form.Control>
-                        <Input autoComplete="off" {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label optional>{t("fields.company")}</Form.Label>
+                    <Form.Control>
+                      <Input autoComplete="off" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="phone"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label optional>{t("fields.phone")}</Form.Label>
-                      <Form.Control>
-                        <Input autoComplete="off" {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label optional>{t("fields.phone")}</Form.Label>
+                    <Form.Control>
+                      <Input autoComplete="off" {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
             </div>
           </div>
@@ -175,5 +164,5 @@ export const CreateCustomerForm = () => {
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};

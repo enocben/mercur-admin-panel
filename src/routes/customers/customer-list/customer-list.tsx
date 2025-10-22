@@ -1,9 +1,11 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { CustomerListTable } from "./components/customer-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { CustomerListTable } from "@routes/customers/customer-list/components/customer-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const CustomersList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -14,5 +16,5 @@ export const CustomersList = () => {
     >
       <CustomerListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};
