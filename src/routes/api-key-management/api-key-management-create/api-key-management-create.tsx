@@ -1,15 +1,17 @@
-import { useLocation } from "react-router-dom"
-import { RouteFocusModal } from "../../../components/modals"
-import { getApiKeyTypeFromPathname } from "../common/utils"
-import { ApiKeyCreateForm } from "./components/api-key-create-form"
+import { useLocation } from "react-router-dom";
+
+import { RouteFocusModal } from "@components/modals";
+
+import { ApiKeyCreateForm } from "@routes/api-key-management/api-key-management-create/components/api-key-create-form";
+import { getApiKeyTypeFromPathname } from "@routes/api-key-management/common/utils.ts";
 
 export const ApiKeyManagementCreate = () => {
-  const { pathname } = useLocation()
-  const keyType = getApiKeyTypeFromPathname(pathname)
+  const { pathname } = useLocation();
+  const keyType = getApiKeyTypeFromPathname(pathname);
 
   return (
     <RouteFocusModal>
       <ApiKeyCreateForm keyType={keyType} />
     </RouteFocusModal>
-  )
-}
+  );
+};
