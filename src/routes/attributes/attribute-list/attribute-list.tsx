@@ -1,22 +1,26 @@
-import {
-  Container,
-  Heading,
-  Button,
-  DataTable,
-  useDataTable,
-  DataTablePaginationState,
-  Badge,
-  DropdownMenu,
-  IconButton,
-} from "@medusajs/ui";
-import { XMark, DescendingSorting } from "@medusajs/icons";
-import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { SingleColumnLayout } from "../../../components/layout/single-column";
-import { useAttributeTableColumns } from "../../../hooks/table/columns/use-attribute-table-columns";
+import { useEffect, useMemo, useState } from "react";
 
-import { useAttributes } from "../../../hooks/api/attributes";
-import { AttributeDTO } from "../../../types";
+import { DescendingSorting, XMark } from "@medusajs/icons";
+import type { DataTablePaginationState } from "@medusajs/ui";
+import {
+  Badge,
+  Button,
+  Container,
+  DataTable,
+  DropdownMenu,
+  Heading,
+  IconButton,
+  useDataTable,
+} from "@medusajs/ui";
+
+import { useNavigate } from "react-router-dom";
+
+import { SingleColumnLayout } from "@components/layout/single-column";
+
+import { useAttributes } from "@hooks/api/attributes";
+import { useAttributeTableColumns } from "@hooks/table/columns/use-attribute-table-columns";
+
+import type { AttributeDTO } from "@/types";
 
 export const AttributeList = () => {
   const navigate = useNavigate();
@@ -68,6 +72,7 @@ export const AttributeList = () => {
     setFilters((prev) => {
       const newFilters = { ...prev };
       delete newFilters[key];
+
       return newFilters;
     });
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -79,7 +84,7 @@ export const AttributeList = () => {
   };
 
   const handleSortFieldChange = (
-    field: "name" | "created_at" | "updated_at"
+    field: "name" | "created_at" | "updated_at",
   ) => {
     setSorting((prev) => ({
       ...prev,
@@ -99,13 +104,14 @@ export const AttributeList = () => {
 
     if (filters.filterable !== undefined) {
       filtered = filtered.filter(
-        (attr) => attr.is_filterable === filters.filterable
+        (attr) => attr.is_filterable === filters.filterable,
       );
     }
 
     if (filters.global !== undefined) {
       filtered = filtered.filter((attr) => {
         const isGlobal = !attr.product_categories?.length;
+
         return isGlobal === filters.global;
       });
     }
@@ -115,13 +121,17 @@ export const AttributeList = () => {
       filtered = filtered.filter(
         (attr) =>
           attr.name?.toLowerCase().includes(searchLower) ||
-          attr.description?.toLowerCase().includes(searchLower)
+          attr.description?.toLowerCase().includes(searchLower),
       );
     }
 
     if (sorting.field) {
       filtered.sort((a, b) => {
+        // @todo fix any type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let aValue: any;
+        // @todo fix any type
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let bValue: any;
 
         switch (sorting.field) {
@@ -143,6 +153,7 @@ export const AttributeList = () => {
 
         if (aValue < bValue) return sorting.order === "asc" ? -1 : 1;
         if (aValue > bValue) return sorting.order === "asc" ? 1 : -1;
+
         return 0;
       });
     }
@@ -154,6 +165,7 @@ export const AttributeList = () => {
   const paginatedAttributes = useMemo(() => {
     const startIndex = pagination.pageIndex * pagination.pageSize;
     const endIndex = startIndex + pagination.pageSize;
+
     return processedAttributes.slice(startIndex, endIndex);
   }, [processedAttributes, pagination]);
 
@@ -206,7 +218,7 @@ export const AttributeList = () => {
                     Filterable
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
-                        <button className="hover:bg-ui-bg-subtle-hover px-2 h-7 border border-ui-border-base">
+                        <button className="h-7 border border-ui-border-base px-2 hover:bg-ui-bg-subtle-hover">
                           {filters.filterable ? "Yes" : "No"}
                         </button>
                       </DropdownMenu.Trigger>
@@ -214,7 +226,7 @@ export const AttributeList = () => {
                         <DropdownMenu.Item
                           onClick={() => addFilter("filterable", true)}
                         >
-                          {filters.filterable === true ? (
+                          {filters.filterable ? (
                             <span className="mr-2">•</span>
                           ) : (
                             <span className="ml-4" />
@@ -224,7 +236,7 @@ export const AttributeList = () => {
                         <DropdownMenu.Item
                           onClick={() => addFilter("filterable", false)}
                         >
-                          {filters.filterable === false ? (
+                          {!filters.filterable ? (
                             <span className="mr-2">•</span>
                           ) : (
                             <span className="ml-4" />
@@ -235,7 +247,7 @@ export const AttributeList = () => {
                     </DropdownMenu>
                     <button
                       onClick={() => removeFilter("filterable")}
-                      className="hover:bg-ui-bg-subtle-hover px-2 h-7 border border-ui-border-base bg-ui-bg-subtle flex items-center justify-center rounded-e-md border-x-0 -ml-1 -mr-2"
+                      className="-ml-1 -mr-2 flex h-7 items-center justify-center rounded-e-md border border-x-0 border-ui-border-base bg-ui-bg-subtle px-2 hover:bg-ui-bg-subtle-hover"
                     >
                       <XMark />
                     </button>
@@ -249,7 +261,7 @@ export const AttributeList = () => {
                     Global
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
-                        <button className="hover:bg-ui-bg-subtle-hover px-2 h-7 border border-ui-border-base">
+                        <button className="h-7 border border-ui-border-base px-2 hover:bg-ui-bg-subtle-hover">
                           {filters.global ? "Yes" : "No"}
                         </button>
                       </DropdownMenu.Trigger>
@@ -278,7 +290,7 @@ export const AttributeList = () => {
                     </DropdownMenu>
                     <button
                       onClick={() => removeFilter("global")}
-                      className="hover:bg-ui-bg-subtle-hover px-2 h-7 border border-ui-border-base bg-ui-bg-subtle flex items-center justify-center rounded-e-md border-x-0 -ml-1 -mr-2"
+                      className="-ml-1 -mr-2 flex h-7 items-center justify-center rounded-e-md border border-x-0 border-ui-border-base bg-ui-bg-subtle px-2 hover:bg-ui-bg-subtle-hover"
                     >
                       <XMark />
                     </button>

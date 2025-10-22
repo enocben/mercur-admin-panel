@@ -16,9 +16,10 @@ import { useNavigate } from "react-router-dom";
 
 import type { AttributeDTO } from "@custom-types/attribute";
 
+import { CategorySelectionModal } from "@routes/attributes/attribute-list/components/category-selection-modal.tsx";
+
 import { attributeQueryKeys } from "@/hooks/api/attributes";
 import { sdk } from "@/lib/client";
-import { CategorySelectionModal } from "@/routes/attributes/attribute-list/components/CategorySelectionModal";
 
 const columnHelper = createDataTableColumnHelper<AttributeDTO>();
 
