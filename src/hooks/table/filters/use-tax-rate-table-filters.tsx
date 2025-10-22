@@ -1,8 +1,9 @@
-import { useTranslation } from "react-i18next"
-import { Filter } from "../../../components/table/data-table"
+import { useTranslation } from "react-i18next";
+
+import type { Filter } from "@components/table/data-table";
 
 export const useTaxRateTableFilters = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const dateFilters: Filter[] = [
     { label: t("fields.createdAt"), key: "created_at" },
@@ -11,9 +12,7 @@ export const useTaxRateTableFilters = () => {
     key: f.key,
     label: f.label,
     type: "date",
-  }))
+  }));
 
-  const filters = [...dateFilters]
-
-  return filters
-}
+  return [...dateFilters];
+};

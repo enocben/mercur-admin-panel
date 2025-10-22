@@ -1,15 +1,17 @@
-import { useTranslation } from "react-i18next"
-import { Filter } from "../../../components/table/data-table"
-import { useCustomerGroups } from "../../api/customer-groups"
+import { useTranslation } from "react-i18next";
 
-const excludeableFields = ["groups"] as const
+import type { Filter } from "@components/table/data-table";
+
+import { useCustomerGroups } from "@hooks/api";
+
+const excludeableFields = ["groups"] as const;
 
 export const useCustomerTableFilters = (
-  exclude?: (typeof excludeableFields)[number][]
+  exclude?: (typeof excludeableFields)[number][],
 ) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const isGroupsExcluded = exclude?.includes("groups")
+  const isGroupsExcluded = exclude?.includes("groups");
 
   const { customer_groups } = useCustomerGroups(
     {
@@ -17,10 +19,10 @@ export const useCustomerTableFilters = (
     },
     {
       enabled: !isGroupsExcluded,
-    }
-  )
+    },
+  );
 
-  let filters: Filter[] = []
+  let filters: Filter[] = [];
 
   if (customer_groups && !isGroupsExcluded) {
     const customerGroupFilter: Filter = {
@@ -32,9 +34,9 @@ export const useCustomerTableFilters = (
         label: s.name,
         value: s.id,
       })),
-    }
+    };
 
-    filters = [...filters, customerGroupFilter]
+    filters = [...filters, customerGroupFilter];
   }
 
   const hasAccountFilter: Filter = {
@@ -51,7 +53,7 @@ export const useCustomerTableFilters = (
         value: "false",
       },
     ],
-  }
+  };
 
   const dateFilters: Filter[] = [
     { label: t("fields.createdAt"), key: "created_at" },
@@ -60,9 +62,9 @@ export const useCustomerTableFilters = (
     key: f.key,
     label: f.label,
     type: "date",
-  }))
+  }));
 
-  filters = [...filters, hasAccountFilter, ...dateFilters]
+  filters = [...filters, hasAccountFilter, ...dateFilters];
 
-  return filters
-}
+  return filters;
+};
