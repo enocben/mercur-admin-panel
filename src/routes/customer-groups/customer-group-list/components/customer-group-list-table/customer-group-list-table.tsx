@@ -1,32 +1,33 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import { useCallback, useMemo } from "react";
+
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
 import {
   Container,
   createDataTableColumnHelper,
   toast,
   usePrompt,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { useCallback, useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+} from "@medusajs/ui";
 
-import { DataTable } from "../../../../../components/data-table"
-import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
-import { SingleColumnPage } from "../../../../../components/layout/pages"
-import {
-  useCustomerGroups,
-  useDeleteCustomerGroupLazy,
-} from "../../../../../hooks/api"
-import { useDate } from "../../../../../hooks/use-date"
-import { useQueryParams } from "../../../../../hooks/use-query-params"
-import { useExtension } from "../../../../../providers/extension-provider"
+import { keepPreviousData } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
-const PAGE_SIZE = 10
+import { DataTable } from "@components/data-table";
+import { useDataTableDateFilters } from "@components/data-table/helpers/general";
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { useCustomerGroups, useDeleteCustomerGroupLazy } from "@hooks/api";
+import { useDate } from "@hooks/use-date.tsx";
+import { useQueryParams } from "@hooks/use-query-params";
+
+import { useExtension } from "@providers/extension-provider";
+
+const PAGE_SIZE = 10;
 
 export const CustomerGroupListTable = () => {
-  const { t } = useTranslation()
-  const { getWidgets } = useExtension()
+  const { t } = useTranslation();
+  const { getWidgets } = useExtension();
 
   const { q, order, offset, created_at, updated_at } = useQueryParams([
     "q",
@@ -34,10 +35,10 @@ export const CustomerGroupListTable = () => {
     "offset",
     "created_at",
     "updated_at",
-  ])
+  ]);
 
-  const columns = useColumns()
-  const filters = useFilters()
+  const columns = useColumns();
+  const filters = useFilters();
 
   const { customer_groups, count, isPending, isError, error } =
     useCustomerGroups(
@@ -52,11 +53,11 @@ export const CustomerGroupListTable = () => {
       },
       {
         placeholderData: keepPreviousData,
-      }
-    )
+      },
+    );
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -94,18 +95,19 @@ export const CustomerGroupListTable = () => {
         />
       </Container>
     </SingleColumnPage>
-  )
-}
+  );
+};
 
-const columnHelper = createDataTableColumnHelper<HttpTypes.AdminCustomerGroup>()
+const columnHelper =
+  createDataTableColumnHelper<HttpTypes.AdminCustomerGroup>();
 
 const useColumns = () => {
-  const { t } = useTranslation()
-  const { getFullDate } = useDate()
-  const navigate = useNavigate()
-  const prompt = usePrompt()
+  const { t } = useTranslation();
+  const { getFullDate } = useDate();
+  const navigate = useNavigate();
+  const prompt = usePrompt();
 
-  const { mutateAsync: deleteCustomerGroup } = useDeleteCustomerGroupLazy()
+  const { mutateAsync: deleteCustomerGroup } = useDeleteCustomerGroupLazy();
 
   const handleDeleteCustomerGroup = useCallback(
     async ({ id, name }: { id: string; name: string }) => {
@@ -118,26 +120,26 @@ const useColumns = () => {
         verificationInstruction: t("general.typeToConfirm"),
         confirmText: t("actions.delete"),
         cancelText: t("actions.cancel"),
-      })
+      });
 
       if (!res) {
-        return
+        return;
       }
 
       await deleteCustomerGroup(
         { id },
         {
           onSuccess: () => {
-            toast.success(t("customerGroups.delete.successToast", { name }))
+            toast.success(t("customerGroups.delete.successToast", { name }));
           },
           onError: (e) => {
-            toast.error(e.message)
+            toast.error(e.message);
           },
-        }
-      )
+        },
+      );
     },
-    [t, prompt, deleteCustomerGroup]
-  )
+    [t, prompt, deleteCustomerGroup],
+  );
 
   return useMemo(() => {
     return [
@@ -150,7 +152,7 @@ const useColumns = () => {
       columnHelper.accessor("customers", {
         header: t("customers.domain"),
         cell: ({ row }) => {
-          return <span>{row.original.customers?.length ?? 0}</span>
+          return <span>{row.original.customers?.length ?? 0}</span>;
         },
       }),
       columnHelper.accessor("created_at", {
@@ -163,7 +165,7 @@ const useColumns = () => {
                 includeTime: true,
               })}
             </span>
-          )
+          );
         },
         enableSorting: true,
         sortAscLabel: t("filters.sorting.dateAsc"),
@@ -179,7 +181,7 @@ const useColumns = () => {
                 includeTime: true,
               })}
             </span>
-          )
+          );
         },
         enableSorting: true,
         sortAscLabel: t("filters.sorting.dateAsc"),
@@ -192,7 +194,7 @@ const useColumns = () => {
               icon: <PencilSquare />,
               label: t("actions.edit"),
               onClick: (row) => {
-                navigate(`/customer-groups/${row.row.original.id}/edit`)
+                navigate(`/customer-groups/${row.row.original.id}/edit`);
               },
             },
           ],
@@ -204,20 +206,20 @@ const useColumns = () => {
                 handleDeleteCustomerGroup({
                   id: row.row.original.id,
                   name: row.row.original.name ?? "",
-                })
+                });
               },
             },
           ],
         ],
       }),
-    ]
-  }, [t, navigate, getFullDate, handleDeleteCustomerGroup])
-}
+    ];
+  }, [t, navigate, getFullDate, handleDeleteCustomerGroup]);
+};
 
 const useFilters = () => {
-  const dateFilters = useDataTableDateFilters()
+  const dateFilters = useDataTableDateFilters();
 
   return useMemo(() => {
-    return dateFilters
-  }, [dateFilters])
-}
+    return dateFilters;
+  }, [dateFilters]);
+};
