@@ -1,24 +1,30 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading, StatusBadge, Text } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteProductCategoryAction } from "../../../common/hooks/use-delete-product-category-action"
-import { getIsActiveProps, getIsInternalProps } from "../../../common/utils"
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading, StatusBadge, Text } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+
+import { useDeleteProductCategoryAction } from "@routes/categories/common/hooks/use-delete-product-category-action";
+import {
+  getIsActiveProps,
+  getIsInternalProps,
+} from "@routes/categories/common/utils";
 
 type CategoryGeneralSectionProps = {
-  category: HttpTypes.AdminProductCategory
-}
+  category: HttpTypes.AdminProductCategory;
+};
 
 export const CategoryGeneralSection = ({
   category,
 }: CategoryGeneralSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const activeProps = getIsActiveProps(category.is_active, t)
-  const internalProps = getIsInternalProps(category.is_internal, t)
+  const activeProps = getIsActiveProps(category.is_active, t);
+  const internalProps = getIsInternalProps(category.is_internal, t);
 
-  const handleDelete = useDeleteProductCategoryAction(category)
+  const handleDelete = useDeleteProductCategoryAction(category);
 
   return (
     <Container className="divide-y p-0">
@@ -57,7 +63,7 @@ export const CategoryGeneralSection = ({
           />
         </div>
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 gap-3 px-6 py-4">
+      <div className="grid grid-cols-2 gap-3 px-6 py-4 text-ui-fg-subtle">
         <Text size="small" leading="compact" weight="plus">
           {t("fields.description")}
         </Text>
@@ -65,7 +71,7 @@ export const CategoryGeneralSection = ({
           {category.description || "-"}
         </Text>
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 gap-3 px-6 py-4">
+      <div className="grid grid-cols-2 gap-3 px-6 py-4 text-ui-fg-subtle">
         <Text size="small" leading="compact" weight="plus">
           {t("fields.handle")}
         </Text>
@@ -74,5 +80,5 @@ export const CategoryGeneralSection = ({
         </Text>
       </div>
     </Container>
-  )
-}
+  );
+};

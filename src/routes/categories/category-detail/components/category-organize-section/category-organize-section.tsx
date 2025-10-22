@@ -1,27 +1,35 @@
+import { useMemo, useState } from "react";
+
 import {
   FolderIllustration,
   PencilSquare,
   TriangleRightMini,
-} from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Badge, Container, Heading, Text, Tooltip } from "@medusajs/ui"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { LinkButton } from "../../../../../components/common/link-button"
-import { Skeleton } from "../../../../../components/common/skeleton"
-import { useProductCategory } from "../../../../../hooks/api/categories"
-import { getCategoryChildren, getCategoryPath } from "../../../common/utils"
+} from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Badge, Container, Heading, Text, Tooltip } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { LinkButton } from "@components/common/link-button";
+import { Skeleton } from "@components/common/skeleton";
+
+import { useProductCategory } from "@hooks/api";
+
+import {
+  getCategoryChildren,
+  getCategoryPath,
+} from "@routes/categories/common/utils";
 
 type CategoryOrganizeSectionProps = {
-  category: HttpTypes.AdminProductCategory
-}
+  category: HttpTypes.AdminProductCategory;
+};
 
 export const CategoryOrganizeSection = ({
   category,
 }: CategoryOrganizeSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Container className="divide-y p-0">
@@ -41,30 +49,30 @@ export const CategoryOrganizeSection = ({
           ]}
         />
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-start gap-3 px-6 py-4">
+      <div className="grid grid-cols-2 items-start gap-3 px-6 py-4 text-ui-fg-subtle">
         <Text size="small" leading="compact" weight="plus">
           {t("categories.fields.path.label")}
         </Text>
         <PathDisplay category={category} />
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-start gap-3 px-6 py-4">
+      <div className="grid grid-cols-2 items-start gap-3 px-6 py-4 text-ui-fg-subtle">
         <Text size="small" leading="compact" weight="plus">
           {t("categories.fields.children.label")}
         </Text>
         <ChildrenDisplay category={category} />
       </div>
     </Container>
-  )
-}
+  );
+};
 
 const PathDisplay = ({
   category,
 }: {
-  category: HttpTypes.AdminProductCategory
+  category: HttpTypes.AdminProductCategory;
 }) => {
-  const [expanded, setExpanded] = useState(false)
+  const [expanded, setExpanded] = useState(false);
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const {
     product_category: withParents,
@@ -74,16 +82,16 @@ const PathDisplay = ({
   } = useProductCategory(category.id, {
     include_ancestors_tree: true,
     fields: "id,name,*parent_category",
-  })
+  });
 
-  const chips = useMemo(() => getCategoryPath(withParents), [withParents])
+  const chips = useMemo(() => getCategoryPath(withParents), [withParents]);
 
   if (isLoading || !withParents) {
-    return <Skeleton className="h-5 w-16" />
+    return <Skeleton className="h-5 w-16" />;
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   if (!chips.length) {
@@ -91,7 +99,7 @@ const PathDisplay = ({
       <Text size="small" leading="compact">
         -
       </Text>
-    )
+    );
   }
 
   if (chips.length > 1 && !expanded) {
@@ -123,7 +131,7 @@ const PathDisplay = ({
           </Text>
         </div>
       </div>
-    )
+    );
   }
 
   if (chips.length > 1 && expanded) {
@@ -148,11 +156,11 @@ const PathDisplay = ({
                 )}
                 {index < chips.length - 1 && <TriangleRightMini />}
               </div>
-            )
+            );
           })}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -166,13 +174,13 @@ const PathDisplay = ({
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
 const ChildrenDisplay = ({
   category,
 }: {
-  category: HttpTypes.AdminProductCategory
+  category: HttpTypes.AdminProductCategory;
 }) => {
   const {
     product_category: withChildren,
@@ -182,16 +190,19 @@ const ChildrenDisplay = ({
   } = useProductCategory(category.id, {
     include_descendants_tree: true,
     fields: "id,name,category_children",
-  })
+  });
 
-  const chips = useMemo(() => getCategoryChildren(withChildren), [withChildren])
+  const chips = useMemo(
+    () => getCategoryChildren(withChildren),
+    [withChildren],
+  );
 
   if (isLoading || !withChildren) {
-    return <Skeleton className="h-5 w-16" />
+    return <Skeleton className="h-5 w-16" />;
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   if (!chips.length) {
@@ -199,7 +210,7 @@ const ChildrenDisplay = ({
       <Text size="small" leading="compact">
         -
       </Text>
-    )
+    );
   }
 
   return (
@@ -212,5 +223,5 @@ const ChildrenDisplay = ({
         </Badge>
       ))}
     </div>
-  )
-}
+  );
+};

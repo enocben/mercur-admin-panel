@@ -1,16 +1,18 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Input, Select, Textarea, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input, Select, Textarea, toast } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { Form } from "../../../../../components/common/form"
-import { HandleInput } from "../../../../../components/inputs/handle-input"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateProductCategory } from "../../../../../hooks/api/categories"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+import { Form } from "@components/common/form";
+import { HandleInput } from "@components/inputs/handle-input";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateProductCategory } from "@hooks/api";
+import { useDocumentDirection } from "@hooks/use-document-direction";
 
 const EditCategorySchema = z.object({
   name: z.string().min(1),
@@ -18,16 +20,16 @@ const EditCategorySchema = z.object({
   description: z.string().optional(),
   status: z.enum(["active", "inactive"]),
   visibility: z.enum(["public", "internal"]),
-})
+});
 
 type EditCategoryFormProps = {
-  category: HttpTypes.AdminProductCategory
-}
+  category: HttpTypes.AdminProductCategory;
+};
 
 export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const direction = useDocumentDirection();
   const form = useForm<z.infer<typeof EditCategorySchema>>({
     defaultValues: {
       name: category.name,
@@ -37,9 +39,9 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
       visibility: category.is_internal ? "internal" : "public",
     },
     resolver: zodResolver(EditCategorySchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateProductCategory(category.id)
+  const { mutateAsync, isPending } = useUpdateProductCategory(category.id);
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
       {
@@ -51,15 +53,15 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
       },
       {
         onSuccess: () => {
-          toast.success(t("categories.edit.successToast"))
-          handleSuccess()
+          toast.success(t("categories.edit.successToast"));
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -69,119 +71,106 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
             <Form.Field
               control={form.control}
               name="name"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label>{t("fields.title")}</Form.Label>
-                    <Form.Control>
-                      <Input autoComplete="off" {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label>{t("fields.title")}</Form.Label>
+                  <Form.Control>
+                    <Input autoComplete="off" {...field} />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="handle"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label
-                      optional
-                      tooltip={t("collections.handleTooltip")}
-                    >
-                      {t("fields.handle")}
-                    </Form.Label>
-                    <Form.Control>
-                      <HandleInput {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional tooltip={t("collections.handleTooltip")}>
+                    {t("fields.handle")}
+                  </Form.Label>
+                  <Form.Control>
+                    <HandleInput {...field} />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="description"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>{t("fields.description")}</Form.Label>
-                    <Form.Control>
-                      <Textarea {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional>{t("fields.description")}</Form.Label>
+                  <Form.Control>
+                    <Textarea {...field} />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <Form.Field
                 control={form.control}
                 name="status"
-                render={({ field: { ref, onChange, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>
-                        {t("categories.fields.status.label")}
-                      </Form.Label>
-                      <Form.Control>
-                        <Select
-                          dir={direction}
-                          {...field}
-                          onValueChange={onChange}
-                        >
-                          <Select.Trigger ref={ref}>
-                            <Select.Value />
-                          </Select.Trigger>
-                          <Select.Content>
-                            <Select.Item value="active">
-                              {t("categories.fields.status.active")}
-                            </Select.Item>
-                            <Select.Item value="inactive">
-                              {t("categories.fields.status.inactive")}
-                            </Select.Item>
-                          </Select.Content>
-                        </Select>
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field: { ref, onChange, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>
+                      {t("categories.fields.status.label")}
+                    </Form.Label>
+                    <Form.Control>
+                      <Select
+                        dir={direction}
+                        {...field}
+                        onValueChange={onChange}
+                      >
+                        <Select.Trigger ref={ref}>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          <Select.Item value="active">
+                            {t("categories.fields.status.active")}
+                          </Select.Item>
+                          <Select.Item value="inactive">
+                            {t("categories.fields.status.inactive")}
+                          </Select.Item>
+                        </Select.Content>
+                      </Select>
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="visibility"
-                render={({ field: { ref, onChange, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>
-                        {t("categories.fields.visibility.label")}
-                      </Form.Label>
-                      <Form.Control>
-                        <Select
-                          dir={direction}
-                          {...field}
-                          onValueChange={onChange}
-                        >
-                          <Select.Trigger ref={ref}>
-                            <Select.Value />
-                          </Select.Trigger>
-                          <Select.Content>
-                            <Select.Item value="public">
-                              {t("categories.fields.visibility.public")}
-                            </Select.Item>
-                            <Select.Item value="internal">
-                              {t("categories.fields.visibility.internal")}
-                            </Select.Item>
-                          </Select.Content>
-                        </Select>
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field: { ref, onChange, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>
+                      {t("categories.fields.visibility.label")}
+                    </Form.Label>
+                    <Form.Control>
+                      <Select
+                        dir={direction}
+                        {...field}
+                        onValueChange={onChange}
+                      >
+                        <Select.Trigger ref={ref}>
+                          <Select.Value />
+                        </Select.Trigger>
+                        <Select.Content>
+                          <Select.Item value="public">
+                            {t("categories.fields.visibility.public")}
+                          </Select.Item>
+                          <Select.Item value="internal">
+                            {t("categories.fields.visibility.internal")}
+                          </Select.Item>
+                        </Select.Content>
+                      </Select>
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
             </div>
           </div>
@@ -200,5 +189,5 @@ export const EditCategoryForm = ({ category }: EditCategoryFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

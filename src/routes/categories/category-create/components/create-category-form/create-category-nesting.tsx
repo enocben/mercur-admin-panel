@@ -1,28 +1,33 @@
-import { UniqueIdentifier } from "@dnd-kit/core"
-import { Badge } from "@medusajs/ui"
-import { useMemo, useState } from "react"
-import { UseFormReturn, useWatch } from "react-hook-form"
+import { useMemo, useState } from "react";
 
-import { useTranslation } from "react-i18next"
-import { useProductCategories } from "../../../../../hooks/api/categories"
-import { CategoryTree } from "../../../common/components/category-tree"
-import { CategoryTreeItem } from "../../../common/types"
-import { insertCategoryTreeItem } from "../../../common/utils"
-import { CreateCategorySchema } from "./schema"
+import { Badge } from "@medusajs/ui";
+
+import type { UniqueIdentifier } from "@dnd-kit/core";
+import type { UseFormReturn } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+import { useProductCategories } from "@hooks/api";
+
+import { CategoryTree } from "@routes/categories/common/components/category-tree";
+import type { CategoryTreeItem } from "@routes/categories/common/types.ts";
+import { insertCategoryTreeItem } from "@routes/categories/common/utils.ts";
+
+import type { CreateCategorySchema } from "./schema";
 
 type CreateCategoryNestingProps = {
-  form: UseFormReturn<CreateCategorySchema>
-  shouldFreeze?: boolean
-}
+  form: UseFormReturn<CreateCategorySchema>;
+  shouldFreeze?: boolean;
+};
 
-const ID = "new-item"
+const ID = "new-item";
 
 export const CreateCategoryNesting = ({
   form,
   shouldFreeze,
 }: CreateCategoryNestingProps) => {
-  const { t } = useTranslation()
-  const [snapshot, setSnapshot] = useState<CategoryTreeItem[]>([])
+  const { t } = useTranslation();
+  const [snapshot, setSnapshot] = useState<CategoryTreeItem[]>([]);
 
   const { product_categories, isPending, isError, error } =
     useProductCategories({
@@ -30,22 +35,22 @@ export const CreateCategoryNesting = ({
       limit: 9999,
       fields: "id,name,parent_category_id,rank,category_children,rank",
       include_descendants_tree: true,
-    })
+    });
 
   const parentCategoryId = useWatch({
     control: form.control,
     name: "parent_category_id",
-  })
+  });
 
   const watchedRank = useWatch({
     control: form.control,
     name: "rank",
-  })
+  });
 
   const watchedName = useWatch({
     control: form.control,
     name: "name",
-  })
+  });
 
   const value = useMemo(() => {
     const temp = {
@@ -54,40 +59,40 @@ export const CreateCategoryNesting = ({
       parent_category_id: parentCategoryId,
       rank: watchedRank,
       category_children: null,
-    }
+    };
 
-    return insertCategoryTreeItem(product_categories ?? [], temp)
-  }, [product_categories, watchedName, parentCategoryId, watchedRank])
+    return insertCategoryTreeItem(product_categories ?? [], temp);
+  }, [product_categories, watchedName, parentCategoryId, watchedRank]);
 
   const handleChange = (
     {
       parentId,
       index,
     }: {
-      id: UniqueIdentifier
-      parentId: UniqueIdentifier | null
-      index: number
+      id: UniqueIdentifier;
+      parentId: UniqueIdentifier | null;
+      index: number;
     },
-    list: CategoryTreeItem[]
+    list: CategoryTreeItem[],
   ) => {
     form.setValue("parent_category_id", parentId as string | null, {
       shouldDirty: true,
       shouldTouch: true,
-    })
+    });
 
     form.setValue("rank", index, {
       shouldDirty: true,
       shouldTouch: true,
-    })
+    });
 
-    setSnapshot(list)
-  }
+    setSnapshot(list);
+  };
 
   if (isError) {
-    throw error
+    throw error;
   }
 
-  const ready = !isPending && !!product_categories
+  const ready = !isPending && !!product_categories;
 
   return (
     <CategoryTree
@@ -103,12 +108,12 @@ export const CreateCategoryNesting = ({
                 {t("categories.fields.new.label")}
               </Badge>
             </div>
-          )
+          );
         }
 
-        return item.name
+        return item.name;
       }}
       isLoading={!ready}
     />
-  )
-}
+  );
+};

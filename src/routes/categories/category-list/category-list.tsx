@@ -1,9 +1,11 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { CategoryListTable } from "./components/category-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { CategoryListTable } from "@routes/categories/category-list/components/category-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const CategoryList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -15,5 +17,5 @@ export const CategoryList = () => {
     >
       <CategoryListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};

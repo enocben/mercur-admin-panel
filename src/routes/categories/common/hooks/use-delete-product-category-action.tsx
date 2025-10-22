@@ -1,19 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { toast, usePrompt } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
-import { useDeleteProductCategory } from "../../../../hooks/api/categories"
+import type { HttpTypes } from "@medusajs/types";
+import { toast, usePrompt } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import { useDeleteProductCategory } from "@hooks/api";
 
 export const useDeleteProductCategoryAction = (
-  category: HttpTypes.AdminProductCategory
+  category: HttpTypes.AdminProductCategory,
 ) => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const prompt = usePrompt()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const prompt = usePrompt();
 
-  const { mutateAsync } = useDeleteProductCategory(category.id)
+  const { mutateAsync } = useDeleteProductCategory(category.id);
 
-  const handleDelete = async () => {
+  return async () => {
     const res = await prompt({
       title: t("general.areYouSure"),
       description: t("categories.delete.confirmation", {
@@ -21,10 +23,10 @@ export const useDeleteProductCategoryAction = (
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
@@ -32,18 +34,16 @@ export const useDeleteProductCategoryAction = (
         toast.success(
           t("categories.delete.successToast", {
             name: category.name,
-          })
-        )
+          }),
+        );
 
         navigate("/categories", {
           replace: true,
-        })
+        });
       },
       onError: (e) => {
-        toast.error(e.message)
+        toast.error(e.message);
       },
-    })
-  }
-
-  return handleDelete
-}
+    });
+  };
+};

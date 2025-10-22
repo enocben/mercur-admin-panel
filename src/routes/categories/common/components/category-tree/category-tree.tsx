@@ -1,23 +1,25 @@
-import { UniqueIdentifier } from "@dnd-kit/core"
-import { ReactNode } from "react"
+import type { ReactNode } from "react";
 
-import { SortableTree } from "../../../../../components/common/sortable-tree"
-import { CategoryTreeItem } from "../../types"
+import type { UniqueIdentifier } from "@dnd-kit/core";
+
+import { SortableTree } from "@components/common/sortable-tree";
+
+import type { CategoryTreeItem } from "@routes/categories/common/types.ts";
 
 type CategoryTreeProps = {
-  value: CategoryTreeItem[]
+  value: CategoryTreeItem[];
   onChange: (
     value: {
-      id: UniqueIdentifier
-      parentId: UniqueIdentifier | null
-      index: number
+      id: UniqueIdentifier;
+      parentId: UniqueIdentifier | null;
+      index: number;
     },
-    items: CategoryTreeItem[]
-  ) => void
-  renderValue: (item: CategoryTreeItem) => ReactNode
-  enableDrag?: boolean | ((item: CategoryTreeItem) => boolean)
-  isLoading?: boolean
-}
+    items: CategoryTreeItem[],
+  ) => void;
+  renderValue: (item: CategoryTreeItem) => ReactNode;
+  enableDrag?: boolean | ((item: CategoryTreeItem) => boolean);
+  isLoading?: boolean;
+};
 
 export const CategoryTree = ({
   value,
@@ -33,7 +35,7 @@ export const CategoryTree = ({
           <CategoryLeafPlaceholder key={i} />
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -45,11 +47,9 @@ export const CategoryTree = ({
       onChange={onChange}
       renderValue={renderValue}
     />
-  )
-}
+  );
+};
 
-const CategoryLeafPlaceholder = () => {
-  return (
-    <div className="bg-ui-bg-base -mb-px flex h-12 animate-pulse items-center border-y px-6 py-2.5" />
-  )
-}
+const CategoryLeafPlaceholder = () => (
+  <div className="-mb-px flex h-12 animate-pulse items-center border-y bg-ui-bg-base px-6 py-2.5" />
+);

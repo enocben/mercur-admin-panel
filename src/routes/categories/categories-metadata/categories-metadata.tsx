@@ -1,20 +1,19 @@
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 
-import {
-  useProductCategory,
-  useUpdateProductCategory,
-} from "../../../hooks/api"
-import { MetadataForm } from "../../../components/forms/metadata-form"
-import { RouteDrawer } from "../../../components/modals"
+import { MetadataForm } from "@components/forms/metadata-form";
+import { RouteDrawer } from "@components/modals";
+
+import { useProductCategory, useUpdateProductCategory } from "@hooks/api";
 
 export const CategoriesMetadata = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
-  const { product_category, isPending, isError, error } = useProductCategory(id)
-  const { mutateAsync, isPending: isMutating } = useUpdateProductCategory(id)
+  const { product_category, isPending, isError, error } =
+    useProductCategory(id);
+  const { mutateAsync, isPending: isMutating } = useUpdateProductCategory(id);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -26,5 +25,5 @@ export const CategoriesMetadata = () => {
         metadata={product_category?.metadata}
       />
     </RouteDrawer>
-  )
-}
+  );
+};

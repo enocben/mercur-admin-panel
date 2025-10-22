@@ -1,10 +1,9 @@
-import { RouteFocusModal } from "../../../components/modals"
-import { OrganizeCategoryForm } from "./components/organize-category-form/organize-category-form"
+import { RouteFocusModal } from "@components/modals";
 
-export const CategoryOrganize = () => {
-  return (
-    <RouteFocusModal>
-      <OrganizeCategoryForm />
-    </RouteFocusModal>
-  )
-}
+import { OrganizeCategoryForm } from "@routes/categories/category-organize/components/organize-category-form/organize-category-form";
+
+export const CategoryOrganize = () => (
+  <RouteFocusModal>
+    <OrganizeCategoryForm />
+  </RouteFocusModal>
+);

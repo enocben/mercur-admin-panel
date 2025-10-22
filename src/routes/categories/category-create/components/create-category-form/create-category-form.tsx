@@ -1,24 +1,27 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { useState } from "react";
 
-import { useState } from "react"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useCreateProductCategory } from "../../../../../hooks/api/categories"
-import { transformNullableFormData } from "../../../../../lib/form-helpers"
-import { CreateCategoryDetails } from "./create-category-details"
-import { CreateCategoryNesting } from "./create-category-nesting"
-import { CreateCategoryDetailsSchema, CreateCategorySchema } from "./schema"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+import type { ProgressStatus } from "@medusajs/ui";
+import { Button, ProgressTabs, toast } from "@medusajs/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useCreateProductCategory } from "@hooks/api";
+import { useDocumentDirection } from "@hooks/use-document-direction";
+
+import { transformNullableFormData } from "@lib/form-helpers";
+
+import { CreateCategoryDetails } from "./create-category-details";
+import { CreateCategoryNesting } from "./create-category-nesting";
+import { CreateCategoryDetailsSchema, CreateCategorySchema } from "./schema";
 
 type CreateCategoryFormProps = {
-  parentCategoryId: string | null
-}
+  parentCategoryId: string | null;
+};
 
 enum Tab {
   DETAILS = "details",
@@ -28,12 +31,12 @@ enum Tab {
 export const CreateCategoryForm = ({
   parentCategoryId,
 }: CreateCategoryFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
-  const [activeTab, setActiveTab] = useState<Tab>(Tab.DETAILS)
-  const [validDetails, setValidDetails] = useState(false)
-  const [shouldFreeze, setShouldFreeze] = useState(false)
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const direction = useDocumentDirection();
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.DETAILS);
+  const [validDetails, setValidDetails] = useState(false);
+  const [shouldFreeze, setShouldFreeze] = useState(false);
 
   const form = useForm<CreateCategorySchema>({
     defaultValues: {
@@ -46,11 +49,12 @@ export const CreateCategoryForm = ({
       parent_category_id: parentCategoryId,
     },
     resolver: zodResolver(CreateCategorySchema),
-  })
+  });
 
   const handleTabChange = (tab: Tab) => {
     if (tab === Tab.ORGANIZE) {
-      const { name, handle, description, status, visibility } = form.getValues()
+      const { name, handle, description, status, visibility } =
+        form.getValues();
 
       const result = CreateCategoryDetailsSchema.safeParse({
         name,
@@ -58,33 +62,34 @@ export const CreateCategoryForm = ({
         description,
         status,
         visibility,
-      })
+      });
 
       if (!result.success) {
         result.error.errors.forEach((error) => {
           form.setError(error.path.join(".") as keyof CreateCategorySchema, {
             type: "manual",
             message: error.message,
-          })
-        })
+          });
+        });
 
-        return
+        return;
       }
 
-      form.clearErrors()
-      setValidDetails(true)
+      form.clearErrors();
+      setValidDetails(true);
     }
 
-    setActiveTab(tab)
-  }
+    setActiveTab(tab);
+  };
 
-  const { mutateAsync, isPending } = useCreateProductCategory()
+  const { mutateAsync, isPending } = useCreateProductCategory();
 
   const handleSubmit = form.handleSubmit((data) => {
-    const { visibility, status, parent_category_id, rank, name, ...rest } = data
-    const parsedData = transformNullableFormData(rest, false)
+    const { visibility, status, parent_category_id, rank, name, ...rest } =
+      data;
+    const parsedData = transformNullableFormData(rest, false);
 
-    setShouldFreeze(true)
+    setShouldFreeze(true);
 
     mutateAsync(
       {
@@ -100,29 +105,29 @@ export const CreateCategoryForm = ({
           toast.success(
             t("categories.create.successToast", {
               name: product_category.name,
-            })
-          )
+            }),
+          );
 
-          handleSuccess(`/categories/${product_category.id}`)
+          handleSuccess(`/categories/${product_category.id}`);
         },
         onError: (error) => {
-          toast.error(error.message)
-          setShouldFreeze(false)
+          toast.error(error.message);
+          setShouldFreeze(false);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   const nestingStatus: ProgressStatus =
     form.getFieldState("parent_category_id")?.isDirty ||
     form.getFieldState("rank")?.isDirty ||
     activeTab === Tab.ORGANIZE
       ? "in-progress"
-      : "not-started"
+      : "not-started";
 
   const detailsStatus: ProgressStatus = validDetails
     ? "completed"
-    : "in-progress"
+    : "in-progress";
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -130,8 +135,9 @@ export const CreateCategoryForm = ({
         onSubmit={handleSubmit}
         className="flex size-full flex-col overflow-hidden"
       >
-         <ProgressTabs
-        dir={direction}value={activeTab}
+        <ProgressTabs
+          dir={direction}
+          value={activeTab}
           onValueChange={(tab) => handleTabChange(tab as Tab)}
           className="flex size-full flex-col"
         >
@@ -167,7 +173,7 @@ export const CreateCategoryForm = ({
             </ProgressTabs.Content>
             <ProgressTabs.Content
               value={Tab.ORGANIZE}
-              className="bg-ui-bg-subtle flex-1"
+              className="flex-1 bg-ui-bg-subtle"
             >
               <CreateCategoryNesting form={form} shouldFreeze={shouldFreeze} />
             </ProgressTabs.Content>
@@ -205,5 +211,5 @@ export const CreateCategoryForm = ({
         </ProgressTabs>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};
