@@ -11,5 +11,7 @@ export const sdk = new Medusa({
 
 // useful when you want to call the BE from the console and try things out quickly
 if (typeof window !== "undefined") {
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).__sdk = sdk;
 }
