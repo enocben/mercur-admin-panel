@@ -11,7 +11,7 @@ import { attributeQueryKeys } from "@hooks/api/attributes.tsx";
 
 import { sdk } from "@lib/client";
 
-import { AttributeForm } from "@routes/attributes/attribute-edit/components/AttributeForm.tsx";
+import { AttributeForm } from "@routes/attributes/attribute-edit/components/attribute-form.tsx";
 import type { CreateAttributeFormSchema } from "@routes/attributes/attribute-edit/schema.ts";
 
 export const AttributeCreate = () => {

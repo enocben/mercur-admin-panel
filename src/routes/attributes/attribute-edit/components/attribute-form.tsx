@@ -15,10 +15,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
 import type { z } from "zod";
 
-import type { AttributeDTO } from "../../../../types";
-import MultiSelectCategory from "../../attribute-create/components/multi-select-category.tsx";
-import PossibleValuesList from "../../attribute-create/components/possible-values-list.tsx";
-import { AdminUpdateAttribute, CreateAttributeFormSchema } from "../schema";
+import MultiSelectCategory from "@routes/attributes/attribute-create/components/multi-select-category";
+import PossibleValuesList from "@routes/attributes/attribute-create/components/possible-values-list";
+import {
+  AdminUpdateAttribute,
+  CreateAttributeFormSchema,
+} from "@routes/attributes/attribute-edit/schema";
+
+import type { AttributeDTO } from "@/types";
 
 enum AttributeUIComponent {
   SELECT = "select",
