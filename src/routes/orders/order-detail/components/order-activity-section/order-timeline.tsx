@@ -1,55 +1,56 @@
-import { Button, Text, Tooltip, clx, toast, usePrompt } from "@medusajs/ui"
-import { Collapsible as RadixCollapsible } from "radix-ui"
+import type { PropsWithChildren, ReactNode } from "react";
+import { useMemo, useState } from "react";
 
-import { PropsWithChildren, ReactNode, useMemo, useState } from "react"
-
-import {
+import type {
   AdminClaim,
   AdminExchange,
   AdminFulfillment,
   AdminOrder,
   AdminOrderChange,
   AdminReturn,
-} from "@medusajs/types"
-import { useTranslation } from "react-i18next"
+} from "@medusajs/types";
+import type { AdminOrderLineItem } from "@medusajs/types";
+import { Button, Text, Tooltip, clx, toast, usePrompt } from "@medusajs/ui";
 
-import { AdminOrderLineItem } from "@medusajs/types"
-import { By } from "../../../../../components/common/user-link"
+import { Collapsible as RadixCollapsible } from "radix-ui";
+import { useTranslation } from "react-i18next";
+
+import { By } from "@components/common/user-link";
+
 import {
   useCancelOrderTransfer,
   useCustomer,
   useOrderChanges,
   useOrderLineItems,
-} from "../../../../../hooks/api"
-import { useCancelClaim, useClaims } from "../../../../../hooks/api/claims"
-import {
-  useCancelExchange,
-  useExchanges,
-} from "../../../../../hooks/api/exchanges"
-import { useCancelReturn, useReturns } from "../../../../../hooks/api/returns"
-import { useDate } from "../../../../../hooks/use-date"
-import { getFormattedAddress } from "../../../../../lib/addresses"
-import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
-import { getPaymentsFromOrder } from "../../../../../lib/orders"
-import ActivityItems from "./activity-items"
-import ChangeDetailsTooltip from "./change-details-tooltip"
+} from "@hooks/api";
+import { useCancelClaim, useClaims } from "@hooks/api/claims.tsx";
+import { useCancelExchange, useExchanges } from "@hooks/api/exchanges";
+import { useCancelReturn, useReturns } from "@hooks/api/returns";
+import { useDate } from "@hooks/use-date";
+
+import { getFormattedAddress } from "@lib/addresses";
+import { getStylizedAmount } from "@lib/money-amount-helpers";
+import { getPaymentsFromOrder } from "@lib/orders";
+
+import ActivityItems from "./activity-items";
+import ChangeDetailsTooltip from "./change-details-tooltip";
 
 type OrderTimelineProps = {
-  order: AdminOrder
-}
+  order: AdminOrder;
+};
 
 /**
  * Arbitrary high limit to ensure all notes are fetched
  */
-const NOTE_LIMIT = 9999
+const NOTE_LIMIT = 9999;
 
 /**
  * Order Changes that are not related to RMA flows
  */
-const NON_RMA_CHANGE_TYPES = ["transfer", "update_order"]
+const NON_RMA_CHANGE_TYPES = ["transfer", "update_order"];
 
 export const OrderTimeline = ({ order }: OrderTimelineProps) => {
-  const items = useActivityItems(order)
+  const items = useActivityItems(order);
 
   if (items.length <= 3) {
     return (
@@ -67,15 +68,15 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
             >
               {item.children}
             </OrderActivityItem>
-          )
+          );
         })}
       </div>
-    )
+    );
   }
 
-  const lastItems = items.slice(0, 2)
-  const collapsibleItems = items.slice(2, items.length - 1)
-  const firstItem = items[items.length - 1]
+  const lastItems = items.slice(0, 2);
+  const collapsibleItems = items.slice(2, items.length - 1);
+  const firstItem = items[items.length - 1];
 
   return (
     <div className="flex flex-col gap-y-0.5">
@@ -91,7 +92,7 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
           >
             {item.children}
           </OrderActivityItem>
-        )
+        );
       })}
       <OrderActivityCollapsible activities={collapsibleItems} />
       <OrderActivityItem
@@ -105,23 +106,23 @@ export const OrderTimeline = ({ order }: OrderTimelineProps) => {
         {firstItem.children}
       </OrderActivityItem>
     </div>
-  )
-}
+  );
+};
 
 type Activity = {
-  title: string
-  timestamp: string | Date
-  children?: ReactNode
+  title: string;
+  timestamp: string | Date;
+  children?: ReactNode;
   itemsToSend?: (
     | AdminClaim["additional_items"]
     | AdminExchange["additional_items"]
-  )[]
-  itemsToReturn?: AdminReturn["items"]
-  itemsMap?: Map<string, AdminOrderLineItem>
-}
+  )[];
+  itemsToReturn?: AdminReturn["items"];
+  itemsMap?: Map<string, AdminOrderLineItem>;
+};
 
 const useActivityItems = (order: AdminOrder): Activity[] => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const { order_changes: orderChanges = [] } = useOrderChanges(order.id, {
     change_type: [
@@ -132,13 +133,13 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
       "transfer",
       "update_order",
     ],
-  })
+  });
 
   const rmaChanges = orderChanges.filter(
-    (oc) => !NON_RMA_CHANGE_TYPES.includes(oc.change_type)
-  )
+    (oc) => !NON_RMA_CHANGE_TYPES.includes(oc.change_type),
+  );
 
-  const missingLineItemIds = getMissingLineItemIds(order, rmaChanges)
+  const missingLineItemIds = getMissingLineItemIds(order, rmaChanges);
   const { order_items: removedLineItems = [] } = useOrderLineItems(
     order.id,
 
@@ -148,42 +149,42 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
     },
     {
       enabled: !!rmaChanges.length,
-    }
-  )
+    },
+  );
 
   const itemsMap = useMemo(() => {
-    const _itemsMap = new Map(order?.items?.map((i) => [i.id, i]))
+    const _itemsMap = new Map(order?.items?.map((i) => [i.id, i]));
 
     for (const id of missingLineItemIds) {
-      const i = removedLineItems.find((i) => i.item.id === id)
+      const i = removedLineItems.find((i) => i.item.id === id);
 
       if (i) {
-        _itemsMap.set(id, { ...i.item, quantity: i.quantity }) // copy quantity from OrderItem to OrderLineItem
+        _itemsMap.set(id, { ...i.item, quantity: i.quantity }); // copy quantity from OrderItem to OrderLineItem
       }
     }
 
-    return _itemsMap
-  }, [order.items, removedLineItems, missingLineItemIds])
+    return _itemsMap;
+  }, [order.items, removedLineItems, missingLineItemIds]);
 
   const { returns = [] } = useReturns({
     order_id: order.id,
     fields: "+received_at,*items",
-  })
+  });
 
   const { claims = [] } = useClaims({
     order_id: order.id,
     fields: "*additional_items",
-  })
+  });
 
   const { exchanges = [] } = useExchanges({
     order_id: order.id,
     fields: "*additional_items",
-  })
+  });
 
-  const payments = getPaymentsFromOrder(order)
+  const payments = getPaymentsFromOrder(order);
 
-  const notes = []
-  const isLoading = false
+  const notes = [];
+  const isLoading = false;
   // const { notes, isLoading, isError, error } = useNotes(
   //   {
   //     resource_id: order.id,
@@ -201,13 +202,13 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
 
   return useMemo(() => {
     if (isLoading) {
-      return []
+      return [];
     }
 
-    const items: Activity[] = []
+    const items: Activity[] = [];
 
     for (const payment of payments) {
-      const amount = payment.amount as number
+      const amount = payment.amount as number;
 
       items.push({
         title: t("orders.activity.events.payment.awaiting"),
@@ -217,7 +218,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             {getStylizedAmount(amount, payment.currency_code)}
           </Text>
         ),
-      })
+      });
 
       if (payment.canceled_at) {
         items.push({
@@ -228,7 +229,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
               {getStylizedAmount(amount, payment.currency_code)}
             </Text>
           ),
-        })
+        });
       }
 
       if (payment.captured_at) {
@@ -240,7 +241,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
               {getStylizedAmount(amount, payment.currency_code)}
             </Text>
           ),
-        })
+        });
       }
 
       for (const refund of payment.refunds || []) {
@@ -251,11 +252,11 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             <Text size="small" className="text-ui-fg-subtle">
               {getStylizedAmount(
                 refund.amount as number,
-                payment.currency_code
+                payment.currency_code,
               )}
             </Text>
           ),
-        })
+        });
       }
     }
 
@@ -264,14 +265,14 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
         title: t("orders.activity.events.fulfillment.created"),
         timestamp: fulfillment.created_at,
         children: <FulfillmentCreatedBody fulfillment={fulfillment} />,
-      })
+      });
 
       if (fulfillment.delivered_at) {
         items.push({
           title: t("orders.activity.events.fulfillment.delivered"),
           timestamp: fulfillment.delivered_at,
           children: <FulfillmentCreatedBody fulfillment={fulfillment} />,
-        })
+        });
       }
 
       if (fulfillment.shipped_at) {
@@ -281,24 +282,24 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           children: (
             <FulfillmentCreatedBody fulfillment={fulfillment} isShipment />
           ),
-        })
+        });
       }
 
       if (fulfillment.canceled_at) {
         items.push({
           title: t("orders.activity.events.fulfillment.canceled"),
           timestamp: fulfillment.canceled_at,
-        })
+        });
       }
     }
 
-    const returnMap = new Map<string, AdminReturn>()
+    const returnMap = new Map<string, AdminReturn>();
 
     for (const ret of returns) {
-      returnMap.set(ret.id, ret)
+      returnMap.set(ret.id, ret);
 
       if (ret.claim_id || ret.exchange_id) {
-        continue
+        continue;
       }
 
       // Always display created action
@@ -310,7 +311,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
         itemsToReturn: ret?.items,
         itemsMap,
         children: <ReturnBody orderReturn={ret} isCreated={!ret.canceled_at} />,
-      })
+      });
 
       if (ret.canceled_at) {
         items.push({
@@ -318,7 +319,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             returnId: ret.id.slice(-7),
           }),
           timestamp: ret.canceled_at,
-        })
+        });
       }
 
       if (ret.status === "received" || ret.status === "partially_received") {
@@ -330,12 +331,12 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           itemsToReturn: ret?.items,
           itemsMap,
           children: <ReturnBody orderReturn={ret} isReceived />,
-        })
+        });
       }
     }
 
     for (const claim of claims) {
-      const claimReturn = returnMap.get(claim.return_id!)
+      const claimReturn = returnMap.get(claim.return_id!);
 
       items.push({
         title: t(
@@ -344,18 +345,18 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             : "orders.activity.events.claim.created",
           {
             claimId: claim.id.slice(-7),
-          }
+          },
         ),
         timestamp: claim.canceled_at || claim.created_at,
         itemsToSend: claim.additional_items,
         itemsToReturn: claimReturn?.items,
         itemsMap,
         children: <ClaimBody claim={claim} claimReturn={claimReturn} />,
-      })
+      });
     }
 
     for (const exchange of exchanges) {
-      const exchangeReturn = returnMap.get(exchange.return_id!)
+      const exchangeReturn = returnMap.get(exchange.return_id!);
 
       items.push({
         title: t(
@@ -364,7 +365,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             : "orders.activity.events.exchange.created",
           {
             exchangeId: exchange.id.slice(-7),
-          }
+          },
         ),
         timestamp: exchange.canceled_at || exchange.created_at,
         itemsToSend: exchange.additional_items,
@@ -373,15 +374,15 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
         children: (
           <ExchangeBody exchange={exchange} exchangeReturn={exchangeReturn} />
         ),
-      })
+      });
     }
 
     for (const edit of orderChanges.filter((oc) => oc.change_type === "edit")) {
-      const isConfirmed = edit.status === "confirmed"
-      const isPending = edit.status === "pending"
+      const isConfirmed = edit.status === "confirmed";
+      const isPending = edit.status === "pending";
 
       if (isPending) {
-        continue
+        continue;
       }
 
       items.push({
@@ -399,11 +400,11 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
                   ? edit.canceled_at
                   : edit.created_at,
         children: isConfirmed ? <OrderEditBody edit={edit} /> : null,
-      })
+      });
     }
 
     for (const transfer of orderChanges.filter(
-      (oc) => oc.change_type === "transfer"
+      (oc) => oc.change_type === "transfer",
     )) {
       if (transfer.requested_at) {
         items.push({
@@ -412,7 +413,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           }),
           timestamp: transfer.requested_at,
           children: <TransferOrderRequestBody transfer={transfer} />,
-        })
+        });
       }
 
       if (transfer.confirmed_at) {
@@ -421,7 +422,7 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             transferId: transfer.id.slice(-7),
           }),
           timestamp: transfer.confirmed_at,
-        })
+        });
       }
       if (transfer.declined_at) {
         items.push({
@@ -429,14 +430,14 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
             transferId: transfer.id.slice(-7),
           }),
           timestamp: transfer.declined_at,
-        })
+        });
       }
     }
 
     for (const update of orderChanges.filter(
-      (oc) => oc.change_type === "update_order"
+      (oc) => oc.change_type === "update_order",
     )) {
-      const updateType = update.actions[0]?.details?.type
+      const updateType = update.actions[0]?.details?.type;
 
       if (updateType === "shipping_address") {
         items.push({
@@ -453,11 +454,11 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           ),
           timestamp: update.created_at,
           children: (
-            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
               {t("fields.by")} <By id={update.created_by} />
             </div>
           ),
-        })
+        });
       }
 
       if (updateType === "billing_address") {
@@ -475,11 +476,11 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           ),
           timestamp: update.created_at,
           children: (
-            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
               {t("fields.by")} <By id={update.created_by} />
             </div>
           ),
-        })
+        });
       }
 
       if (updateType === "email") {
@@ -493,11 +494,11 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           ),
           timestamp: update.created_at,
           children: (
-            <div className="text-ui-fg-subtle mt-2 flex gap-x-2 text-sm">
+            <div className="mt-2 flex gap-x-2 text-sm text-ui-fg-subtle">
               {t("fields.by")} <By id={update.created_by} />
             </div>
           ),
-        })
+        });
       }
     }
 
@@ -513,12 +514,12 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
       items.push({
         title: t("orders.activity.events.canceled.title"),
         timestamp: order.canceled_at,
-      })
+      });
     }
 
     const sortedActivities = items.sort((a, b) => {
-      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-    })
+      return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+    });
 
     const createdAt = {
       title: t("orders.activity.events.placed.title"),
@@ -528,9 +529,9 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
           {getStylizedAmount(order.total, order.currency_code)}
         </Text>
       ),
-    }
+    };
 
-    return [...sortedActivities, createdAt]
+    return [...sortedActivities, createdAt];
   }, [
     order,
     payments,
@@ -540,19 +541,19 @@ const useActivityItems = (order: AdminOrder): Activity[] => {
     notes,
     isLoading,
     itemsMap,
-  ])
-}
+  ]);
+};
 
 type OrderActivityItemProps = PropsWithChildren<{
-  title: string
-  timestamp: string | Date
-  isFirst?: boolean
+  title: string;
+  timestamp: string | Date;
+  isFirst?: boolean;
   itemsToSend?:
     | AdminClaim["additional_items"]
-    | AdminExchange["additional_items"]
-  itemsToReturn?: AdminReturn["items"]
-  itemsMap?: Map<string, AdminOrderLineItem>
-}>
+    | AdminExchange["additional_items"];
+  itemsToReturn?: AdminReturn["items"];
+  itemsMap?: Map<string, AdminOrderLineItem>;
+}>;
 
 const OrderActivityItem = ({
   title,
@@ -563,17 +564,17 @@ const OrderActivityItem = ({
   itemsToReturn,
   itemsMap,
 }: OrderActivityItemProps) => {
-  const { getFullDate, getRelativeDate } = useDate()
+  const { getFullDate, getRelativeDate } = useDate();
 
   return (
     <div className="grid grid-cols-[20px_1fr] items-start gap-2">
       <div className="flex size-full flex-col items-center gap-y-0.5">
         <div className="flex size-5 items-center justify-center">
-          <div className="bg-ui-bg-base shadow-borders-base flex size-2.5 items-center justify-center rounded-full">
-            <div className="bg-ui-tag-neutral-icon size-1.5 rounded-full" />
+          <div className="flex size-2.5 items-center justify-center rounded-full bg-ui-bg-base shadow-borders-base">
+            <div className="size-1.5 rounded-full bg-ui-tag-neutral-icon" />
           </div>
         </div>
-        {!isFirst && <div className="bg-ui-border-base w-px flex-1" />}
+        {!isFirst && <div className="w-px flex-1 bg-ui-border-base" />}
       </div>
       <div
         className={clx({
@@ -601,7 +602,7 @@ const OrderActivityItem = ({
               <Text
                 size="small"
                 leading="compact"
-                className="text-ui-fg-subtle text-right"
+                className="text-right text-ui-fg-subtle"
               >
                 {getRelativeDate(timestamp)}
               </Text>
@@ -611,20 +612,20 @@ const OrderActivityItem = ({
         <div>{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const OrderActivityCollapsible = ({
   activities,
 }: {
-  activities: Activity[]
+  activities: Activity[];
 }) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (!activities.length) {
-    return null
+    return null;
   }
 
   return (
@@ -632,7 +633,7 @@ const OrderActivityCollapsible = ({
       {!open && (
         <div className="grid grid-cols-[20px_1fr] items-start gap-2">
           <div className="flex size-full flex-col items-center">
-            <div className="border-ui-border-strong w-px flex-1 bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-right bg-repeat-y" />
+            <div className="w-px flex-1 border-ui-border-strong bg-[linear-gradient(var(--border-strong)_33%,rgba(255,255,255,0)_0%)] bg-[length:1px_3px] bg-right bg-repeat-y" />
           </div>
           <div className="pb-4">
             <RadixCollapsible.Trigger className="text-left">
@@ -664,13 +665,13 @@ const OrderActivityCollapsible = ({
               >
                 {item.children}
               </OrderActivityItem>
-            )
+            );
           })}
         </div>
       </RadixCollapsible.Content>
     </RadixCollapsible.Root>
-  )
-}
+  );
+};
 
 /**
  * TODO: Add once notes are supported.
@@ -737,13 +738,13 @@ const OrderActivityCollapsible = ({
 const FulfillmentCreatedBody = ({
   fulfillment,
 }: {
-  fulfillment: AdminFulfillment
+  fulfillment: AdminFulfillment;
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const numberOfItems = fulfillment.items.reduce((acc, item) => {
-    return acc + item.quantity
-  }, 0)
+    return acc + item.quantity;
+  }, 0);
 
   return (
     <div>
@@ -753,25 +754,25 @@ const FulfillmentCreatedBody = ({
         })}
       </Text>
     </div>
-  )
-}
+  );
+};
 
 const ReturnBody = ({
   orderReturn,
   isCreated,
   isReceived,
 }: {
-  orderReturn: AdminReturn
-  isCreated: boolean
-  isReceived?: boolean
+  orderReturn: AdminReturn;
+  isCreated: boolean;
+  isReceived?: boolean;
 }) => {
-  const prompt = usePrompt()
-  const { t } = useTranslation()
+  const prompt = usePrompt();
+  const { t } = useTranslation();
 
   const { mutateAsync: cancelReturnRequest } = useCancelReturn(
     orderReturn.id,
-    orderReturn.order_id
-  )
+    orderReturn.order_id,
+  );
 
   const onCancel = async () => {
     const res = await prompt({
@@ -779,20 +780,20 @@ const ReturnBody = ({
       description: t("orders.returns.cancel.description"),
       confirmText: t("actions.confirm"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await cancelReturnRequest().catch((error) => {
-      toast.error(error.message)
-    })
-  }
+      toast.error(error.message);
+    });
+  };
 
   const numberOfItems = orderReturn.items.reduce((acc, item) => {
-    return acc + (isReceived ? item.received_quantity : item.quantity) // TODO: revisit when we add dismissed quantity on ReturnItem
-  }, 0)
+    return acc + (isReceived ? item.received_quantity : item.quantity); // TODO: revisit when we add dismissed quantity on ReturnItem
+  }, 0);
 
   return (
     <div className="flex items-start gap-1">
@@ -806,7 +807,7 @@ const ReturnBody = ({
           <div className="mt-[2px] flex items-center leading-none">⋅</div>
           <Button
             onClick={onCancel}
-            className="text-ui-fg-subtle h-auto px-0 leading-none hover:bg-transparent"
+            className="h-auto px-0 leading-none text-ui-fg-subtle hover:bg-transparent"
             variant="transparent"
             size="small"
           >
@@ -815,22 +816,22 @@ const ReturnBody = ({
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
 const ClaimBody = ({
   claim,
   claimReturn,
 }: {
-  claim: AdminClaim
-  claimReturn?: AdminReturn
+  claim: AdminClaim;
+  claimReturn?: AdminReturn;
 }) => {
-  const prompt = usePrompt()
-  const { t } = useTranslation()
+  const prompt = usePrompt();
+  const { t } = useTranslation();
 
-  const isCanceled = !!claim.created_at
+  const isCanceled = !!claim.created_at;
 
-  const { mutateAsync: cancelClaim } = useCancelClaim(claim.id, claim.order_id)
+  const { mutateAsync: cancelClaim } = useCancelClaim(claim.id, claim.order_id);
 
   const onCancel = async () => {
     const res = await prompt({
@@ -838,26 +839,26 @@ const ClaimBody = ({
       description: t("orders.claims.cancel.description"),
       confirmText: t("actions.confirm"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await cancelClaim().catch((error) => {
-      toast.error(error.message)
-    })
-  }
+      toast.error(error.message);
+    });
+  };
 
   const outboundItems = (claim.additional_items || []).reduce(
     (acc, item) => (acc + item.quantity) as number,
-    0
-  )
+    0,
+  );
 
   const inboundItems = (claimReturn?.items || []).reduce(
     (acc, item) => acc + item.quantity,
-    0
-  )
+    0,
+  );
 
   return (
     <div>
@@ -880,7 +881,7 @@ const ClaimBody = ({
       {!isCanceled && (
         <Button
           onClick={onCancel}
-          className="text-ui-fg-subtle h-auto px-0 leading-none hover:bg-transparent"
+          className="h-auto px-0 leading-none text-ui-fg-subtle hover:bg-transparent"
           variant="transparent"
           size="small"
         >
@@ -888,25 +889,25 @@ const ClaimBody = ({
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 const ExchangeBody = ({
   exchange,
   exchangeReturn,
 }: {
-  exchange: AdminExchange
-  exchangeReturn?: AdminReturn
+  exchange: AdminExchange;
+  exchangeReturn?: AdminReturn;
 }) => {
-  const prompt = usePrompt()
-  const { t } = useTranslation()
+  const prompt = usePrompt();
+  const { t } = useTranslation();
 
-  const isCanceled = !!exchange.canceled_at
+  const isCanceled = !!exchange.canceled_at;
 
   const { mutateAsync: cancelExchange } = useCancelExchange(
     exchange.id,
-    exchange.order_id
-  )
+    exchange.order_id,
+  );
 
   const onCancel = async () => {
     const res = await prompt({
@@ -914,26 +915,26 @@ const ExchangeBody = ({
       description: t("orders.exchanges.cancel.description"),
       confirmText: t("actions.confirm"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await cancelExchange().catch((error) => {
-      toast.error(error.message)
-    })
-  }
+      toast.error(error.message);
+    });
+  };
 
   const outboundItems = (exchange.additional_items || []).reduce(
     (acc, item) => (acc + item.quantity) as number,
-    0
-  )
+    0,
+  );
 
   const inboundItems = (exchangeReturn?.items || []).reduce(
     (acc, item) => acc + item.quantity,
-    0
-  )
+    0,
+  );
 
   return (
     <div>
@@ -956,7 +957,7 @@ const ExchangeBody = ({
       {!isCanceled && (
         <Button
           onClick={onCancel}
-          className="text-ui-fg-subtle h-auto px-0 leading-none hover:bg-transparent"
+          className="h-auto px-0 leading-none text-ui-fg-subtle hover:bg-transparent"
           variant="transparent"
           size="small"
         >
@@ -964,16 +965,16 @@ const ExchangeBody = ({
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 const OrderEditBody = ({ edit }: { edit: AdminOrderChange }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const [itemsAdded, itemsRemoved] = useMemo(
     () => countItemsChange(edit.actions),
-    [edit]
-  )
+    [edit],
+  );
 
   return (
     <div>
@@ -989,25 +990,25 @@ const OrderEditBody = ({ edit }: { edit: AdminOrderChange }) => {
         </Text>
       )}
     </div>
-  )
-}
+  );
+};
 
 const TransferOrderRequestBody = ({
   transfer,
 }: {
-  transfer: AdminOrderChange
+  transfer: AdminOrderChange;
 }) => {
-  const prompt = usePrompt()
-  const { t } = useTranslation()
+  const prompt = usePrompt();
+  const { t } = useTranslation();
 
-  const action = transfer.actions[0]
-  const { customer } = useCustomer(action.reference_id)
+  const action = transfer.actions[0];
+  const { customer } = useCustomer(action.reference_id);
 
-  const isCompleted = !!transfer.confirmed_at
+  const isCompleted = !!transfer.confirmed_at;
 
   const { mutateAsync: cancelTransfer } = useCancelOrderTransfer(
-    transfer.order_id
-  )
+    transfer.order_id,
+  );
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -1015,16 +1016,16 @@ const TransferOrderRequestBody = ({
       description: t("actions.cannotUndo"),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await cancelTransfer().catch((error) => {
-      toast.error(error.message)
-    })
-  }
+      toast.error(error.message);
+    });
+  };
 
   /**
    * TODO: change original_email to customer info when action details is changed
@@ -1045,7 +1046,7 @@ const TransferOrderRequestBody = ({
       {!isCompleted && (
         <Button
           onClick={handleDelete}
-          className="text-ui-fg-subtle h-auto px-0 leading-none hover:bg-transparent"
+          className="h-auto px-0 leading-none text-ui-fg-subtle hover:bg-transparent"
           variant="transparent"
           size="small"
         >
@@ -1053,32 +1054,32 @@ const TransferOrderRequestBody = ({
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 /**
  * Returns count of added and removed item quantity
  */
 function countItemsChange(actions: AdminOrderChange["actions"]) {
-  let added = 0
-  let removed = 0
+  let added = 0;
+  let removed = 0;
 
   actions.forEach((action) => {
     if (action.action === "ITEM_ADD") {
-      added += action.details!.quantity as number
+      added += action.details!.quantity as number;
     }
     if (action.action === "ITEM_UPDATE") {
-      const quantityDiff = action.details!.quantity_diff as number
+      const quantityDiff = action.details!.quantity_diff as number;
 
       if (quantityDiff > 0) {
-        added += quantityDiff
+        added += quantityDiff;
       } else {
-        removed += Math.abs(quantityDiff)
+        removed += Math.abs(quantityDiff);
       }
     }
-  })
+  });
 
-  return [added, removed]
+  return [added, removed];
 }
 
 /**
@@ -1086,26 +1087,26 @@ function countItemsChange(actions: AdminOrderChange["actions"]) {
  */
 function getMissingLineItemIds(order: AdminOrder, changes: AdminOrderChange[]) {
   if (!changes?.length) {
-    return []
+    return [];
   }
 
-  const retIds = new Set<string>()
-  const existingItemsMap = new Map(order.items.map((item) => [item.id, true]))
+  const retIds = new Set<string>();
+  const existingItemsMap = new Map(order.items.map((item) => [item.id, true]));
 
   changes.forEach((change) => {
     change.actions.forEach((action) => {
       if (!action.details?.reference_id) {
-        return
+        return;
       }
 
       if (
         (action.details.reference_id as string).startsWith("ordli_") &&
         !existingItemsMap.has(action.details.reference_id as string)
       ) {
-        retIds.add(action.details.reference_id as string)
+        retIds.add(action.details.reference_id as string);
       }
-    })
-  })
+    });
+  });
 
-  return Array.from(retIds)
+  return Array.from(retIds);
 }

@@ -1,45 +1,46 @@
-import { ArrowPath } from "@medusajs/icons"
-import { Button, Container, Heading, Text, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
+import { ArrowPath } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Container, Heading, Text, toast } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { useNavigate } from "react-router-dom"
-import { useCancelExchangeRequest } from "../../../../../hooks/api/exchanges"
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import { useCancelExchangeRequest } from "@hooks/api/exchanges";
 
 type ActiveOrderExchangeSectionProps = {
-  orderPreview: HttpTypes.AdminOrderPreview
-}
+  orderPreview: HttpTypes.AdminOrderPreview;
+};
 
 export const ActiveOrderExchangeSection = ({
   orderPreview,
 }: ActiveOrderExchangeSectionProps) => {
-  const { t } = useTranslation()
-  const exchangeId = orderPreview?.order_change?.exchange_id
+  const { t } = useTranslation();
+  const exchangeId = orderPreview?.order_change?.exchange_id;
 
   const { mutateAsync: cancelExchange } = useCancelExchangeRequest(
     exchangeId,
-    orderPreview.id
-  )
+    orderPreview.id,
+  );
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onContinueExchange = async () => {
-    navigate(`/orders/${orderPreview.id}/exchanges`)
-  }
+    navigate(`/orders/${orderPreview.id}/exchanges`);
+  };
 
   const onCancelExchange = async () => {
     await cancelExchange(undefined, {
       onSuccess: () => {
-        toast.success(t("orders.exchanges.toast.canceledSuccessfully"))
+        toast.success(t("orders.exchanges.toast.canceledSuccessfully"));
       },
       onError: (error) => {
-        toast.error(error.message)
+        toast.error(error.message);
       },
-    })
-  }
+    });
+  };
 
   if (!exchangeId) {
-    return
+    return;
   }
 
   return (
@@ -79,5 +80,5 @@ export const ActiveOrderExchangeSection = ({
         </div>
       </Container>
     </div>
-  )
-}
+  );
+};

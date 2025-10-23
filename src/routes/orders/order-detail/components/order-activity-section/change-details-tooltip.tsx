@@ -1,30 +1,33 @@
-import { Popover, Text } from "@medusajs/ui"
-import { ReactNode, useState } from "react"
-import { useTranslation } from "react-i18next"
+import type { ReactNode } from "react";
+import { useState } from "react";
+
+import { Popover, Text } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
 
 type ChangeDetailsTooltipProps = {
-  previous: ReactNode
-  next: ReactNode
-  title: string
-}
+  previous: ReactNode;
+  next: ReactNode;
+  title: string;
+};
 
 function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
-  const previous = props.previous
-  const next = props.next
-  const title = props.title
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const previous = props.previous;
+  const next = props.next;
+  const title = props.title;
 
   const handleMouseEnter = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleMouseLeave = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
   if (!previous && !next) {
-    return null
+    return null;
   }
 
   return (
@@ -43,7 +46,7 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
       <Popover.Content
         align="center"
         side="top"
-        className="bg-ui-bg-component max-w-[200px] p-0 focus-visible:outline-none"
+        className="max-w-[200px] bg-ui-bg-component p-0 focus-visible:outline-none"
       >
         <div className="flex flex-col">
           {!!previous && (
@@ -68,7 +71,7 @@ function ChangeDetailsTooltip(props: ChangeDetailsTooltipProps) {
         </div>
       </Popover.Content>
     </Popover>
-  )
+  );
 }
 
-export default ChangeDetailsTooltip
+export default ChangeDetailsTooltip;

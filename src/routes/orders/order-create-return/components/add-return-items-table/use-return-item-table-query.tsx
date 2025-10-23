@@ -1,25 +1,26 @@
-import {
+import type {
   DateComparisonOperator,
   NumericalComparisonOperator,
-} from "@medusajs/types"
-import { useQueryParams } from "../../../../../hooks/use-query-params"
+} from "@medusajs/types";
+
+import { useQueryParams } from "@hooks/use-query-params";
 
 export type ReturnItemTableQuery = {
-  q?: string
-  offset: number
-  order?: string
-  created_at?: DateComparisonOperator
-  updated_at?: DateComparisonOperator
-  returnable_quantity?: NumericalComparisonOperator | number
-  refundable_amount?: NumericalComparisonOperator | number
-}
+  q?: string;
+  offset: number;
+  order?: string;
+  created_at?: DateComparisonOperator;
+  updated_at?: DateComparisonOperator;
+  returnable_quantity?: NumericalComparisonOperator | number;
+  refundable_amount?: NumericalComparisonOperator | number;
+};
 
 export const useReturnItemTableQuery = ({
   pageSize = 50,
   prefix,
 }: {
-  pageSize?: number
-  prefix?: string
+  pageSize?: number;
+  prefix?: string;
 }) => {
   const raw = useQueryParams(
     [
@@ -31,8 +32,8 @@ export const useReturnItemTableQuery = ({
       "returnable_quantity",
       "refundable_amount",
     ],
-    prefix
-  )
+    prefix,
+  );
 
   const {
     offset,
@@ -41,7 +42,7 @@ export const useReturnItemTableQuery = ({
     refundable_amount,
     returnable_quantity,
     ...rest
-  } = raw
+  } = raw;
 
   const searchParams = {
     ...rest,
@@ -55,7 +56,7 @@ export const useReturnItemTableQuery = ({
     returnable_quantity: returnable_quantity
       ? JSON.parse(returnable_quantity)
       : undefined,
-  }
+  };
 
-  return { searchParams, raw }
-}
+  return { searchParams, raw };
+};

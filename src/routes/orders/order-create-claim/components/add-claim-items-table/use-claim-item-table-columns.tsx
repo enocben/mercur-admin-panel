@@ -1,19 +1,24 @@
-import { useMemo } from "react"
-import { Checkbox } from "@medusajs/ui"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useTranslation } from "react-i18next"
+import { useMemo } from "react";
+
+import { Checkbox } from "@medusajs/ui";
+
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
 
 import {
   ProductCell,
   ProductHeader,
-} from "../../../../../components/table/table-cells/product/product-cell"
-import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
-import { getReturnableQuantity } from "../../../../../lib/rma"
+} from "@components/table/table-cells/product/product-cell";
 
-const columnHelper = createColumnHelper<any>()
+import { getStylizedAmount } from "@lib/money-amount-helpers";
+import { getReturnableQuantity } from "@lib/rma.ts";
+
+// @todo fix any type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const columnHelper = createColumnHelper<any>();
 
 export const useClaimItemTableColumns = (currencyCode: string) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return useMemo(
     () => [
@@ -31,10 +36,10 @@ export const useClaimItemTableColumns = (currencyCode: string) => {
                 table.toggleAllPageRowsSelected(!!value)
               }
             />
-          )
+          );
         },
         cell: ({ row }) => {
-          const isSelectable = row.getCanSelect()
+          const isSelectable = row.getCanSelect();
 
           return (
             <Checkbox
@@ -42,10 +47,10 @@ export const useClaimItemTableColumns = (currencyCode: string) => {
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             />
-          )
+          );
         },
       }),
       columnHelper.display({
@@ -63,7 +68,7 @@ export const useClaimItemTableColumns = (currencyCode: string) => {
       columnHelper.accessor("variant.sku", {
         header: t("fields.sku"),
         cell: ({ getValue }) => {
-          return getValue() || "-"
+          return getValue() || "-";
         },
       }),
       columnHelper.accessor("variant.title", {
@@ -75,9 +80,7 @@ export const useClaimItemTableColumns = (currencyCode: string) => {
             <span className="truncate">{t("fields.quantity")}</span>
           </div>
         ),
-        cell: ({ getValue, row }) => {
-          return getReturnableQuantity(row.original)
-        },
+        cell: ({ row }) => getReturnableQuantity(row.original),
       }),
       columnHelper.accessor("refundable_total", {
         header: () => (
@@ -86,18 +89,18 @@ export const useClaimItemTableColumns = (currencyCode: string) => {
           </div>
         ),
         cell: ({ getValue }) => {
-          const amount = getValue() || 0
+          const amount = getValue() || 0;
 
-          const stylized = getStylizedAmount(amount, currencyCode)
+          const stylized = getStylizedAmount(amount, currencyCode);
 
           return (
             <div className="flex size-full items-center justify-end overflow-hidden text-right">
               <span className="truncate">{stylized}</span>
             </div>
-          )
+          );
         },
       }),
     ],
-    [t, currencyCode]
-  )
-}
+    [t, currencyCode],
+  );
+};

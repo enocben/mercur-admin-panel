@@ -1,47 +1,48 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { AdminOrder, AdminOrderPreview } from "@medusajs/types"
-import { Button, Heading, Input, Switch, toast, usePrompt } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import type { AdminOrder, AdminOrderPreview } from "@medusajs/types";
+import { Button, Heading, Input, Switch, toast, usePrompt } from "@medusajs/ui";
 
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
-import { Form } from "../../../../../components/common/form"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
+import { Form } from "@components/common/form";
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
 import {
   useCancelOrderEdit,
   useRequestOrderEdit,
-} from "../../../../../hooks/api/order-edits"
-import { getStylizedAmount } from "../../../../../lib/money-amount-helpers"
-import { OrderEditItemsSection } from "./order-edit-items-section"
-import { CreateOrderEditSchemaType, OrderEditCreateSchema } from "./schema"
+} from "@hooks/api/order-edits";
+
+import { getStylizedAmount } from "@lib/money-amount-helpers";
+
+import { OrderEditItemsSection } from "./order-edit-items-section";
+import type { CreateOrderEditSchemaType } from "./schema";
+import { OrderEditCreateSchema } from "./schema";
 
 type ReturnCreateFormProps = {
-  order: AdminOrder
-  preview: AdminOrderPreview
-}
+  order: AdminOrder;
+  preview: AdminOrderPreview;
+};
 
 export const OrderEditCreateForm = ({
   order,
   preview,
 }: ReturnCreateFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   /**
    * MUTATIONS
    */
 
   const { mutateAsync: cancelOrderEditRequest, isPending: isCanceling } =
-    useCancelOrderEdit(order.id)
+    useCancelOrderEdit(order.id);
 
   const { mutateAsync: requestOrderEdit, isPending: isRequesting } =
-    useRequestOrderEdit(order.id)
+    useRequestOrderEdit(order.id);
 
-  const isRequestRunning = isCanceling || isRequesting
+  const isRequestRunning = isCanceling || isRequesting;
 
   /**
    * FORM
@@ -51,12 +52,12 @@ export const OrderEditCreateForm = ({
       return Promise.resolve({
         note: "", // TODO: add note when update edit route is added
         send_notification: false, // TODO: not supported in the API ATM
-      })
+      });
     },
     resolver: zodResolver(OrderEditCreateSchema),
-  })
+  });
 
-  const prompt = usePrompt()
+  const prompt = usePrompt();
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
@@ -66,22 +67,22 @@ export const OrderEditCreateForm = ({
         confirmText: t("actions.continue"),
         cancelText: t("actions.cancel"),
         variant: "confirmation",
-      })
+      });
 
       if (!res) {
-        return
+        return;
       }
 
-      await requestOrderEdit()
+      await requestOrderEdit();
 
-      toast.success(t("orders.edits.createSuccessToast"))
-      handleSuccess()
+      toast.success(t("orders.edits.createSuccessToast"));
+      handleSuccess();
     } catch (e) {
       toast.error(t("general.error"), {
         description: e.message,
-      })
+      });
     }
-  })
+  });
 
   return (
     <RouteFocusModal.Form
@@ -90,12 +91,12 @@ export const OrderEditCreateForm = ({
         if (!isSubmitSuccessful) {
           cancelOrderEditRequest(undefined, {
             onSuccess: () => {
-              toast.success(t("orders.edits.cancelSuccessToast"))
+              toast.success(t("orders.edits.cancelSuccessToast"));
             },
             onError: (error) => {
-              toast.error(error.message)
+              toast.error(error.message);
             },
-          })
+          });
         }
       }}
     >
@@ -137,7 +138,7 @@ export const OrderEditCreateForm = ({
                 <span className="txt-small font-medium">
                   {getStylizedAmount(
                     preview.summary.pending_difference,
-                    order.currency_code
+                    order.currency_code,
                   )}
                 </span>
               </div>
@@ -147,58 +148,54 @@ export const OrderEditCreateForm = ({
             <Form.Field
               control={form.control}
               name="note"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <div className="mt-8 flex">
-                      <div className="block flex-1">
-                        <Form.Label>{t("fields.note")}</Form.Label>
-                        <Form.Hint className="!mt-1">
-                          {t("orders.edits.noteHint")}
-                        </Form.Hint>
-                      </div>
-                      <div className="w-full flex-1 flex-grow">
-                        <Form.Control>
-                          <Input {...field} placeholder={t("fields.note")} />
-                        </Form.Control>
-                      </div>
+              render={({ field }) => (
+                <Form.Item>
+                  <div className="mt-8 flex">
+                    <div className="block flex-1">
+                      <Form.Label>{t("fields.note")}</Form.Label>
+                      <Form.Hint className="!mt-1">
+                        {t("orders.edits.noteHint")}
+                      </Form.Hint>
                     </div>
-                  </Form.Item>
-                )
-              }}
+                    <div className="w-full flex-1 flex-grow">
+                      <Form.Control>
+                        <Input {...field} placeholder={t("fields.note")} />
+                      </Form.Control>
+                    </div>
+                  </div>
+                </Form.Item>
+              )}
             />
 
             {/* SEND NOTIFICATION*/}
-            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4">
+            <div className="mt-8 rounded-lg border bg-ui-bg-field py-2 pl-2 pr-4">
               <Form.Field
                 control={form.control}
                 name="send_notification"
-                render={({ field: { onChange, value, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <div className="flex items-center">
-                        <Form.Control className="mr-4 self-start">
-                          <Switch
-                            dir="ltr"
-                            className="mt-[2px] rtl:rotate-180"
-                            checked={!!value}
-                            onCheckedChange={onChange}
-                            {...field}
-                          />
-                        </Form.Control>
-                        <div className="block">
-                          <Form.Label>
-                            {t("orders.returns.sendNotification")}
-                          </Form.Label>
-                          <Form.Hint className="!mt-1">
-                            {t("orders.returns.sendNotificationHint")}
-                          </Form.Hint>
-                        </div>
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item>
+                    <div className="flex items-center">
+                      <Form.Control className="mr-4 self-start">
+                        <Switch
+                          dir="ltr"
+                          className="mt-[2px] rtl:rotate-180"
+                          checked={!!value}
+                          onCheckedChange={onChange}
+                          {...field}
+                        />
+                      </Form.Control>
+                      <div className="block">
+                        <Form.Label>
+                          {t("orders.returns.sendNotification")}
+                        </Form.Label>
+                        <Form.Hint className="!mt-1">
+                          {t("orders.returns.sendNotificationHint")}
+                        </Form.Hint>
                       </div>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                    </div>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
             </div>
 
@@ -227,5 +224,5 @@ export const OrderEditCreateForm = ({
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};

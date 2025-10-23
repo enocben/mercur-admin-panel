@@ -1,59 +1,63 @@
-import { toast } from "@medusajs/ui"
-import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { useNavigate, useParams } from "react-router-dom"
+import { useEffect } from "react";
 
-import { RouteFocusModal } from "../../../components/modals"
-import { useOrder, useOrderPreview } from "../../../hooks/api/orders"
-import { DEFAULT_FIELDS } from "../order-detail/constants"
-import { OrderEditCreateForm } from "./components/order-edit-create-form"
-import { useCreateOrderEdit } from "../../../hooks/api/order-edits"
+import { toast } from "@medusajs/ui";
 
-let IS_REQUEST_RUNNING = false
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
+
+import { RouteFocusModal } from "@components/modals";
+
+import { useOrder, useOrderPreview } from "@hooks/api";
+import { useCreateOrderEdit } from "@hooks/api/order-edits";
+
+import { OrderEditCreateForm } from "@routes/orders/order-create-edit/components/order-edit-create-form";
+import { DEFAULT_FIELDS } from "@routes/orders/order-detail/constants.ts";
+
+let IS_REQUEST_RUNNING = false;
 
 export const OrderEditCreate = () => {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { order } = useOrder(id!, {
     fields: DEFAULT_FIELDS,
-  })
+  });
 
-  const { order: preview } = useOrderPreview(id!)
-  const { mutateAsync: createOrderEdit } = useCreateOrderEdit(order.id)
+  const { order: preview } = useOrderPreview(id!);
+  const { mutateAsync: createOrderEdit } = useCreateOrderEdit(order.id);
 
   useEffect(() => {
     async function run() {
       if (IS_REQUEST_RUNNING || !preview) {
-        return
+        return;
       }
 
       if (preview.order_change) {
         if (preview.order_change.change_type !== "edit") {
-          navigate(`/orders/${preview.id}`, { replace: true })
-          toast.error(t("orders.edits.activeChangeError"))
+          navigate(`/orders/${preview.id}`, { replace: true });
+          toast.error(t("orders.edits.activeChangeError"));
         }
 
-        return
+        return;
       }
 
-      IS_REQUEST_RUNNING = true
+      IS_REQUEST_RUNNING = true;
 
       try {
         const { order } = await createOrderEdit({
           order_id: preview.id,
-        })
+        });
       } catch (e) {
-        toast.error(e.message)
-        navigate(`/orders/${preview.id}`, { replace: true })
+        toast.error(e.message);
+        navigate(`/orders/${preview.id}`, { replace: true });
       } finally {
-        IS_REQUEST_RUNNING = false
+        IS_REQUEST_RUNNING = false;
       }
     }
 
-    run()
-  }, [preview])
+    run();
+  }, [preview]);
 
   return (
     <RouteFocusModal>
@@ -61,5 +65,5 @@ export const OrderEditCreate = () => {
         <OrderEditCreateForm order={order} preview={preview} />
       )}
     </RouteFocusModal>
-  )
-}
+  );
+};

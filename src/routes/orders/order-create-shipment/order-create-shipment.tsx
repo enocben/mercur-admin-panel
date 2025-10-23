@@ -1,21 +1,23 @@
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
 
-import { RouteFocusModal } from "../../../components/modals"
-import { useOrder } from "../../../hooks/api/orders"
-import { OrderCreateShipmentForm } from "./components/order-create-shipment-form"
+import { RouteFocusModal } from "@components/modals";
+
+import { useOrder } from "@hooks/api";
+
+import { OrderCreateShipmentForm } from "@routes/orders/order-create-shipment/components/order-create-shipment-form";
 
 export function OrderCreateShipment() {
-  const { id, f_id } = useParams()
+  const { id, f_id } = useParams();
 
   const { order, isLoading, isError, error } = useOrder(id!, {
     fields: "*fulfillments,*fulfillments.items,*fulfillments.labels",
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
-  const ready = !isLoading && order
+  const ready = !isLoading && order;
 
   return (
     <RouteFocusModal>
@@ -26,5 +28,5 @@ export function OrderCreateShipment() {
         />
       )}
     </RouteFocusModal>
-  )
+  );
 }

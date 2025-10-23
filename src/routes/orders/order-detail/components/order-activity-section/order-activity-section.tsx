@@ -1,14 +1,16 @@
-import { AdminOrder } from "@medusajs/types"
-import { Container, Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { OrderTimeline } from "./order-timeline"
+import type { AdminOrder } from "@medusajs/types";
+import { Container, Heading } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { OrderTimeline } from "./order-timeline";
 
 type OrderActivityProps = {
-  order: AdminOrder
-}
+  order: AdminOrder;
+};
 
 export const OrderActivitySection = ({ order }: OrderActivityProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Container className="flex flex-col gap-y-8 px-6 py-4">
@@ -21,5 +23,5 @@ export const OrderActivitySection = ({ order }: OrderActivityProps) => {
       </div>
       <OrderTimeline order={order} />
     </Container>
-  )
-}
+  );
+};

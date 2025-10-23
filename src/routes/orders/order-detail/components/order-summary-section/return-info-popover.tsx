@@ -1,43 +1,46 @@
-import { InformationCircleSolid } from "@medusajs/icons"
-import { AdminReturn } from "@medusajs/types"
-import { Badge, Popover, Text } from "@medusajs/ui"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { useDate } from "../../../../../hooks/use-date"
+import { useState } from "react";
+
+import { InformationCircleSolid } from "@medusajs/icons";
+import type { AdminReturn } from "@medusajs/types";
+import { Badge, Popover, Text } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { useDate } from "@hooks/use-date";
 
 type ReturnInfoPopoverProps = {
-  orderReturn: AdminReturn
-}
+  orderReturn: AdminReturn;
+};
 
 function ReturnInfoPopover({ orderReturn }: ReturnInfoPopoverProps) {
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(false)
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
-  const { getFullDate } = useDate()
+  const { getFullDate } = useDate();
 
   const handleMouseEnter = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
 
   const handleMouseLeave = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
 
-  let returnType = "Return"
-  let returnTypeId = orderReturn.id
+  let returnType = "Return";
+  let returnTypeId = orderReturn.id;
 
   if (orderReturn.claim_id) {
-    returnType = "Claim"
-    returnTypeId = orderReturn.claim_id
+    returnType = "Claim";
+    returnTypeId = orderReturn.claim_id;
   }
 
   if (orderReturn.exchange_id) {
-    returnType = "Exchange"
-    returnTypeId = orderReturn.exchange_id
+    returnType = "Exchange";
+    returnTypeId = orderReturn.exchange_id;
   }
 
   if (typeof orderReturn !== "object") {
-    return
+    return;
   }
 
   return (
@@ -84,7 +87,7 @@ function ReturnInfoPopover({ orderReturn }: ReturnInfoPopoverProps) {
         </div>
       </Popover.Content>
     </Popover>
-  )
+  );
 }
 
-export default ReturnInfoPopover
+export default ReturnInfoPopover;

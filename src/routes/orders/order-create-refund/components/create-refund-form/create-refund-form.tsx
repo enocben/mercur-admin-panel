@@ -1,5 +1,6 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import { useEffect, useMemo, useState } from "react";
+
+import type { HttpTypes } from "@medusajs/types";
 import {
   Button,
   CurrencyInput,
@@ -7,27 +8,31 @@ import {
   Select,
   Textarea,
   toast,
-} from "@medusajs/ui"
-import { useEffect, useMemo, useState } from "react"
-import { formatValue } from "react-currency-input-field"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { useSearchParams } from "react-router-dom"
-import * as zod from "zod"
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useRefundPayment, useRefundReasons } from "../../../../../hooks/api"
-import { currencies } from "../../../../../lib/data/currencies"
-import { formatCurrency } from "../../../../../lib/format-currency"
-import { getLocaleAmount } from "../../../../../lib/money-amount-helpers"
-import { getPaymentsFromOrder } from "../../../../../lib/orders"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
-import { formatProvider } from "../../../../../lib/format-provider.ts"
+} from "@medusajs/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { formatValue } from "react-currency-input-field";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useRefundPayment, useRefundReasons } from "@hooks/api";
+import { useDocumentDirection } from "@hooks/use-document-direction";
+
+import { currencies } from "@lib/data/currencies";
+import { formatCurrency } from "@lib/format-currency";
+import { formatProvider } from "@lib/format-provider";
+import { getLocaleAmount } from "@lib/money-amount-helpers";
+import { getPaymentsFromOrder } from "@lib/orders";
 
 type CreateRefundFormProps = {
-  order: HttpTypes.AdminOrder
-}
+  order: HttpTypes.AdminOrder;
+};
 
 const CreateRefundSchema = zod.object({
   amount: zod.object({
@@ -36,28 +41,28 @@ const CreateRefundSchema = zod.object({
   }),
   note: zod.string().optional(),
   refund_reason_id: zod.string().optional(),
-})
+});
 
 export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const { refund_reasons } = useRefundReasons()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const { refund_reasons } = useRefundReasons();
 
-  const [searchParams] = useSearchParams()
-  const hasPaymentIdInSearchParams = !!searchParams.get("paymentId")
+  const [searchParams] = useSearchParams();
+  const hasPaymentIdInSearchParams = !!searchParams.get("paymentId");
   const [paymentId, setPaymentId] = useState<string | undefined>(
-    searchParams.get("paymentId") || undefined
-  )
-  const payments = getPaymentsFromOrder(order)
-  const payment = payments.find((p) => p.id === paymentId)
-  const paymentAmount = payment?.amount || 0
+    searchParams.get("paymentId") || undefined,
+  );
+  const payments = getPaymentsFromOrder(order);
+  const payment = payments.find((p) => p.id === paymentId);
+  const paymentAmount = payment?.amount || 0;
 
   const currency = useMemo(
     () => currencies[order.currency_code.toUpperCase()],
-    [order.currency_code]
-  )
+    [order.currency_code],
+  );
 
-  const direction = useDocumentDirection()
+  const direction = useDocumentDirection();
   const form = useForm<zod.infer<typeof CreateRefundSchema>>({
     defaultValues: {
       amount: {
@@ -66,26 +71,26 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
       },
     },
     resolver: zodResolver(CreateRefundSchema),
-  })
+  });
 
   useEffect(() => {
-    const pendingDifference = order.summary.pending_difference as number
-    const paymentAmount = (payment?.amount || 0) as number
+    const pendingDifference = order.summary.pending_difference as number;
+    const paymentAmount = (payment?.amount || 0) as number;
     const pendingAmount =
       pendingDifference < 0
         ? Math.min(Math.abs(pendingDifference), paymentAmount)
-        : paymentAmount
+        : paymentAmount;
 
     const normalizedAmount =
-      pendingAmount < 0 ? pendingAmount * -1 : pendingAmount
+      pendingAmount < 0 ? pendingAmount * -1 : pendingAmount;
 
     form.setValue("amount", {
       value: normalizedAmount.toFixed(currency.decimal_digits),
       float: normalizedAmount,
-    })
-  }, [payment?.id || ""])
+    });
+  }, [payment?.id || ""]);
 
-  const { mutateAsync, isPending } = useRefundPayment(order.id, payment?.id!)
+  const { mutateAsync, isPending } = useRefundPayment(order.id, payment?.id!);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -100,19 +105,19 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
             t("orders.payment.refundPaymentSuccess", {
               amount: formatCurrency(
                 data.amount.float!,
-                payment?.currency_code!
+                payment?.currency_code!,
               ),
-            })
-          )
+            }),
+          );
 
-          handleSuccess()
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -127,7 +132,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                 dir={direction}
                 value={paymentId}
                 onValueChange={(value) => {
-                  setPaymentId(value)
+                  setPaymentId(value);
                 }}
               >
                 <Label className="txt-compact-small mb-[-6px] font-sans font-medium">
@@ -145,8 +150,8 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                     const totalRefunded =
                       payment.refunds?.reduce(
                         (acc, next) => next.amount + acc,
-                        0
-                      ) || 0
+                        0,
+                      ) || 0;
 
                     return (
                       <Select.Item
@@ -161,14 +166,14 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                         <span>
                           {getLocaleAmount(
                             payment.amount as number,
-                            payment.currency_code
+                            payment.currency_code,
                           )}
                           {" - "}
                         </span>
                         <span>{formatProvider(payment.provider_id)}</span>
                         <span> - (#{payment.id.substring(23)})</span>
                       </Select.Item>
-                    )
+                    );
                   })}
                 </Select.Content>
               </Select>
@@ -178,7 +183,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                 <span>
                   {getLocaleAmount(
                     payment!.amount as number,
-                    payment!.currency_code
+                    payment!.currency_code,
                   )}
                 </span>
                 <span> - </span>
@@ -194,76 +199,72 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
                 min: 0,
                 max: paymentAmount,
               }}
-              render={({ field: { onChange, ...field } }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label>{t("fields.amount")}</Form.Label>
+              render={({ field: { onChange, ...field } }) => (
+                <Form.Item>
+                  <Form.Label>{t("fields.amount")}</Form.Label>
 
-                    <Form.Control>
-                      <CurrencyInput
-                        {...field}
-                        min={0}
-                        placeholder={formatValue({
-                          value: "0",
-                          decimalScale: currency.decimal_digits,
-                        })}
-                        decimalScale={currency.decimal_digits}
-                        symbol={currency.symbol_native}
-                        code={currency.code}
-                        value={field.value.value}
-                        onValueChange={(_value, _name, values) =>
-                          onChange({
-                            value: values?.value ?? "",
-                            float: values?.float ?? null,
-                          })
-                        }
-                        autoFocus
-                      />
-                    </Form.Control>
+                  <Form.Control>
+                    <CurrencyInput
+                      {...field}
+                      min={0}
+                      placeholder={formatValue({
+                        value: "0",
+                        decimalScale: currency.decimal_digits,
+                      })}
+                      decimalScale={currency.decimal_digits}
+                      symbol={currency.symbol_native}
+                      code={currency.code}
+                      value={field.value.value}
+                      onValueChange={(_value, _name, values) =>
+                        onChange({
+                          value: values?.value ?? "",
+                          float: values?.float ?? null,
+                        })
+                      }
+                      autoFocus
+                    />
+                  </Form.Control>
 
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
 
             <Form.Field
               control={form.control}
               name="refund_reason_id"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label>{t("fields.refundReason")}</Form.Label>
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label>{t("fields.refundReason")}</Form.Label>
 
-                    <Form.Control>
-                      <Select
-                        dir={direction}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <Select.Trigger>
-                          <Select.Value />
-                        </Select.Trigger>
+                  <Form.Control>
+                    <Select
+                      dir={direction}
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <Select.Trigger>
+                        <Select.Value />
+                      </Select.Trigger>
 
-                        <Select.Content>
-                          {refund_reasons?.map((reason) => (
-                            <Select.Item key={reason.id} value={reason.id}>
-                              {reason.label}
-                            </Select.Item>
-                          ))}
-                        </Select.Content>
-                      </Select>
-                    </Form.Control>
+                      <Select.Content>
+                        {refund_reasons?.map((reason) => (
+                          <Select.Item key={reason.id} value={reason.id}>
+                            {reason.label}
+                          </Select.Item>
+                        ))}
+                      </Select.Content>
+                    </Select>
+                  </Form.Control>
 
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
 
             <Form.Field
               control={form.control}
-              name={`note`}
+              name="note"
               render={({ field }) => {
                 return (
                   <Form.Item>
@@ -275,7 +276,7 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
 
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -302,5 +303,5 @@ export const CreateRefundForm = ({ order }: CreateRefundFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

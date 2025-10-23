@@ -1,39 +1,45 @@
-import { AdminOrder, AdminOrderPreview } from "@medusajs/types"
-import { Button, Heading, Input, toast } from "@medusajs/ui"
-import { useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { useMemo, useState } from "react";
+
+import type { AdminOrder, AdminOrderPreview } from "@medusajs/types";
+import { Button, Heading, Input, toast } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
 import {
   RouteFocusModal,
   StackedFocusModal,
   useStackedModal,
-} from "../../../../../components/modals"
-import { useAddOrderEditItems } from "../../../../../hooks/api/order-edits"
-import { AddOrderEditItemsTable } from "../add-order-edit-items-table"
-import { OrderEditItem } from "./order-edit-item"
+} from "@components/modals";
+
+import { useAddOrderEditItems } from "@hooks/api/order-edits";
+
+import { AddOrderEditItemsTable } from "@routes/orders/order-create-edit/components/add-order-edit-items-table";
+
+import { OrderEditItem } from "./order-edit-item";
 
 type ExchangeInboundSectionProps = {
-  order: AdminOrder
-  preview: AdminOrderPreview
-}
+  order: AdminOrder;
+  preview: AdminOrderPreview;
+};
 
-let addedVariants: string[] = []
+let addedVariants: string[] = [];
 
 export const OrderEditItemsSection = ({
   order,
   preview,
 }: ExchangeInboundSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   /**
    * STATE
    */
-  const { setIsOpen } = useStackedModal()
-  const [filterTerm, setFilterTerm] = useState("")
+  const { setIsOpen } = useStackedModal();
+  const [filterTerm, setFilterTerm] = useState("");
 
   /*
    * MUTATIONS
    */
-  const { mutateAsync: addItems, isPending } = useAddOrderEditItems(order.id)
+  const { mutateAsync: addItems, isPending } = useAddOrderEditItems(order.id);
 
   /**
    * CALLBACKS
@@ -48,21 +54,21 @@ export const OrderEditItemsSection = ({
       },
       {
         onError: (e) => {
-          toast.error(e.message)
+          toast.error(e.message);
         },
-      }
-    )
+      },
+    );
 
-    setIsOpen("inbound-items", false)
-  }
+    setIsOpen("inbound-items", false);
+  };
 
   const filteredItems = useMemo(() => {
     return preview.items.filter(
       (i) =>
         i.title.toLowerCase().includes(filterTerm) ||
-        i.product_title.toLowerCase().includes(filterTerm)
-    )
-  }, [preview, filterTerm])
+        i.product_title.toLowerCase().includes(filterTerm),
+    );
+  }, [preview, filterTerm]);
 
   return (
     <div>
@@ -91,7 +97,7 @@ export const OrderEditItemsSection = ({
               <AddOrderEditItemsTable
                 currencyCode={order.currency_code}
                 onSelectionChange={(finalSelection) => {
-                  addedVariants = finalSelection
+                  addedVariants = finalSelection;
                 }}
               />
 
@@ -137,9 +143,9 @@ export const OrderEditItemsSection = ({
             background:
               "repeating-linear-gradient(-45deg, rgb(212, 212, 216, 0.15), rgb(212, 212, 216,.15) 10px, transparent 10px, transparent 20px)",
           }}
-          className="bg-ui-bg-field mt-4 block h-[56px] w-full rounded-lg border border-dashed"
+          className="mt-4 block h-[56px] w-full rounded-lg border border-dashed bg-ui-bg-field"
         />
       )}
     </div>
-  )
-}
+  );
+};

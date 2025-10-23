@@ -1,49 +1,56 @@
-import {
+import { useEffect, useMemo, useState } from "react";
+
+import type {
   AdminExchange,
   AdminOrder,
   AdminOrderPreview,
   AdminReturn,
   InventoryLevelDTO,
-} from "@medusajs/types"
-import { Alert, Button, Heading, Text, toast } from "@medusajs/ui"
-import { useEffect, useMemo, useState } from "react"
-import { useFieldArray, UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+} from "@medusajs/types";
+import type { HttpTypes } from "@medusajs/types";
+import { Alert, Button, Heading, Text, toast } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
+import type { UseFormReturn } from "react-hook-form";
+import { useFieldArray } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+import { Form } from "@components/common/form";
+import { Combobox } from "@components/inputs/combobox";
 import {
   RouteFocusModal,
   StackedFocusModal,
   useStackedModal,
-} from "../../../../../components/modals"
-import { useShippingOptions, useStockLocations } from "../../../../../hooks/api"
+} from "@components/modals";
+
+import { useShippingOptions, useStockLocations } from "@hooks/api";
 import {
   useAddExchangeInboundItems,
   useAddExchangeInboundShipping,
   useDeleteExchangeInboundShipping,
   useRemoveExchangeInboundItem,
   useUpdateExchangeInboundItem,
-} from "../../../../../hooks/api/exchanges"
-import { useUpdateReturn } from "../../../../../hooks/api/returns"
-import { sdk } from "../../../../../lib/client"
-import { ReturnShippingPlaceholder } from "../../../common/placeholders"
-import { ItemPlaceholder } from "../../../order-create-claim/components/claim-create-form/item-placeholder"
-import { AddExchangeInboundItemsTable } from "../add-exchange-inbound-items-table"
-import { ExchangeInboundItem } from "./exchange-inbound-item"
-import { CreateExchangeSchemaType } from "./schema"
+} from "@hooks/api/exchanges";
+import { useUpdateReturn } from "@hooks/api/returns";
+
+import { sdk } from "@lib/client";
+
+import { ReturnShippingPlaceholder } from "@routes/orders/common/placeholders";
+import { ItemPlaceholder } from "@routes/orders/order-create-claim/components/claim-create-form/item-placeholder";
+import { AddExchangeInboundItemsTable } from "@routes/orders/order-create-exchange/components/add-exchange-inbound-items-table";
+
+import { ExchangeInboundItem } from "./exchange-inbound-item";
+import type { CreateExchangeSchemaType } from "./schema";
 
 type ExchangeInboundSectionProps = {
-  order: AdminOrder
-  orderReturn?: AdminReturn
-  exchange: AdminExchange
-  preview: AdminOrderPreview
-  form: UseFormReturn<CreateExchangeSchemaType>
-}
+  order: AdminOrder;
+  orderReturn?: AdminReturn;
+  exchange: AdminExchange;
+  preview: AdminOrderPreview;
+  form: UseFormReturn<CreateExchangeSchemaType>;
+};
 
-let itemsToAdd: string[] = []
-let itemsToRemove: string[] = []
+let itemsToAdd: string[] = [];
+let itemsToRemove: string[] = [];
 
 export const ExchangeInboundSection = ({
   order,
@@ -52,46 +59,46 @@ export const ExchangeInboundSection = ({
   form,
   orderReturn,
 }: ExchangeInboundSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   /**
    * STATE
    */
-  const { setIsOpen } = useStackedModal()
+  const { setIsOpen } = useStackedModal();
   const [inventoryMap, setInventoryMap] = useState<
     Record<string, InventoryLevelDTO[]>
-  >({})
+  >({});
 
   /**
    * MUTATIONS
    */
   const { mutateAsync: updateReturn } = useUpdateReturn(
     preview?.order_change?.return_id!,
-    order.id
-  )
+    order.id,
+  );
 
   const { mutateAsync: addInboundShipping } = useAddExchangeInboundShipping(
     exchange.id,
-    order.id
-  )
+    order.id,
+  );
 
   const { mutateAsync: deleteInboundShipping } =
-    useDeleteExchangeInboundShipping(exchange.id, order.id)
+    useDeleteExchangeInboundShipping(exchange.id, order.id);
 
   const { mutateAsync: addInboundItem } = useAddExchangeInboundItems(
     exchange.id,
-    order.id
-  )
+    order.id,
+  );
 
   const { mutateAsync: updateInboundItem } = useUpdateExchangeInboundItem(
     exchange.id,
-    order.id
-  )
+    order.id,
+  );
 
   const { mutateAsync: removeInboundItem } = useRemoveExchangeInboundItem(
     exchange.id,
-    order.id
-  )
+    order.id,
+  );
 
   /**
    * Only consider items that belong to this exchange.
@@ -99,26 +106,26 @@ export const ExchangeInboundSection = ({
   const previewInboundItems = useMemo(
     () =>
       preview?.items?.filter(
-        (i) => !!i.actions?.find((a) => a.exchange_id === exchange.id)
+        (i) => !!i.actions?.find((a) => a.exchange_id === exchange.id),
       ),
-    [preview.items]
-  )
+    [preview.items],
+  );
 
   const inboundPreviewItems = previewInboundItems.filter(
-    (item) => !!item.actions?.find((a) => a.action === "RETURN_ITEM")
-  )
+    (item) => !!item.actions?.find((a) => a.action === "RETURN_ITEM"),
+  );
 
   const itemsMap = useMemo(
     () => new Map(order?.items?.map((i) => [i.id, i])),
-    [order.items]
-  )
+    [order.items],
+  );
 
-  const locationId = form.watch("location_id")
+  const locationId = form.watch("location_id");
 
   /**
    * HOOKS
    */
-  const { stock_locations = [] } = useStockLocations({ limit: 999 })
+  const { stock_locations = [] } = useStockLocations({ limit: 999 });
   const { shipping_options = [] } = useShippingOptions(
     {
       limit: 999,
@@ -127,15 +134,15 @@ export const ExchangeInboundSection = ({
     },
     {
       enabled: !!locationId,
-    }
-  )
+    },
+  );
 
   const inboundShippingOptions = shipping_options.filter(
     (shippingOption) =>
       !!shippingOption.rules.find(
-        (r) => r.attribute === "is_return" && r.value === "true"
-      )
-  )
+        (r) => r.attribute === "is_return" && r.value === "true",
+      ),
+  );
 
   const {
     fields: inboundItems,
@@ -145,69 +152,69 @@ export const ExchangeInboundSection = ({
   } = useFieldArray({
     name: "inbound_items",
     control: form.control,
-  })
+  });
 
   const inboundItemsMap = useMemo(
     () => new Map(previewInboundItems.map((i) => [i.id, i])),
-    [previewInboundItems, inboundItems]
-  )
+    [previewInboundItems, inboundItems],
+  );
 
   useEffect(() => {
-    const existingItemsMap: Record<string, boolean> = {}
+    const existingItemsMap: Record<string, boolean> = {};
 
     inboundPreviewItems.forEach((i) => {
-      const ind = inboundItems.findIndex((field) => field.item_id === i.id)
+      const ind = inboundItems.findIndex((field) => field.item_id === i.id);
 
-      existingItemsMap[i.id] = true
+      existingItemsMap[i.id] = true;
 
       if (ind > -1) {
         if (inboundItems[ind].quantity !== i.detail.return_requested_quantity) {
           const returnItemAction = i.actions?.find(
-            (a) => a.action === "RETURN_ITEM"
-          )
+            (a) => a.action === "RETURN_ITEM",
+          );
 
           update(ind, {
             ...inboundItems[ind],
             quantity: i.detail.return_requested_quantity,
             note: returnItemAction?.internal_note,
             reason_id: returnItemAction?.details?.reason_id as string,
-          })
+          });
         }
       } else {
         append(
           { item_id: i.id, quantity: i.detail.return_requested_quantity },
-          { shouldFocus: false }
-        )
+          { shouldFocus: false },
+        );
       }
-    })
+    });
 
     inboundItems.forEach((i, ind) => {
       if (!(i.item_id in existingItemsMap)) {
-        remove(ind)
+        remove(ind);
       }
-    })
-  }, [previewInboundItems])
+    });
+  }, [previewInboundItems]);
 
   useEffect(() => {
     const inboundShippingMethod = preview.shipping_methods.find((s) =>
-      s.actions?.find((a) => a.action === "SHIPPING_ADD" && !!a.return_id)
-    )
+      s.actions?.find((a) => a.action === "SHIPPING_ADD" && !!a.return_id),
+    );
 
     if (inboundShippingMethod) {
       form.setValue(
         "inbound_option_id",
-        inboundShippingMethod.shipping_option_id
-      )
+        inboundShippingMethod.shipping_option_id,
+      );
     } else {
-      form.setValue("inbound_option_id", "")
+      form.setValue("inbound_option_id", "");
     }
-  }, [preview.shipping_methods])
+  }, [preview.shipping_methods]);
 
   useEffect(() => {
-    form.setValue("location_id", orderReturn?.location_id)
-  }, [orderReturn])
+    form.setValue("location_id", orderReturn?.location_id);
+  }, [orderReturn]);
 
-  const showInboundItemsPlaceholder = !inboundItems.length
+  const showInboundItemsPlaceholder = !inboundItems.length;
 
   const onItemsSelected = async () => {
     itemsToAdd.length &&
@@ -220,120 +227,120 @@ export const ExchangeInboundSection = ({
         },
         {
           onError: (error) => {
-            toast.error(error.message)
+            toast.error(error.message);
           },
-        }
-      ))
+        },
+      ));
 
     for (const itemToRemove of itemsToRemove) {
       const actionId = previewInboundItems
         .find((i) => i.id === itemToRemove)
-        ?.actions?.find((a) => a.action === "RETURN_ITEM")?.id
+        ?.actions?.find((a) => a.action === "RETURN_ITEM")?.id;
 
       if (actionId) {
         await removeInboundItem(actionId, {
           onError: (error) => {
-            toast.error(error.message)
+            toast.error(error.message);
           },
-        })
+        });
       }
     }
 
-    setIsOpen("inbound-items", false)
-  }
+    setIsOpen("inbound-items", false);
+  };
 
   const onLocationChange = async (selectedLocationId?: string | null) => {
-    await updateReturn({ location_id: selectedLocationId })
-  }
+    await updateReturn({ location_id: selectedLocationId });
+  };
 
   const onShippingOptionChange = async (
-    selectedOptionId: string | undefined
+    selectedOptionId: string | undefined,
   ) => {
     const inboundShippingMethods = preview.shipping_methods.filter((s) =>
-      s.actions?.find((a) => a.action === "SHIPPING_ADD" && !!a.return_id)
-    )
+      s.actions?.find((a) => a.action === "SHIPPING_ADD" && !!a.return_id),
+    );
 
     const promises = inboundShippingMethods
       .filter(Boolean)
       .map((inboundShippingMethod) => {
         const action = inboundShippingMethod.actions?.find(
-          (a) => a.action === "SHIPPING_ADD" && !!a.return_id
-        )
+          (a) => a.action === "SHIPPING_ADD" && !!a.return_id,
+        );
 
         if (action) {
-          return deleteInboundShipping(action.id)
+          return deleteInboundShipping(action.id);
         }
-      })
+      });
 
-    await Promise.all(promises)
+    await Promise.all(promises);
 
     if (selectedOptionId) {
       await addInboundShipping(
         { shipping_option_id: selectedOptionId },
         {
           onError: (error) => {
-            toast.error(error.message)
+            toast.error(error.message);
           },
-        }
-      )
+        },
+      );
     }
-  }
+  };
 
   const showLevelsWarning = useMemo(() => {
     if (!locationId) {
-      return false
+      return false;
     }
 
     const allItemsHaveLocation = inboundItems
       .map((_i) => {
-        const item = itemsMap.get(_i.item_id)
+        const item = itemsMap.get(_i.item_id);
         if (!item?.variant_id || !item?.variant) {
-          return true
+          return true;
         }
 
         if (!item.variant?.manage_inventory) {
-          return true
+          return true;
         }
 
         return inventoryMap[item.variant_id]?.find(
-          (l) => l.location_id === locationId
-        )
+          (l) => l.location_id === locationId,
+        );
       })
-      .every(Boolean)
+      .every(Boolean);
 
-    return !allItemsHaveLocation
-  }, [inboundItems, inventoryMap, locationId])
+    return !allItemsHaveLocation;
+  }, [inboundItems, inventoryMap, locationId]);
 
   useEffect(() => {
     const getInventoryMap = async () => {
-      const ret: Record<string, InventoryLevelDTO[]> = {}
+      const ret: Record<string, InventoryLevelDTO[]> = {};
 
       if (!inboundItems.length) {
-        return ret
+        return ret;
       }
 
       const variantIds = inboundItems
         .map((item) => item?.variant_id)
-        .filter(Boolean)
+        .filter(Boolean);
 
       const variants = (
         await sdk.admin.productVariant.list({
           id: variantIds,
           fields: "*inventory.location_levels",
         })
-      ).variants
+      ).variants;
 
       variants.forEach((variant) => {
-        ret[variant.id] = variant.inventory?.[0]?.location_levels || []
-      })
+        ret[variant.id] = variant.inventory?.[0]?.location_levels || [];
+      });
 
-      return ret
-    }
+      return ret;
+    };
 
     getInventoryMap().then((map) => {
-      setInventoryMap(map)
-    })
-  }, [inboundItems])
+      setInventoryMap(map);
+    });
+  }, [inboundItems]);
 
   return (
     <div>
@@ -342,7 +349,7 @@ export const ExchangeInboundSection = ({
 
         <StackedFocusModal id="inbound-items">
           <StackedFocusModal.Trigger asChild>
-            <a className="focus-visible:shadow-borders-focus transition-fg txt-compact-small-plus cursor-pointer text-blue-500 outline-none hover:text-blue-400">
+            <a className="txt-compact-small-plus cursor-pointer text-blue-500 outline-none transition-fg hover:text-blue-400 focus-visible:shadow-borders-focus">
               {t("actions.addItems")}
             </a>
           </StackedFocusModal.Trigger>
@@ -355,14 +362,14 @@ export const ExchangeInboundSection = ({
               selectedItems={inboundItems.map((i) => i.item_id)}
               currencyCode={order.currency_code}
               onSelectionChange={(finalSelection) => {
-                const alreadySelected = inboundItems.map((i) => i.item_id)
+                const alreadySelected = inboundItems.map((i) => i.item_id);
 
                 itemsToAdd = finalSelection.filter(
-                  (selection) => !alreadySelected.includes(selection)
-                )
+                  (selection) => !alreadySelected.includes(selection),
+                );
                 itemsToRemove = alreadySelected.filter(
-                  (selection) => !finalSelection.includes(selection)
-                )
+                  (selection) => !finalSelection.includes(selection),
+                );
               }}
             />
 
@@ -406,20 +413,20 @@ export const ExchangeInboundSection = ({
               onRemove={() => {
                 const actionId = previewInboundItems
                   .find((i) => i.id === item.item_id)
-                  ?.actions?.find((a) => a.action === "RETURN_ITEM")?.id
+                  ?.actions?.find((a) => a.action === "RETURN_ITEM")?.id;
 
                 if (actionId) {
                   removeInboundItem(actionId, {
                     onError: (error) => {
-                      toast.error(error.message)
+                      toast.error(error.message);
                     },
-                  })
+                  });
                 }
               }}
               onUpdate={(payload: HttpTypes.AdminUpdateReturnItems) => {
                 const action = previewInboundItems
                   .find((i) => i.id === item.item_id)
-                  ?.actions?.find((a) => a.action === "RETURN_ITEM")
+                  ?.actions?.find((a) => a.action === "RETURN_ITEM");
 
                 if (action) {
                   updateInboundItem(
@@ -429,19 +436,19 @@ export const ExchangeInboundSection = ({
                         if (action.details?.quantity && payload.quantity) {
                           form.setValue(
                             `inbound_items.${index}.quantity`,
-                            action.details?.quantity as number
-                          )
+                            action.details?.quantity as number,
+                          );
                         }
 
-                        toast.error(error.message)
+                        toast.error(error.message);
                       },
-                    }
-                  )
+                    },
+                  );
                 }
               }}
               index={index}
             />
-          )
+          ),
       )}
       {!showInboundItemsPlaceholder && (
         <div className="mt-8 flex flex-col gap-y-4">
@@ -465,19 +472,19 @@ export const ExchangeInboundSection = ({
                         {...field}
                         value={value ?? undefined}
                         onChange={(v) => {
-                          onChange(v)
-                          onLocationChange(v)
+                          onChange(v);
+                          onLocationChange(v);
                         }}
                         options={(stock_locations ?? []).map(
                           (stockLocation) => ({
                             label: stockLocation.name,
                             value: stockLocation.id,
-                          })
+                          }),
                         )}
                       />
                     </Form.Control>
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -490,7 +497,7 @@ export const ExchangeInboundSection = ({
                 <Text
                   size="small"
                   leading="compact"
-                  className="text-ui-fg-muted ml-1 inline"
+                  className="ml-1 inline text-ui-fg-muted"
                 >
                   ({t("fields.optional")})
                 </Text>
@@ -512,8 +519,8 @@ export const ExchangeInboundSection = ({
                         allowClear
                         value={value ?? undefined}
                         onChange={(val) => {
-                          onChange(val)
-                          onShippingOptionChange(val)
+                          onChange(val);
+                          onShippingOptionChange(val);
                         }}
                         {...field}
                         options={inboundShippingOptions.map((so) => ({
@@ -525,7 +532,7 @@ export const ExchangeInboundSection = ({
                       />
                     </Form.Control>
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -533,14 +540,14 @@ export const ExchangeInboundSection = ({
       )}
       {showLevelsWarning && (
         <Alert variant="warning" dismissible className="mt-4 p-5">
-          <div className="text-ui-fg-subtle txt-small pb-2 font-medium leading-[20px]">
+          <div className="txt-small pb-2 font-medium leading-[20px] text-ui-fg-subtle">
             {t("orders.returns.noInventoryLevel")}
           </div>
-          <Text className="text-ui-fg-subtle txt-small leading-normal">
+          <Text className="txt-small leading-normal text-ui-fg-subtle">
             {t("orders.returns.noInventoryLevelDesc")}
           </Text>
         </Alert>
       )}
     </div>
-  )
-}
+  );
+};
