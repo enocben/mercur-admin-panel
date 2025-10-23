@@ -3,14 +3,14 @@ import { useState } from "react";
 import { InformationCircle } from "@medusajs/icons";
 import { Button, Container, Drawer, Text } from "@medusajs/ui";
 
-import { formatDate } from "@lib/date";
+import type { AdminSellerRequest } from "@custom-types/requests";
 
-import type { AdminRequest } from "@custom-types/requests";
+import { formatDate } from "@lib/date";
 
 import { ResolveRequestPrompt } from "@routes/requests/common/components/resolve-request";
 
 type Props = {
-  request?: AdminRequest;
+  request?: AdminSellerRequest;
   open: boolean;
   close: () => void;
 };
@@ -19,7 +19,7 @@ export function RequestSellerDetail({ request, open, close }: Props) {
   if (!request) {
     return null;
   }
-  const requestData = request.data as Record<string, unknown>;
+  const requestData = request.data;
 
   const [promptOpen, setPromptOpen] = useState(false);
   const [requestAccept, setRequestAccept] = useState(false);
@@ -50,21 +50,19 @@ export function RequestSellerDetail({ request, open, close }: Props) {
           <fieldset>
             <legend className="mb-2">Seller name</legend>
             <Container>
-              <Text>{(requestData?.seller as string) ?? ""}</Text>
+              <Text>{requestData?.seller?.name ?? "-"}</Text>
             </Container>
           </fieldset>
           <fieldset className="mt-2">
             <legend className="mb-2">Member</legend>
             <Container>
-              <Text>{`${(requestData?.member as Record<string, unknown>)?.name ?? ""}`}</Text>
+              <Text>{requestData?.member?.name ?? "-"}</Text>
             </Container>
           </fieldset>
           <fieldset className="mt-2">
             <legend className="mb-2">Email</legend>
             <Container>
-              <Text>
-                {(requestData?.provider_identity_id as string) ?? "N/A"}
-              </Text>
+              <Text>{requestData?.provider_identity_id ?? "N/A"}</Text>
             </Container>
           </fieldset>
           <Container className="mt-4">
