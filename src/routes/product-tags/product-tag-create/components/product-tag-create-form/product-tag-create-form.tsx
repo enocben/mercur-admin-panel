@@ -1,32 +1,32 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Heading, Input, Text, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
-import { Form } from "../../../../../components/common/form"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useCreateProductTag } from "../../../../../hooks/api"
+import { Button, Heading, Input, Text, toast } from "@medusajs/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useCreateProductTag } from "@hooks/api";
 
 const ProductTagCreateSchema = z.object({
   value: z.string().min(1),
-})
+});
 
 export const ProductTagCreateForm = () => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<z.infer<typeof ProductTagCreateSchema>>({
     defaultValues: {
       value: "",
     },
     resolver: zodResolver(ProductTagCreateSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useCreateProductTag()
+  const { mutateAsync, isPending } = useCreateProductTag();
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(data, {
@@ -34,15 +34,15 @@ export const ProductTagCreateForm = () => {
         toast.success(
           t("productTags.create.successToast", {
             value: product_tag.value,
-          })
-        )
-        handleSuccess(`../${product_tag.id}`)
+          }),
+        );
+        handleSuccess(`../${product_tag.id}`);
       },
       onError: (error) => {
-        toast.error(error.message)
+        toast.error(error.message);
       },
-    })
-  })
+    });
+  });
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -76,7 +76,7 @@ export const ProductTagCreateForm = () => {
                       </Form.Control>
                       <Form.ErrorMessage />
                     </Form.Item>
-                  )
+                  );
                 }}
               />
             </div>
@@ -96,5 +96,5 @@ export const ProductTagCreateForm = () => {
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};
