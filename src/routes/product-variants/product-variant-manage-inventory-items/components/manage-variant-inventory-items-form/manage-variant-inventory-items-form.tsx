@@ -1,38 +1,34 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { XMarkMini } from "@medusajs/icons"
-import { AdminProductVariant, HttpTypes } from "@medusajs/types"
-import { Button, Heading, IconButton, Input, Label, toast } from "@medusajs/ui"
-import i18next from "i18next"
-import {
-  useFieldArray,
-  useForm,
-  UseFormReturn,
-  useWatch,
-} from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import { XMarkMini } from "@medusajs/icons";
+import type { AdminProductVariant, HttpTypes } from "@medusajs/types";
+import { Button, Heading, IconButton, Input, Label, toast } from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
-import {
-  RouteFocusModal,
-  useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useProductVariantsInventoryItemsBatch } from "../../../../../hooks/api/products"
-import { useComboboxData } from "../../../../../hooks/use-combobox-data"
-import { castNumber } from "../../../../../lib/cast-number"
-import { sdk } from "../../../../../lib/client"
+import { zodResolver } from "@hookform/resolvers/zod";
+import i18next from "i18next";
+import type { UseFormReturn } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { Combobox } from "@components/inputs/combobox";
+import { RouteFocusModal, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useProductVariantsInventoryItemsBatch } from "@hooks/api";
+import { useComboboxData } from "@hooks/use-combobox-data";
+
+import { castNumber } from "@lib/cast-number";
+import { sdk } from "@lib/client";
 
 type ManageVariantInventoryItemsFormProps = {
   variant: AdminProductVariant & {
     inventory_items: {
-      inventory: HttpTypes.AdminInventoryItem
-      inventory_item_id: string
-      required_quantity: number
-    }[]
-  }
-}
+      inventory: HttpTypes.AdminInventoryItem;
+      inventory_item_id: string;
+      required_quantity: number;
+    }[];
+  };
+};
 
 const ManageVariantInventoryItemsSchema = zod.object({
   inventory: zod.array(
@@ -46,39 +42,39 @@ const ManageVariantInventoryItemsSchema = zod.object({
       .superRefine((data, ctx) => {
         const quantity = data.required_quantity
           ? castNumber(data.required_quantity)
-          : 0
+          : 0;
 
         if (quantity < 1) {
           ctx.addIssue({
             code: zod.ZodIssueCode.custom,
             message: i18next.t(
-              "products.variant.inventory.validation.quantity"
+              "products.variant.inventory.validation.quantity",
             ),
             path: ["required_quantity"],
-          })
+          });
         }
-      })
+      }),
   ),
-})
+});
 
 type InventoryItemFormData = zod.infer<
   typeof ManageVariantInventoryItemsSchema
->["inventory"]
+>["inventory"];
 
 type VariantInventoryItemRowProps = {
-  form: UseFormReturn<InventoryItemFormData>
-  inventoryIndex: number
+  form: UseFormReturn<InventoryItemFormData>;
+  inventoryIndex: number;
   inventoryItem: {
-    id: string
-    inventory_item_id: string
-    required_quantity: number
-  }
+    id: string;
+    inventory_item_id: string;
+    required_quantity: number;
+  };
   isItemOptionDisabled: (
     option: { value: string },
-    inventoryIndex: number
-  ) => boolean
-  onRemove: () => void
-}
+    inventoryIndex: number,
+  ) => boolean;
+  onRemove: () => void;
+};
 
 function VariantInventoryItemRow({
   form,
@@ -87,12 +83,12 @@ function VariantInventoryItemRow({
   isItemOptionDisabled,
   onRemove,
 }: VariantInventoryItemRowProps) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const selectedInventoryItemId = useWatch({
     control: form.control,
     name: `inventory.${inventoryIndex}.inventory_item_id`,
-  })
+  });
 
   const items = useComboboxData({
     queryKey: ["inventory_items"],
@@ -105,12 +101,12 @@ function VariantInventoryItemRow({
         label: `${item.title} ${item.sku ? `(${item.sku})` : ""}`,
         value: item.id!,
       })),
-  })
+  });
 
   return (
     <li
       key={inventoryItem.id}
-      className="bg-ui-bg-component shadow-elevation-card-rest grid grid-cols-[1fr_28px] items-center gap-1.5 rounded-xl p-1.5"
+      className="grid grid-cols-[1fr_28px] items-center gap-1.5 rounded-xl bg-ui-bg-component p-1.5 shadow-elevation-card-rest"
     >
       <div className="grid grid-cols-[min-content,1fr] items-center gap-1.5">
         <div className="flex items-center px-2 py-1.5">
@@ -147,7 +143,7 @@ function VariantInventoryItemRow({
                 </Form.Control>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
 
@@ -164,26 +160,24 @@ function VariantInventoryItemRow({
         <Form.Field
           control={form.control}
           name={`inventory.${inventoryIndex}.required_quantity`}
-          render={({ field: { onChange, value, ...field } }) => {
-            return (
-              <Form.Item>
-                <Form.Control>
-                  <Input
-                    type="number"
-                    className="bg-ui-bg-field-component"
-                    min={0}
-                    value={value}
-                    onChange={onChange}
-                    {...field}
-                    placeholder={t(
-                      "products.create.inventory.quantityPlaceholder"
-                    )}
-                  />
-                </Form.Control>
-                <Form.ErrorMessage />
-              </Form.Item>
-            )
-          }}
+          render={({ field: { onChange, value, ...field } }) => (
+            <Form.Item>
+              <Form.Control>
+                <Input
+                  type="number"
+                  className="bg-ui-bg-field-component"
+                  min={0}
+                  value={value}
+                  onChange={onChange}
+                  {...field}
+                  placeholder={t(
+                    "products.create.inventory.quantityPlaceholder",
+                  )}
+                />
+              </Form.Control>
+              <Form.ErrorMessage />
+            </Form.Item>
+          )}
         />
       </div>
       <IconButton
@@ -196,14 +190,14 @@ function VariantInventoryItemRow({
         <XMarkMini />
       </IconButton>
     </li>
-  )
+  );
 }
 
 export function ManageVariantInventoryItemsForm({
   variant,
 }: ManageVariantInventoryItemsFormProps) {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof ManageVariantInventoryItemsSchema>>({
     defaultValues: {
@@ -220,92 +214,94 @@ export function ManageVariantInventoryItemsForm({
           ],
     },
     resolver: zodResolver(ManageVariantInventoryItemsSchema),
-  })
+  });
 
   const inventory = useFieldArray({
     control: form.control,
     name: `inventory`,
-  })
+  });
 
   const inventoryFormData = useWatch({
     control: form.control,
     name: `inventory`,
-  })
+  });
 
   /**
    * Will mark an option as disabled if another input already selected that option
    */
   const isItemOptionDisabled = (
     option: { value: string },
-    inventoryIndex: number
+    inventoryIndex: number,
   ) => {
     return !!inventoryFormData?.some(
       (i, index) =>
-        index != inventoryIndex && i.inventory_item_id === option.value
-    )
-  }
+        index != inventoryIndex && i.inventory_item_id === option.value,
+    );
+  };
 
-  const hasKit = inventory.fields.length > 1
+  const hasKit = inventory.fields.length > 1;
 
   const { mutateAsync, isPending } = useProductVariantsInventoryItemsBatch(
-    variant?.product_id!
-  )
+    variant?.product_id!,
+  );
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    const existingItems: Record<string, number> = {}
-    const selectedItems: Record<string, boolean> = {}
+    const existingItems: Record<string, number> = {};
+    const selectedItems: Record<string, boolean> = {};
 
     variant.inventory_items.forEach(
-      (i) => (existingItems[i.inventory.id] = i.required_quantity)
-    )
+      (i) => (existingItems[i.inventory.id] = i.required_quantity),
+    );
 
-    values.inventory.forEach((i) => (selectedItems[i.inventory_item_id] = true))
+    values.inventory.forEach(
+      (i) => (selectedItems[i.inventory_item_id] = true),
+    );
 
-    const payload: HttpTypes.AdminBatchProductVariantInventoryItemRequest = {}
+    const payload: HttpTypes.AdminBatchProductVariantInventoryItemRequest = {};
 
     values.inventory.forEach((v) => {
       if (v.inventory_item_id in existingItems) {
         if (v.required_quantity !== existingItems[v.inventory_item_id]) {
-          payload.update = payload.update || []
+          payload.update = payload.update || [];
 
           payload.update.push({
             required_quantity: castNumber(v.required_quantity),
             inventory_item_id: v.inventory_item_id,
             variant_id: variant.id,
-          })
+          });
         }
       } else {
-        payload.create = payload.create || []
+        payload.create = payload.create || [];
 
         payload.create.push({
           required_quantity: castNumber(v.required_quantity),
           inventory_item_id: v.inventory_item_id,
           variant_id: variant.id,
-        })
+        });
       }
-    })
+    });
 
     variant.inventory_items.forEach((i) => {
       if (!(i.inventory.id in selectedItems)) {
-        payload.delete = payload.delete || []
+        payload.delete = payload.delete || [];
 
         payload.delete.push({
           inventory_item_id: i.inventory.id,
           variant_id: variant.id,
-        })
+        });
       }
-    })
+    });
 
     await mutateAsync(payload, {
       onSuccess: () => {
-        toast.success(t("products.variant.inventory.toast.itemsManageSuccess"))
-        handleSuccess()
+        toast.success(t("products.variant.inventory.toast.itemsManageSuccess"));
+        handleSuccess();
       },
       onError: (err) => {
-        toast.error(err.message)
+        toast.error(err.message);
       },
-    })
-  })
+    });
+  });
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -317,7 +313,7 @@ export function ManageVariantInventoryItemsForm({
               {t(
                 hasKit
                   ? "products.create.inventory.heading"
-                  : "fields.inventoryItems"
+                  : "fields.inventoryItems",
               )}
             </Heading>
 
@@ -329,7 +325,7 @@ export function ManageVariantInventoryItemsForm({
                     {t(
                       hasKit
                         ? "products.create.inventory.label"
-                        : "fields.inventoryItem"
+                        : "fields.inventoryItem",
                     )}
                   </Form.Hint>
                 </div>
@@ -341,7 +337,7 @@ export function ManageVariantInventoryItemsForm({
                     inventory.append({
                       inventory_item_id: "",
                       required_quantity: "",
-                    })
+                    });
                   }}
                 >
                   {t("actions.add")}
@@ -372,5 +368,5 @@ export function ManageVariantInventoryItemsForm({
         </RouteFocusModal.Footer>
       </KeyboundForm>
     </RouteFocusModal.Form>
-  )
+  );
 }

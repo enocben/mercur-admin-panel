@@ -1,12 +1,12 @@
-import { useTranslation } from "react-i18next"
+import { Buildings } from "@medusajs/icons";
+import type { InventoryItemDTO } from "@medusajs/types";
 
-import { Buildings } from "@medusajs/icons"
-import { InventoryItemDTO } from "@medusajs/types"
+import { useTranslation } from "react-i18next";
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
+import { ActionMenu } from "@components/common/action-menu";
 
 export const InventoryActions = ({ item }: { item: InventoryItemDTO }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <ActionMenu
@@ -22,5 +22,5 @@ export const InventoryActions = ({ item }: { item: InventoryItemDTO }) => {
         },
       ]}
     />
-  )
-}
+  );
+};

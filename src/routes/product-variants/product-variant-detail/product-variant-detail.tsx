@@ -1,35 +1,38 @@
-import { useLoaderData, useParams } from "react-router-dom"
+import { useLoaderData, useParams } from "react-router-dom";
 
-import { useProductVariant } from "../../../hooks/api/products"
+import { TwoColumnPageSkeleton } from "@components/common/skeleton";
+import { TwoColumnPage } from "@components/layout/pages";
 
-import { TwoColumnPageSkeleton } from "../../../components/common/skeleton"
-import { TwoColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { VariantGeneralSection } from "./components/variant-general-section"
+import { useProductVariant } from "@hooks/api";
+
+import { VariantGeneralSection } from "@routes/product-variants/product-variant-detail/components/variant-general-section";
 import {
   InventorySectionPlaceholder,
   VariantInventorySection,
-} from "./components/variant-inventory-section"
-import { VariantPricesSection } from "./components/variant-prices-section"
-import { VARIANT_DETAIL_FIELDS } from "./constants"
-import { variantLoader } from "./loader"
+} from "@routes/product-variants/product-variant-detail/components/variant-inventory-section";
+import { VariantPricesSection } from "@routes/product-variants/product-variant-detail/components/variant-prices-section";
+
+import { useExtension } from "@providers/extension-provider";
+
+import { VARIANT_DETAIL_FIELDS } from "./constants";
+import type { variantLoader } from "./loader";
 
 export const ProductVariantDetail = () => {
   const initialData = useLoaderData() as Awaited<
     ReturnType<typeof variantLoader>
-  >
+  >;
 
-  const { id, variant_id } = useParams()
+  const { id, variant_id } = useParams();
   const { variant, isLoading, isError, error } = useProductVariant(
     id!,
     variant_id!,
     { fields: VARIANT_DETAIL_FIELDS },
     {
       initialData,
-    }
-  )
+    },
+  );
 
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   if (isLoading || !variant) {
     return (
@@ -39,11 +42,11 @@ export const ProductVariantDetail = () => {
         showJSON
         showMetadata
       />
-    )
+    );
   }
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -65,13 +68,11 @@ export const ProductVariantDetail = () => {
           <InventorySectionPlaceholder />
         ) : (
           <VariantInventorySection
-            inventoryItems={variant.inventory_items.map((i) => {
-              return {
-                ...i.inventory,
-                required_quantity: i.required_quantity,
-                variant,
-              }
-            })}
+            inventoryItems={variant.inventory_items.map((i) => ({
+              ...i.inventory,
+              required_quantity: i.required_quantity,
+              variant,
+            }))}
           />
         )}
       </TwoColumnPage.Main>
@@ -79,5 +80,5 @@ export const ProductVariantDetail = () => {
         <VariantPricesSection variant={variant} />
       </TwoColumnPage.Sidebar>
     </TwoColumnPage>
-  )
-}
+  );
+};

@@ -1,25 +1,27 @@
-import { Component, PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Badge, Container, Heading, usePrompt } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import { Component, PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Badge, Container, Heading, usePrompt } from "@medusajs/ui";
 
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { SectionRow } from "../../../../../components/common/section"
-import { useDeleteVariant } from "../../../../../hooks/api/products"
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { SectionRow } from "@components/common/section";
+
+import { useDeleteVariant } from "@hooks/api";
 
 type VariantGeneralSectionProps = {
-  variant: HttpTypes.AdminProductVariant
-}
+  variant: HttpTypes.AdminProductVariant;
+};
 
 export function VariantGeneralSection({ variant }: VariantGeneralSectionProps) {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const navigate = useNavigate();
 
-  const hasInventoryKit = variant.inventory?.length > 1
+  const hasInventoryKit = variant.inventory?.length > 1;
 
-  const { mutateAsync } = useDeleteVariant(variant.product_id!, variant.id)
+  const { mutateAsync } = useDeleteVariant(variant.product_id!, variant.id);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -29,18 +31,18 @@ export function VariantGeneralSection({ variant }: VariantGeneralSectionProps) {
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
       onSuccess: () => {
-        navigate("..", { replace: true })
+        navigate("..", { replace: true });
       },
-    })
-  }
+    });
+  };
 
   return (
     <Container className="divide-y p-0">
@@ -49,12 +51,12 @@ export function VariantGeneralSection({ variant }: VariantGeneralSectionProps) {
           <div className="flex items-center gap-2">
             <Heading>{variant.title}</Heading>
             {hasInventoryKit && (
-              <span className="text-ui-fg-muted font-normal">
+              <span className="font-normal text-ui-fg-muted">
                 <Component />
               </span>
             )}
           </div>
-          <span className="text-ui-fg-subtle txt-small mt-2">
+          <span className="txt-small mt-2 text-ui-fg-subtle">
             {t("labels.productVariant")}
           </span>
         </div>
@@ -93,5 +95,5 @@ export function VariantGeneralSection({ variant }: VariantGeneralSectionProps) {
         />
       ))}
     </Container>
-  )
+  );
 }
