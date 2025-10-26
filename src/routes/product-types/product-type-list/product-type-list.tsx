@@ -1,9 +1,11 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { ProductTypeListTable } from "./components/product-type-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { ProductTypeListTable } from "@routes/product-types/product-type-list/components/product-type-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const ProductTypeList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -14,5 +16,5 @@ export const ProductTypeList = () => {
     >
       <ProductTypeListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};

@@ -1,22 +1,25 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useDeleteProductTypeAction } from "../../../common/hooks/use-delete-product-type-action"
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+
+import { useDeleteProductTypeAction } from "@routes/product-types/common/hooks/use-delete-product-type-action.tsx";
 
 type ProductTypeGeneralSectionProps = {
-  productType: HttpTypes.AdminProductType
-}
+  productType: HttpTypes.AdminProductType;
+};
 
 export const ProductTypeGeneralSection = ({
   productType,
 }: ProductTypeGeneralSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   const handleDelete = useDeleteProductTypeAction(
     productType.id,
-    productType.value
-  )
+    productType.value,
+  );
 
   return (
     <Container className="flex items-center justify-between">
@@ -44,5 +47,5 @@ export const ProductTypeGeneralSection = ({
         ]}
       />
     </Container>
-  )
-}
+  );
+};
