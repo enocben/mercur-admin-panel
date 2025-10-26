@@ -1,49 +1,51 @@
-import * as zod from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
-import { Button, Input, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input, toast } from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateOrder } from "../../../../../hooks/api/orders"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateOrder } from "@hooks/api";
 
 type EditOrderEmailFormProps = {
-  order: HttpTypes.AdminOrder
-}
+  order: HttpTypes.AdminOrder;
+};
 
 const EditOrderEmailSchema = zod.object({
   email: zod.string().email(),
-})
+});
 
 export function EditOrderEmailForm({ order }: EditOrderEmailFormProps) {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof EditOrderEmailSchema>>({
     defaultValues: {
       email: order.email || "",
     },
     resolver: zodResolver(EditOrderEmailSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateOrder(order.id)
+  const { mutateAsync, isPending } = useUpdateOrder(order.id);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
       await mutateAsync({
         email: data.email,
-      })
+      });
       toast.success(
-        t("orders.edit.email.requestSuccess", { email: data.email })
-      )
-      handleSuccess()
+        t("orders.edit.email.requestSuccess", { email: data.email }),
+      );
+      handleSuccess();
     } catch (error) {
-      toast.error((error as Error).message)
+      toast.error((error as Error).message);
     }
-  })
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -66,7 +68,7 @@ export function EditOrderEmailForm({ order }: EditOrderEmailFormProps) {
 
                   <Form.ErrorMessage />
                 </Form.Item>
-              )
+              );
             }}
           />
         </RouteDrawer.Body>
@@ -91,5 +93,5 @@ export function EditOrderEmailForm({ order }: EditOrderEmailFormProps) {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
+  );
 }

@@ -1,18 +1,20 @@
-import { useParams } from "react-router-dom"
-import { MetadataForm } from "../../../components/forms/metadata-form/metadata-form"
-import { useOrder, useUpdateOrder } from "../../../hooks/api"
+import { useParams } from "react-router-dom";
+
+import { MetadataForm } from "@components/forms/metadata-form";
+
+import { useOrder, useUpdateOrder } from "@hooks/api";
 
 export const OrderMetadata = () => {
-  const { id } = useParams()
+  const { id } = useParams();
 
   const { order, isPending, isError, error } = useOrder(id!, {
     fields: "id,metadata",
-  })
+  });
 
-  const { mutateAsync, isPending: isMutating } = useUpdateOrder(order?.id!)
+  const { mutateAsync, isPending: isMutating } = useUpdateOrder(order?.id!);
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -22,5 +24,5 @@ export const OrderMetadata = () => {
       isPending={isPending}
       isMutating={isMutating}
     />
-  )
-}
+  );
+};

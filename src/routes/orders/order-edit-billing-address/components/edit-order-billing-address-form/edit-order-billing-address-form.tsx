@@ -1,19 +1,21 @@
-import * as zod from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
-import { Button, Input, toast } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input, toast } from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateOrder } from "../../../../../hooks/api/orders"
-import { CountrySelect } from "../../../../../components/inputs/country-select"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { CountrySelect } from "@components/inputs/country-select";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateOrder } from "@hooks/api";
 
 type EditOrderBillingAddressFormProps = {
-  order: HttpTypes.AdminOrder
-}
+  order: HttpTypes.AdminOrder;
+};
 
 const EditOrderBillingAddressSchema = zod.object({
   address_1: zod.string().min(1),
@@ -24,13 +26,13 @@ const EditOrderBillingAddressSchema = zod.object({
   province: zod.string().optional(),
   company: zod.string().optional(),
   phone: zod.string().optional(),
-})
+});
 
 export function EditOrderBillingAddressForm({
   order,
 }: EditOrderBillingAddressFormProps) {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<zod.infer<typeof EditOrderBillingAddressSchema>>({
     defaultValues: {
@@ -44,21 +46,21 @@ export function EditOrderBillingAddressForm({
       province: order.billing_address?.province || "",
     },
     resolver: zodResolver(EditOrderBillingAddressSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateOrder(order.id)
+  const { mutateAsync, isPending } = useUpdateOrder(order.id);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
       await mutateAsync({
         billing_address: data,
-      })
-      toast.success(t("orders.edit.billingAddress.requestSuccess"))
-      handleSuccess()
+      });
+      toast.success(t("orders.edit.billingAddress.requestSuccess"));
+      handleSuccess();
     } catch (error) {
-      toast.error((error as Error).message)
+      toast.error((error as Error).message);
     }
-  })
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -80,7 +82,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -95,7 +97,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -110,7 +112,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -125,7 +127,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -140,7 +142,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -155,7 +157,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -170,7 +172,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -185,7 +187,7 @@ export function EditOrderBillingAddressForm({
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -212,5 +214,5 @@ export function EditOrderBillingAddressForm({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
+  );
 }

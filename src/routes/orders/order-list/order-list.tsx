@@ -1,10 +1,11 @@
-import { OrderListTable } from "./components/order-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
 
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
+import { OrderListTable } from "@routes/orders/order-list/components/order-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const OrderList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -16,5 +17,5 @@ export const OrderList = () => {
     >
       <OrderListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};

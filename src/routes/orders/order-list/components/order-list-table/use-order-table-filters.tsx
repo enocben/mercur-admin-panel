@@ -1,32 +1,36 @@
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { createDataTableFilterHelper } from "@medusajs/ui"
-import { HttpTypes } from "@medusajs/types"
-import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
-import { useRegions } from "../../../../../hooks/api/regions"
-import { useSalesChannels } from "../../../../../hooks/api/sales-channels"
+import { useMemo } from "react";
 
-const filterHelper = createDataTableFilterHelper<HttpTypes.AdminOrder>()
+import type { HttpTypes } from "@medusajs/types";
+import { createDataTableFilterHelper } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { useDataTableDateFilters } from "@components/data-table/helpers/general";
+
+import { useRegions } from "@hooks/api";
+import { useSalesChannels } from "@hooks/api";
+
+const filterHelper = createDataTableFilterHelper<HttpTypes.AdminOrder>();
 
 /**
  * Hook to create filters in the format expected by @medusajs/ui DataTable
  */
 export const useOrderTableFilters = () => {
-  const { t } = useTranslation()
-  const dateFilters = useDataTableDateFilters()
+  const { t } = useTranslation();
+  const dateFilters = useDataTableDateFilters();
 
   const { regions } = useRegions({
     limit: 1000,
     fields: "id,name",
-  })
+  });
 
   const { sales_channels } = useSalesChannels({
     limit: 1000,
     fields: "id,name",
-  })
+  });
 
   return useMemo(() => {
-    const filters = [...dateFilters]
+    const filters = [...dateFilters];
 
     if (regions?.length) {
       filters.push(
@@ -37,8 +41,8 @@ export const useOrderTableFilters = () => {
             label: r.name,
             value: r.id,
           })),
-        })
-      )
+        }),
+      );
     }
 
     if (sales_channels?.length) {
@@ -50,13 +54,13 @@ export const useOrderTableFilters = () => {
             label: s.name,
             value: s.id,
           })),
-        })
-      )
+        }),
+      );
     }
 
     // TODO: Add payment and fulfillment status filters when they are properly linked to orders
     // Note: These filters are commented out in the legacy implementation as well
 
-    return filters
-  }, [regions, sales_channels, dateFilters, t])
-}
+    return filters;
+  }, [regions, sales_channels, dateFilters, t]);
+};
