@@ -1,20 +1,21 @@
-import { HttpTypes } from "@medusajs/types"
-import { toast, usePrompt } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router-dom"
+import type { HttpTypes } from "@medusajs/types";
+import { toast, usePrompt } from "@medusajs/ui";
 
-import { useDeletePriceList } from "../../../../hooks/api/price-lists"
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+
+import { useDeletePriceList } from "@hooks/api";
 
 export const useDeletePriceListAction = ({
   priceList,
 }: {
-  priceList: HttpTypes.AdminPriceList
+  priceList: HttpTypes.AdminPriceList;
 }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const navigate = useNavigate();
 
-  const { mutateAsync } = useDeletePriceList(priceList.id)
+  const { mutateAsync } = useDeletePriceList(priceList.id);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -24,10 +25,10 @@ export const useDeletePriceListAction = ({
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
@@ -35,16 +36,16 @@ export const useDeletePriceListAction = ({
         toast.success(
           t("priceLists.delete.successToast", {
             title: priceList.title,
-          })
-        )
+          }),
+        );
 
-        navigate("/price-lists")
+        navigate("/price-lists");
       },
       onError: (e) => {
-        toast.error(e.message)
+        toast.error(e.message);
       },
-    })
-  }
+    });
+  };
 
-  return handleDelete
-}
+  return handleDelete;
+};

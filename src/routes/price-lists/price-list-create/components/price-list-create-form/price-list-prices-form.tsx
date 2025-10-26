@@ -1,20 +1,27 @@
-import { HttpTypes } from "@medusajs/types"
-import { useEffect } from "react"
-import { UseFormReturn, useWatch } from "react-hook-form"
-import { DataGrid } from "../../../../../components/data-grid"
-import { useRouteModal } from "../../../../../components/modals"
-import { useProducts } from "../../../../../hooks/api/products"
-import { usePriceListGridColumns } from "../../../common/hooks/use-price-list-grid-columns"
-import { PriceListCreateProductVariantsSchema } from "../../../common/schemas"
-import { isProductRow } from "../../../common/utils"
-import { PricingCreateSchemaType } from "./schema"
+import { useEffect } from "react";
+
+import type { HttpTypes } from "@medusajs/types";
+
+import type { UseFormReturn } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+
+import { DataGrid } from "@components/data-grid";
+import { useRouteModal } from "@components/modals";
+
+import { useProducts } from "@hooks/api";
+
+import { usePriceListGridColumns } from "@routes/price-lists/common/hooks/use-price-list-grid-columns";
+import type { PriceListCreateProductVariantsSchema } from "@routes/price-lists/common/schemas";
+import { isProductRow } from "@routes/price-lists/common/utils";
+
+import type { PricingCreateSchemaType } from "./schema";
 
 type PriceListPricesFormProps = {
-  form: UseFormReturn<PricingCreateSchemaType>
-  currencies: HttpTypes.AdminStoreCurrency[]
-  regions: HttpTypes.AdminRegion[]
-  pricePreferences: HttpTypes.AdminPricePreference[]
-}
+  form: UseFormReturn<PricingCreateSchemaType>;
+  currencies: HttpTypes.AdminStoreCurrency[];
+  regions: HttpTypes.AdminRegion[];
+  pricePreferences: HttpTypes.AdminPricePreference[];
+};
 
 export const PriceListPricesForm = ({
   form,
@@ -25,22 +32,22 @@ export const PriceListPricesForm = ({
   const ids = useWatch({
     control: form.control,
     name: "product_ids",
-  })
+  });
 
   const existingProducts = useWatch({
     control: form.control,
     name: "products",
-  })
+  });
 
   const { products, isLoading, isError, error } = useProducts({
     id: ids.map((id) => id.id),
     limit: ids.length,
     fields: "title,thumbnail,*variants",
-  })
+  });
 
-  const { setCloseOnEscape } = useRouteModal()
+  const { setCloseOnEscape } = useRouteModal();
 
-  const { setValue } = form
+  const { setValue } = form;
 
   useEffect(() => {
     if (!isLoading && products) {
@@ -49,7 +56,7 @@ export const PriceListPricesForm = ({
          * If the product already exists in the form, we don't want to overwrite it.
          */
         if (existingProducts[product.id] || !product.variants) {
-          return
+          return;
         }
 
         setValue(`products.${product.id}.variants`, {
@@ -57,22 +64,23 @@ export const PriceListPricesForm = ({
             variants[variant.id] = {
               currency_prices: {},
               region_prices: {},
-            }
-            return variants
+            };
+
+            return variants;
           }, {} as PriceListCreateProductVariantsSchema),
-        })
-      })
+        });
+      });
     }
-  }, [products, existingProducts, isLoading, setValue])
+  }, [products, existingProducts, isLoading, setValue]);
 
   const columns = usePriceListGridColumns({
     currencies,
     regions,
     pricePreferences,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -83,12 +91,12 @@ export const PriceListPricesForm = ({
         data={products}
         getSubRows={(row) => {
           if (isProductRow(row) && row.variants) {
-            return row.variants
+            return row.variants;
           }
         }}
         state={form}
         onEditingChange={(editing) => setCloseOnEscape(!editing)}
       />
     </div>
-  )
-}
+  );
+};

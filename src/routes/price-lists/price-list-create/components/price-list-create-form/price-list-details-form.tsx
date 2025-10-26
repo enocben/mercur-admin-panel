@@ -1,4 +1,4 @@
-import { MagnifyingGlass, XMarkMini } from "@medusajs/icons"
+import { MagnifyingGlass, XMarkMini } from "@medusajs/icons";
 import {
   Button,
   DatePicker,
@@ -11,51 +11,55 @@ import {
   Text,
   Textarea,
   clx,
-} from "@medusajs/ui"
-import { useFieldArray, type UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+} from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { StackedFocusModal } from "../../../../../components/modals/stacked-focus-modal"
-import { useStackedModal } from "../../../../../components/modals/stacked-modal-provider"
-import { PriceListCustomerGroupRuleForm } from "../../../common/components/price-list-customer-group-rule-form"
+import { type UseFormReturn, useFieldArray } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+import { Form } from "@components/common/form";
+import { StackedFocusModal } from "@components/modals";
+import { useStackedModal } from "@components/modals";
+
+import { useDocumentDirection } from "@hooks/use-document-direction";
+
+import { PriceListCustomerGroupRuleForm } from "@routes/price-lists/common/components/price-list-customer-group-rule-form";
+
 import type {
   PricingCreateSchemaType,
   PricingCustomerGroupsArrayType,
-} from "./schema"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+} from "./schema";
 
 type PriceListDetailsFormProps = {
-  form: UseFormReturn<PricingCreateSchemaType>
-}
+  form: UseFormReturn<PricingCreateSchemaType>;
+};
 
 export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
-  const { t } = useTranslation()
-  const direction = useDocumentDirection()
+  const { t } = useTranslation();
+  const direction = useDocumentDirection();
   const { fields, remove, append } = useFieldArray({
     control: form.control,
     name: "rules.customer_group_id",
     keyName: "cg_id",
-  })
+  });
 
-  const { setIsOpen } = useStackedModal()
+  const { setIsOpen } = useStackedModal();
 
   const handleAddCustomerGroup = (groups: PricingCustomerGroupsArrayType) => {
-    const newIds = groups.map((group) => group.id)
+    const newIds = groups.map((group) => group.id);
 
     const fieldsToAdd = groups.filter(
-      (group) => !fields.some((field) => field.id === group.id)
-    )
+      (group) => !fields.some((field) => field.id === group.id),
+    );
 
     for (const field of fields) {
       if (!newIds.includes(field.id)) {
-        remove(fields.indexOf(field))
+        remove(fields.indexOf(field));
       }
     }
 
-    append(fieldsToAdd)
-    setIsOpen("cg", false)
-  }
+    append(fieldsToAdd);
+    setIsOpen("cg", false);
+  };
 
   return (
     <div className="flex flex-1 flex-col items-center overflow-y-auto">
@@ -85,19 +89,19 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                       className="grid grid-cols-1 gap-4 md:grid-cols-2"
                     >
                       <RadioGroup.ChoiceBox
-                        value={"sale"}
+                        value="sale"
                         label={t("priceLists.fields.type.options.sale.label")}
                         description={t(
-                          "priceLists.fields.type.options.sale.description"
+                          "priceLists.fields.type.options.sale.description",
                         )}
                       />
                       <RadioGroup.ChoiceBox
-                        value={"override"}
+                        value="override"
                         label={t(
-                          "priceLists.fields.type.options.override.label"
+                          "priceLists.fields.type.options.override.label",
                         )}
                         description={t(
-                          "priceLists.fields.type.options.override.description"
+                          "priceLists.fields.type.options.override.description",
                         )}
                       />
                     </RadioGroup>
@@ -105,11 +109,11 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <div className="flex flex-col gap-y-4">
-          <div className="grid grid-cols-1  gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Form.Field
               control={form.control}
               name="title"
@@ -122,7 +126,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -155,7 +159,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -171,7 +175,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              )
+              );
             }}
           />
         </div>
@@ -201,7 +205,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <Divider />
@@ -228,7 +232,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </div>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
         <Divider />
@@ -249,17 +253,17 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 <Form.Control>
                   <div
                     className={clx(
-                      "bg-ui-bg-component shadow-elevation-card-rest transition-fg grid gap-1.5 rounded-xl py-1.5",
-                      "aria-[invalid='true']:shadow-borders-error"
+                      "grid gap-1.5 rounded-xl bg-ui-bg-component py-1.5 shadow-elevation-card-rest transition-fg",
+                      "aria-[invalid='true']:shadow-borders-error",
                     )}
                     role="application"
                     ref={field.ref}
                   >
-                    <div className="text-ui-fg-subtle grid gap-1.5 px-1.5 md:grid-cols-2">
-                      <div className="bg-ui-bg-field shadow-borders-base txt-compact-small rounded-md px-2 py-1.5">
+                    <div className="grid gap-1.5 px-1.5 text-ui-fg-subtle md:grid-cols-2">
+                      <div className="txt-compact-small rounded-md bg-ui-bg-field px-2 py-1.5 shadow-borders-base">
                         {t("priceLists.fields.customerAvailability.attribute")}
                       </div>
-                      <div className="bg-ui-bg-field shadow-borders-base txt-compact-small rounded-md px-2 py-1.5">
+                      <div className="txt-compact-small rounded-md bg-ui-bg-field px-2 py-1.5 shadow-borders-base">
                         {t("operators.in")}
                       </div>
                     </div>
@@ -268,11 +272,11 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                         <StackedFocusModal.Trigger asChild>
                           <button
                             type="button"
-                            className="bg-ui-bg-field-component hover:bg-ui-bg-field-component-hover shadow-borders-base txt-compact-small text-ui-fg-muted transition-fg focus-visible:shadow-borders-interactive-with-active flex flex-1 items-center gap-x-2 rounded-md px-2 py-1.5 outline-none"
+                            className="txt-compact-small flex flex-1 items-center gap-x-2 rounded-md bg-ui-bg-field-component px-2 py-1.5 text-ui-fg-muted shadow-borders-base outline-none transition-fg hover:bg-ui-bg-field-component-hover focus-visible:shadow-borders-interactive-with-active"
                           >
                             <MagnifyingGlass />
                             {t(
-                              "priceLists.fields.customerAvailability.placeholder"
+                              "priceLists.fields.customerAvailability.placeholder",
                             )}
                           </button>
                         </StackedFocusModal.Trigger>
@@ -299,7 +303,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                             return (
                               <div
                                 key={field.cg_id}
-                                className="bg-ui-bg-field-component shadow-borders-base flex items-center justify-between gap-2 rounded-md px-2 py-0.5"
+                                className="flex items-center justify-between gap-2 rounded-md bg-ui-bg-field-component px-2 py-0.5 shadow-borders-base"
                               >
                                 <Text size="small" leading="compact">
                                   {field.name}
@@ -313,7 +317,7 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                                   <XMarkMini />
                                 </IconButton>
                               </div>
-                            )
+                            );
                           })}
                         </div>
                       </div>
@@ -322,10 +326,10 @@ export const PriceListDetailsForm = ({ form }: PriceListDetailsFormProps) => {
                 </Form.Control>
                 <Form.ErrorMessage />
               </Form.Item>
-            )
+            );
           }}
         />
       </div>
     </div>
-  )
-}
+  );
+};

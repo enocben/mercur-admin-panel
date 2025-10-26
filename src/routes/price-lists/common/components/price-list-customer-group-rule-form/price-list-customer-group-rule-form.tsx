@@ -1,99 +1,102 @@
-import { HttpTypes } from "@medusajs/types"
-import { Button, Checkbox } from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import {
-  OnChangeFn,
-  RowSelectionState,
-  createColumnHelper,
-} from "@tanstack/react-table"
-import { useEffect, useMemo, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { StackedDrawer } from "../../../../../components/modals/stacked-drawer"
-import { StackedFocusModal } from "../../../../../components/modals/stacked-focus-modal"
-import { _DataTable } from "../../../../../components/table/data-table"
-import { useCustomerGroups } from "../../../../../hooks/api/customer-groups"
-import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns/use-customer-group-table-columns"
-import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
-import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
-import { PriceListCustomerGroup } from "../../schemas"
+import { useEffect, useMemo, useState } from "react";
 
-const PAGE_SIZE = 50
-const PREFIX = "cg"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Checkbox } from "@medusajs/ui";
+
+import { keepPreviousData } from "@tanstack/react-query";
+import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+
+import { StackedDrawer } from "@components/modals";
+import { StackedFocusModal } from "@components/modals";
+import { _DataTable } from "@components/table/data-table";
+
+import { useCustomerGroups } from "@hooks/api";
+import { useCustomerGroupTableColumns } from "@hooks/table/columns";
+import { useCustomerGroupTableFilters } from "@hooks/table/filters";
+import { useCustomerGroupTableQuery } from "@hooks/table/query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import type { PriceListCustomerGroup } from "@routes/price-lists/common/schemas";
+
+const PAGE_SIZE = 50;
+const PREFIX = "cg";
 
 type PriceListCustomerGroupRuleFormProps = {
-  type: "focus" | "drawer"
-  state: PriceListCustomerGroup[]
-  setState: (state: PriceListCustomerGroup[]) => void
-}
+  type: "focus" | "drawer";
+  state: PriceListCustomerGroup[];
+  setState: (state: PriceListCustomerGroup[]) => void;
+};
 
 const initRowSelection = (state: PriceListCustomerGroup[]) => {
   return state.reduce((acc, group) => {
-    acc[group.id] = true
-    return acc
-  }, {} as RowSelectionState)
-}
+    acc[group.id] = true;
+
+    return acc;
+  }, {} as RowSelectionState);
+};
 
 export const PriceListCustomerGroupRuleForm = ({
   state,
   setState,
   type,
 }: PriceListCustomerGroupRuleFormProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(
-    initRowSelection(state)
-  )
+    initRowSelection(state),
+  );
   const [intermediate, setIntermediate] =
-    useState<PriceListCustomerGroup[]>(state)
+    useState<PriceListCustomerGroup[]>(state);
 
   useEffect(() => {
     // If the selected customer groups change outside of the drawer,
     // update the row selection state and intermediate state
-    setRowSelection(initRowSelection(state))
-    setIntermediate(state)
-  }, [state])
+    setRowSelection(initRowSelection(state));
+    setIntermediate(state);
+  }, [state]);
 
   const { searchParams, raw } = useCustomerGroupTableQuery({
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
-  })
+  });
   const { customer_groups, count, isLoading, isError, error } =
     useCustomerGroups(
       { ...searchParams, fields: "id,name,customers.id" },
       {
         placeholderData: keepPreviousData,
-      }
-    )
+      },
+    );
 
   const updater: OnChangeFn<RowSelectionState> = (value) => {
-    const state = typeof value === "function" ? value(rowSelection) : value
-    const currentIds = Object.keys(rowSelection)
+    const state = typeof value === "function" ? value(rowSelection) : value;
+    const currentIds = Object.keys(rowSelection);
 
-    const ids = Object.keys(state)
+    const ids = Object.keys(state);
 
-    const newIds = ids.filter((id) => !currentIds.includes(id))
-    const removedIds = currentIds.filter((id) => !ids.includes(id))
+    const newIds = ids.filter((id) => !currentIds.includes(id));
+    const removedIds = currentIds.filter((id) => !ids.includes(id));
 
     const newCustomerGroups =
       customer_groups
         ?.filter((cg) => newIds.includes(cg.id))
-        .map((cg) => ({ id: cg.id, name: cg.name! })) || []
+        .map((cg) => ({ id: cg.id, name: cg.name! })) || [];
 
     const filteredIntermediate = intermediate.filter(
-      (cg) => !removedIds.includes(cg.id)
-    )
+      (cg) => !removedIds.includes(cg.id),
+    );
 
-    setIntermediate([...filteredIntermediate, ...newCustomerGroups])
-    setRowSelection(state)
-  }
+    setIntermediate([...filteredIntermediate, ...newCustomerGroups]);
+    setRowSelection(state);
+  };
 
   const handleSave = () => {
-    setState(intermediate)
-  }
+    setState(intermediate);
+  };
 
-  const filters = useCustomerGroupTableFilters()
-  const columns = useColumns()
+  const filters = useCustomerGroupTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: customer_groups || [],
@@ -108,12 +111,12 @@ export const PriceListCustomerGroupRuleForm = ({
     },
     pageSize: PAGE_SIZE,
     prefix: PREFIX,
-  })
+  });
 
-  const Component = type === "focus" ? StackedFocusModal : StackedDrawer
+  const Component = type === "focus" ? StackedFocusModal : StackedDrawer;
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -149,13 +152,13 @@ export const PriceListCustomerGroupRuleForm = ({
         </Button>
       </Component.Footer>
     </div>
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
+const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>();
 
 const useColumns = () => {
-  const base = useCustomerGroupTableColumns()
+  const base = useCustomerGroupTableColumns();
 
   return useMemo(
     () => [
@@ -173,7 +176,7 @@ const useColumns = () => {
                 table.toggleAllPageRowsSelected(!!value)
               }
             />
-          )
+          );
         },
         cell: ({ row }) => {
           return (
@@ -181,14 +184,14 @@ const useColumns = () => {
               checked={row.getIsSelected()}
               onCheckedChange={(value) => row.toggleSelected(!!value)}
               onClick={(e) => {
-                e.stopPropagation()
+                e.stopPropagation();
               }}
             />
-          )
+          );
         },
       }),
       ...base,
     ],
-    [base]
-  )
-}
+    [base],
+  );
+};

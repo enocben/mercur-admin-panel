@@ -1,5 +1,4 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { HttpTypes } from "@medusajs/types"
+import type { HttpTypes } from "@medusajs/types";
 import {
   Button,
   Input,
@@ -7,33 +6,40 @@ import {
   Select,
   Textarea,
   toast,
-} from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+} from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdatePriceList } from "../../../../../hooks/api/price-lists"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
-import { PriceListStatus, PriceListType } from "../../../common/constants"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+import { Form } from "@components/common/form";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdatePriceList } from "@hooks/api";
+import { useDocumentDirection } from "@hooks/use-document-direction";
+
+import {
+  PriceListStatus,
+  PriceListType,
+} from "@routes/price-lists/common/constants";
 
 type PriceListEditFormProps = {
-  priceList: HttpTypes.AdminPriceList
-}
+  priceList: HttpTypes.AdminPriceList;
+};
 
 const PriceListEditSchema = z.object({
   status: z.nativeEnum(PriceListStatus),
   type: z.nativeEnum(PriceListType),
   title: z.string().min(1),
   description: z.string().min(1),
-})
+});
 
 export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const direction = useDocumentDirection();
   const form = useForm<z.infer<typeof PriceListEditSchema>>({
     defaultValues: {
       type: priceList.type as PriceListType,
@@ -42,9 +48,9 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
       status: priceList.status as PriceListStatus,
     },
     resolver: zodResolver(PriceListEditSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdatePriceList(priceList.id)
+  const { mutateAsync, isPending } = useUpdatePriceList(priceList.id);
 
   const handleSubmit = form.handleSubmit(async (values) => {
     await mutateAsync(values, {
@@ -52,16 +58,16 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
         toast.success(
           t("priceLists.edit.successToast", {
             title: price_list.title,
-          })
-        )
+          }),
+        );
 
-        handleSuccess()
+        handleSuccess();
       },
       onError: (error) => {
-        toast.error(error.message)
+        toast.error(error.message);
       },
-    })
-  })
+    });
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -90,23 +96,23 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                         value={PriceListType.SALE}
                         label={t("priceLists.fields.type.options.sale.label")}
                         description={t(
-                          "priceLists.fields.type.options.sale.description"
+                          "priceLists.fields.type.options.sale.description",
                         )}
                       />
                       <RadioGroup.ChoiceBox
                         value={PriceListType.OVERRIDE}
                         label={t(
-                          "priceLists.fields.type.options.override.label"
+                          "priceLists.fields.type.options.override.label",
                         )}
                         description={t(
-                          "priceLists.fields.type.options.override.description"
+                          "priceLists.fields.type.options.override.description",
                         )}
                       />
                     </RadioGroup>
                   </Form.Control>
                   <Form.ErrorMessage />
                 </Form.Item>
-              )
+              );
             }}
           />
           <div className="flex flex-col gap-y-4">
@@ -122,7 +128,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -136,7 +142,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     </Form.Label>
                     <Form.Control>
                       <Select
-                          dir={direction}
+                        dir={direction}
                         {...field}
                         onValueChange={onChange}
                       >
@@ -155,7 +161,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
             <Form.Field
@@ -170,7 +176,7 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
                     </Form.Control>
                     <Form.ErrorMessage />
                   </Form.Item>
-                )
+                );
               }}
             />
           </div>
@@ -189,5 +195,5 @@ export const PriceListEditForm = ({ priceList }: PriceListEditFormProps) => {
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

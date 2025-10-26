@@ -1,9 +1,11 @@
-import { SingleColumnPage } from "../../../components/layout/pages"
-import { useExtension } from "../../../providers/extension-provider"
-import { PriceListListTable } from "./components/price-list-list-table"
+import { SingleColumnPage } from "@components/layout/pages";
+
+import { PriceListListTable } from "@routes/price-lists/price-list-list/components/price-list-list-table";
+
+import { useExtension } from "@providers/extension-provider";
 
 export const PriceListList = () => {
-  const { getWidgets } = useExtension()
+  const { getWidgets } = useExtension();
 
   return (
     <SingleColumnPage
@@ -14,5 +16,5 @@ export const PriceListList = () => {
     >
       <PriceListListTable />
     </SingleColumnPage>
-  )
-}
+  );
+};
