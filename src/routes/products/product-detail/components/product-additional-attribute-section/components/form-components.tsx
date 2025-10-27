@@ -1,11 +1,16 @@
 import { Input, Switch, Textarea } from "@medusajs/ui";
+
 import { AttributeSelect } from "./attribute-select";
 
 export const FormComponents = ({
   attribute,
   field,
 }: {
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   attribute: any;
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any;
 }) => {
   const { ui_component, possible_values } = attribute;

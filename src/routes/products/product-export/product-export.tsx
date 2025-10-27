@@ -1,12 +1,16 @@
-import { Button, Heading, toast } from "@medusajs/ui"
-import { RouteDrawer, useRouteModal } from "../../../components/modals"
-import { useTranslation } from "react-i18next"
-import { ExportFilters } from "./components/export-filters"
-import { useExportProducts } from "../../../hooks/api"
-import { useProductTableQuery } from "../../../hooks/table/query"
+import { Button, Heading, toast } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { RouteDrawer, useRouteModal } from "@components/modals";
+
+import { useExportProducts } from "@hooks/api";
+import { useProductTableQuery } from "@hooks/table/query";
+
+import { ExportFilters } from "@routes/products/product-export/components/export-filters";
 
 export const ProductExport = () => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <RouteDrawer>
@@ -20,29 +24,29 @@ export const ProductExport = () => {
       </RouteDrawer.Header>
       <ProductExportContent />
     </RouteDrawer>
-  )
-}
+  );
+};
 
 const ProductExportContent = () => {
-  const { t } = useTranslation()
-  const { searchParams } = useProductTableQuery({})
+  const { t } = useTranslation();
+  const { searchParams } = useProductTableQuery({});
 
-  const { mutateAsync } = useExportProducts({ ...searchParams })
-  const { handleSuccess } = useRouteModal()
+  const { mutateAsync } = useExportProducts({ ...searchParams });
+  const { handleSuccess } = useRouteModal();
 
   const handleExportRequest = async () => {
     await mutateAsync(searchParams, {
       onSuccess: () => {
         toast.info(t("products.export.success.title"), {
           description: t("products.export.success.description"),
-        })
-        handleSuccess()
+        });
+        handleSuccess();
       },
       onError: (err) => {
-        toast.error(err.message)
+        toast.error(err.message);
       },
-    })
-  }
+    });
+  };
 
   return (
     <>
@@ -63,5 +67,5 @@ const ProductExportContent = () => {
         </div>
       </RouteDrawer.Footer>
     </>
-  )
-}
+  );
+};

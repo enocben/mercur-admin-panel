@@ -1,21 +1,25 @@
-import { PencilSquare } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { SectionRow } from "../../../../../components/common/section"
-import { getFormattedCountry } from "../../../../../lib/addresses"
-import { useExtension } from "../../../../../providers/extension-provider"
+import { PencilSquare } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { SectionRow } from "@components/common/section";
+
+import { getFormattedCountry } from "@lib/addresses";
+
+import { useExtension } from "@providers/extension-provider";
 
 type ProductAttributeSectionProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 export const ProductAttributeSection = ({
   product,
 }: ProductAttributeSectionProps) => {
-  const { t } = useTranslation()
-  const { getDisplays } = useExtension()
+  const { t } = useTranslation();
+  const { getDisplays } = useExtension();
 
   return (
     <Container className="divide-y p-0">
@@ -46,8 +50,8 @@ export const ProductAttributeSection = ({
         value={getFormattedCountry(product.origin_country)}
       />
       {getDisplays("product", "attributes").map((Component, i) => {
-        return <Component key={i} data={product} />
+        return <Component key={i} data={product} />;
       })}
     </Container>
-  )
-}
+  );
+};

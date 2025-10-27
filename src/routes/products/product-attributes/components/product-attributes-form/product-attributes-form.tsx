@@ -1,32 +1,35 @@
-import { HttpTypes } from "@medusajs/types"
-import { Button, Input } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
-import { Form } from "../../../../../components/common/form"
-import { CountrySelect } from "../../../../../components/inputs/country-select"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import {
-  FormExtensionZone,
-  useExtendableForm,
-} from "../../../../../dashboard-app"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { useExtension } from "../../../../../providers/extension-provider"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { CountrySelect } from "@components/inputs/country-select";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateProduct } from "@hooks/api";
+
+import { useExtension } from "@providers/extension-provider";
+
+import { FormExtensionZone, useExtendableForm } from "@/dashboard-app";
 
 type ProductAttributesFormProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 const dimension = zod
   .union([zod.string(), zod.number()])
   .transform((value) => {
     if (value === "") {
-      return null
+      return null;
     }
-    return Number(value)
+
+    return Number(value);
   })
   .optional()
-  .nullable()
+  .nullable();
 
 const ProductAttributesSchema = zod.object({
   weight: dimension,
@@ -36,17 +39,17 @@ const ProductAttributesSchema = zod.object({
   mid_code: zod.string().optional(),
   hs_code: zod.string().optional(),
   origin_country: zod.string().optional(),
-})
+});
 
 export const ProductAttributesForm = ({
   product,
 }: ProductAttributesFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const { getFormConfigs, getFormFields } = useExtension()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const { getFormConfigs, getFormFields } = useExtension();
 
-  const configs = getFormConfigs("product", "attributes")
-  const fields = getFormFields("product", "attributes")
+  const configs = getFormConfigs("product", "attributes");
+  const fields = getFormFields("product", "attributes");
 
   const form = useExtendableForm({
     defaultValues: {
@@ -61,9 +64,9 @@ export const ProductAttributesForm = ({
     schema: ProductAttributesSchema,
     configs: configs,
     data: product,
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -78,11 +81,11 @@ export const ProductAttributesForm = ({
       },
       {
         onSuccess: () => {
-          handleSuccess()
+          handleSuccess();
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -93,163 +96,149 @@ export const ProductAttributesForm = ({
               <Form.Field
                 control={form.control}
                 name="width"
-                render={({ field: { onChange, value, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.width")}</Form.Label>
-                      <Form.Control>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={value || ""}
-                          onChange={(e) => {
-                            const value = e.target.value
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.width")}</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={value || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-                            if (value === "") {
-                              onChange(null)
-                            } else {
-                              onChange(parseFloat(value))
-                            }
-                          }}
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                          if (value === "") {
+                            onChange(null);
+                          } else {
+                            onChange(parseFloat(value));
+                          }
+                        }}
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="height"
-                render={({ field: { onChange, value, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.height")}</Form.Label>
-                      <Form.Control>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={value || ""}
-                          onChange={(e) => {
-                            const value = e.target.value
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.height")}</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={value || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-                            if (value === "") {
-                              onChange(null)
-                            } else {
-                              onChange(Number(value))
-                            }
-                          }}
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                          if (value === "") {
+                            onChange(null);
+                          } else {
+                            onChange(Number(value));
+                          }
+                        }}
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="length"
-                render={({ field: { onChange, value, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.length")}</Form.Label>
-                      <Form.Control>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={value || ""}
-                          onChange={(e) => {
-                            const value = e.target.value
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.length")}</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={value || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-                            if (value === "") {
-                              onChange(null)
-                            } else {
-                              onChange(Number(value))
-                            }
-                          }}
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                          if (value === "") {
+                            onChange(null);
+                          } else {
+                            onChange(Number(value));
+                          }
+                        }}
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="weight"
-                render={({ field: { onChange, value, ...field } }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.weight")}</Form.Label>
-                      <Form.Control>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={value || ""}
-                          onChange={(e) => {
-                            const value = e.target.value
+                render={({ field: { onChange, value, ...field } }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.weight")}</Form.Label>
+                    <Form.Control>
+                      <Input
+                        type="number"
+                        min={0}
+                        value={value || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-                            if (value === "") {
-                              onChange(null)
-                            } else {
-                              onChange(Number(value))
-                            }
-                          }}
-                          {...field}
-                        />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                          if (value === "") {
+                            onChange(null);
+                          } else {
+                            onChange(Number(value));
+                          }
+                        }}
+                        {...field}
+                      />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="mid_code"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.midCode")}</Form.Label>
-                      <Form.Control>
-                        <Input {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.midCode")}</Form.Label>
+                    <Form.Control>
+                      <Input {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="hs_code"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.hsCode")}</Form.Label>
-                      <Form.Control>
-                        <Input {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.hsCode")}</Form.Label>
+                    <Form.Control>
+                      <Input {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <Form.Field
                 control={form.control}
                 name="origin_country"
-                render={({ field }) => {
-                  return (
-                    <Form.Item>
-                      <Form.Label>{t("fields.countryOfOrigin")}</Form.Label>
-                      <Form.Control>
-                        <CountrySelect {...field} />
-                      </Form.Control>
-                      <Form.ErrorMessage />
-                    </Form.Item>
-                  )
-                }}
+                render={({ field }) => (
+                  <Form.Item>
+                    <Form.Label>{t("fields.countryOfOrigin")}</Form.Label>
+                    <Form.Control>
+                      <CountrySelect {...field} />
+                    </Form.Control>
+                    <Form.ErrorMessage />
+                  </Form.Item>
+                )}
               />
               <FormExtensionZone fields={fields} form={form} />
             </div>
@@ -269,5 +258,5 @@ export const ProductAttributesForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

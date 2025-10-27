@@ -1,43 +1,46 @@
-import { Buildings, Component, PencilSquare, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import { useCallback, useMemo } from "react";
+
+import { Buildings, Component, PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import type { DataTableAction } from "@medusajs/ui";
 import {
   Badge,
-  clx,
   Container,
+  Tooltip,
+  clx,
   createDataTableColumnHelper,
   createDataTableCommandHelper,
   createDataTableFilterHelper,
-  DataTableAction,
-  Tooltip,
   usePrompt,
-} from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { useCallback, useMemo } from "react"
-import { useTranslation } from "react-i18next"
+} from "@medusajs/ui";
 
-import { CellContext } from "@tanstack/react-table"
-import { useNavigate, useSearchParams } from "react-router-dom"
-import { DataTable } from "../../../../../components/data-table"
-import { useDataTableDateColumns } from "../../../../../components/data-table/helpers/general/use-data-table-date-columns"
-import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
+import { keepPreviousData } from "@tanstack/react-query";
+import type { CellContext } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { DataTable } from "@components/data-table";
 import {
-  useDeleteVariantLazy,
-  useProductVariants,
-} from "../../../../../hooks/api/products"
-import { useQueryParams } from "../../../../../hooks/use-query-params"
-import { PRODUCT_VARIANT_IDS_KEY } from "../../../common/constants"
+  useDataTableDateColumns,
+  useDataTableDateFilters,
+} from "@components/data-table/helpers/general";
+
+import { useDeleteVariantLazy, useProductVariants } from "@hooks/api";
+import { useQueryParams } from "@hooks/use-query-params";
+
+import { PRODUCT_VARIANT_IDS_KEY } from "@routes/products/common/constants";
 
 type ProductVariantSectionProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
-const PAGE_SIZE = 10
-const PREFIX = "pv"
+const PAGE_SIZE = 10;
+const PREFIX = "pv";
 
 export const ProductVariantSection = ({
   product,
 }: ProductVariantSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const {
     q,
@@ -57,12 +60,12 @@ export const ProductVariantSection = ({
       "created_at",
       "updated_at",
     ],
-    PREFIX
-  )
+    PREFIX,
+  );
 
-  const columns = useColumns(product)
-  const filters = useFilters()
-  const commands = useCommands()
+  const columns = useColumns(product);
+  const filters = useFilters();
+  const commands = useCommands();
 
   const { variants, count, isPending, isError, error } = useProductVariants(
     product.id,
@@ -84,11 +87,11 @@ export const ProductVariantSection = ({
     },
     {
       placeholderData: keepPreviousData,
-    }
-  )
+    },
+  );
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -139,30 +142,31 @@ export const ProductVariantSection = ({
         prefix={PREFIX}
       />
     </Container>
-  )
-}
+  );
+};
 
 const columnHelper =
-  createDataTableColumnHelper<HttpTypes.AdminProductVariant>()
+  createDataTableColumnHelper<HttpTypes.AdminProductVariant>();
 
 const useColumns = (product: HttpTypes.AdminProduct) => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { mutateAsync } = useDeleteVariantLazy(product.id)
-  const prompt = usePrompt()
-  const [searchParams] = useSearchParams()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { mutateAsync } = useDeleteVariantLazy(product.id);
+  const prompt = usePrompt();
+  const [searchParams] = useSearchParams();
 
   const tableSearchParams = useMemo(() => {
-    const filtered = new URLSearchParams()
+    const filtered = new URLSearchParams();
     for (const [key, value] of searchParams.entries()) {
       if (key.startsWith(`${PREFIX}_`)) {
-        filtered.append(key, value)
+        filtered.append(key, value);
       }
     }
-    return filtered
-  }, [searchParams])
 
-  const dateColumns = useDataTableDateColumns<HttpTypes.AdminProductVariant>()
+    return filtered;
+  }, [searchParams]);
+
+  const dateColumns = useDataTableDateColumns<HttpTypes.AdminProductVariant>();
 
   const handleDelete = useCallback(
     async (id: string, title: string) => {
@@ -173,20 +177,20 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
         }),
         confirmText: t("actions.delete"),
         cancelText: t("actions.cancel"),
-      })
+      });
 
       if (!res) {
-        return
+        return;
       }
 
-      await mutateAsync({ variantId: id })
+      await mutateAsync({ variantId: id });
     },
-    [mutateAsync, prompt, t]
-  )
+    [mutateAsync, prompt, t],
+  );
 
   const optionColumns = useMemo(() => {
     if (!product?.options) {
-      return []
+      return [];
     }
 
     return product.options.map((option) => {
@@ -195,11 +199,11 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
         header: option.title,
         cell: ({ row }) => {
           const variantOpt = row.original.options?.find(
-            (opt) => opt.option_id === option.id
-          )
+            (opt) => opt.option_id === option.id,
+          );
 
           if (!variantOpt) {
-            return <span className="text-ui-fg-muted">-</span>
+            return <span className="text-ui-fg-muted">-</span>;
           }
 
           return (
@@ -214,17 +218,17 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
                 </Badge>
               </Tooltip>
             </div>
-          )
+          );
         },
-      })
-    })
-  }, [product])
+      });
+    });
+  }, [product]);
 
   const getActions = useCallback(
     (ctx: CellContext<HttpTypes.AdminProductVariant, unknown>) => {
       const variant = ctx.row.original as HttpTypes.AdminProductVariant & {
-        inventory_items: { inventory: HttpTypes.AdminInventoryItem }[]
-      }
+        inventory_items: { inventory: HttpTypes.AdminInventoryItem }[];
+      };
 
       const mainActions: DataTableAction<HttpTypes.AdminProductVariant>[] = [
         {
@@ -239,11 +243,11 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
                 state: {
                   restore_params: tableSearchParams.toString(),
                 },
-              }
-            )
+              },
+            );
           },
         },
-      ]
+      ];
 
       const secondaryActions: DataTableAction<HttpTypes.AdminProductVariant>[] =
         [
@@ -252,84 +256,84 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
             label: t("actions.delete"),
             onClick: () => handleDelete(variant.id, variant.title!),
           },
-        ]
+        ];
 
-      const inventoryItemsCount = variant.inventory_items?.length || 0
+      const inventoryItemsCount = variant.inventory_items?.length || 0;
 
       switch (inventoryItemsCount) {
         case 0:
-          break
+          break;
         case 1: {
           const inventoryItemLink = `/inventory/${
             variant.inventory_items![0].inventory.id
-          }`
+          }`;
 
           mainActions.push({
             label: t("products.variant.inventory.actions.inventoryItems"),
             onClick: () => {
-              navigate(inventoryItemLink)
+              navigate(inventoryItemLink);
             },
             icon: <Buildings />,
-          })
-          break
+          });
+          break;
         }
         default: {
-          const ids = variant.inventory_items?.map((i) => i.inventory?.id)
+          const ids = variant.inventory_items?.map((i) => i.inventory?.id);
 
           if (!ids || ids.length === 0) {
-            break
+            break;
           }
 
           const inventoryKitLink = `/inventory?${new URLSearchParams({
             id: ids.join(","),
-          }).toString()}`
+          }).toString()}`;
 
           mainActions.push({
             label: t("products.variant.inventory.actions.inventoryKit"),
             onClick: () => {
-              navigate(inventoryKitLink)
+              navigate(inventoryKitLink);
             },
             icon: <Component />,
-          })
+          });
         }
       }
 
-      return [mainActions, secondaryActions]
+      return [mainActions, secondaryActions];
     },
-    [handleDelete, navigate, t, tableSearchParams]
-  )
+    [handleDelete, navigate, t, tableSearchParams],
+  );
 
   const getInventory = useCallback(
     (variant: HttpTypes.AdminProductVariant) => {
       const castVariant = variant as HttpTypes.AdminProductVariant & {
-        inventory_items: { inventory: HttpTypes.AdminInventoryItem }[]
-      }
+        inventory_items: { inventory: HttpTypes.AdminInventoryItem }[];
+      };
 
       if (!variant.manage_inventory) {
         return {
           text: t("products.variant.inventory.notManaged"),
           hasInventoryKit: false,
           notManaged: true,
-        }
+        };
       }
 
-      const quantity = variant.inventory_quantity
+      const quantity = variant.inventory_quantity;
 
       const inventoryItems = castVariant.inventory_items
         ?.map((i) => i.inventory)
-        .filter(Boolean) as HttpTypes.AdminInventoryItem[]
+        .filter(Boolean) as HttpTypes.AdminInventoryItem[];
 
-      const hasInventoryKit = inventoryItems.length > 1
+      const hasInventoryKit = inventoryItems.length > 1;
 
-      const locations: Record<string, boolean> = {}
+      const locations: Record<string, boolean> = {};
 
       inventoryItems.forEach((i) => {
         i.location_levels?.forEach((l) => {
-          locations[l.id] = true
-        })
-      })
+          locations[l.id] = true;
+        });
+      });
 
-      const locationCount = Object.keys(locations).length
+      const locationCount = Object.keys(locations).length;
 
       const text = hasInventoryKit
         ? t("products.variant.tableItemAvailable", {
@@ -339,12 +343,12 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
             availableCount: quantity,
             locationCount,
             count: locationCount,
-          })
+          });
 
-      return { text, hasInventoryKit, quantity, notManaged: false }
+      return { text, hasInventoryKit, quantity, notManaged: false };
     },
-    [t]
-  )
+    [t],
+  );
 
   return useMemo(() => {
     return [
@@ -366,8 +370,8 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
         header: t("fields.inventory"),
         cell: ({ row }) => {
           const { text, hasInventoryKit, quantity, notManaged } = getInventory(
-            row.original
-          )
+            row.original,
+          );
 
           return (
             <Tooltip content={text}>
@@ -382,7 +386,7 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
                 </span>
               </div>
             </Tooltip>
-          )
+          );
         },
         maxSize: 250,
       }),
@@ -390,16 +394,16 @@ const useColumns = (product: HttpTypes.AdminProduct) => {
       columnHelper.action({
         actions: getActions,
       }),
-    ]
-  }, [t, optionColumns, dateColumns, getActions, getInventory])
-}
+    ];
+  }, [t, optionColumns, dateColumns, getActions, getInventory]);
+};
 
 const filterHelper =
-  createDataTableFilterHelper<HttpTypes.AdminProductVariant>()
+  createDataTableFilterHelper<HttpTypes.AdminProductVariant>();
 
 const useFilters = () => {
-  const { t } = useTranslation()
-  const dateFilters = useDataTableDateFilters()
+  const { t } = useTranslation();
+  const dateFilters = useDataTableDateFilters();
 
   return useMemo(() => {
     return [
@@ -420,15 +424,15 @@ const useFilters = () => {
         ],
       }),
       ...dateFilters,
-    ]
-  }, [t, dateFilters])
-}
+    ];
+  }, [t, dateFilters]);
+};
 
-const commandHelper = createDataTableCommandHelper()
+const commandHelper = createDataTableCommandHelper();
 
 const useCommands = () => {
-  const { t } = useTranslation()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return [
     commandHelper.command({
@@ -436,9 +440,9 @@ const useCommands = () => {
       shortcut: "i",
       action: async (selection) => {
         navigate(
-          `stock?${PRODUCT_VARIANT_IDS_KEY}=${Object.keys(selection).join(",")}`
-        )
+          `stock?${PRODUCT_VARIANT_IDS_KEY}=${Object.keys(selection).join(",")}`,
+        );
       },
     }),
-  ]
-}
+  ];
+};

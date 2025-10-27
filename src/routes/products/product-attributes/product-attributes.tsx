@@ -1,22 +1,25 @@
-import { Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import { useParams } from "react-router-dom"
+import { Heading } from "@medusajs/ui";
 
-import { RouteDrawer } from "../../../components/modals"
-import { useProduct } from "../../../hooks/api/products"
-import { PRODUCT_DETAIL_FIELDS } from "../product-detail/constants"
-import { ProductAttributesForm } from "./components/product-attributes-form"
+import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+
+import { RouteDrawer } from "@components/modals";
+
+import { useProduct } from "@hooks/api";
+
+import { ProductAttributesForm } from "@routes/products/product-attributes/components/product-attributes-form";
+import { PRODUCT_DETAIL_FIELDS } from "@routes/products/product-detail/constants";
 
 export const ProductAttributes = () => {
-  const { id } = useParams()
-  const { t } = useTranslation()
+  const { id } = useParams();
+  const { t } = useTranslation();
 
   const { product, isLoading, isError, error } = useProduct(id!, {
     fields: PRODUCT_DETAIL_FIELDS,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -28,5 +31,5 @@ export const ProductAttributes = () => {
       </RouteDrawer.Header>
       {!isLoading && product && <ProductAttributesForm product={product} />}
     </RouteDrawer>
-  )
-}
+  );
+};

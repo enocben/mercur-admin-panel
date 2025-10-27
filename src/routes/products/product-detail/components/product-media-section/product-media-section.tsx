@@ -1,4 +1,7 @@
-import { PencilSquare, ThumbnailBadge } from "@medusajs/icons"
+import { useState } from "react";
+
+import { PencilSquare, ThumbnailBadge } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
 import {
   Button,
   Checkbox,
@@ -9,43 +12,45 @@ import {
   Tooltip,
   clx,
   usePrompt,
-} from "@medusajs/ui"
-import { useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link } from "react-router-dom"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { HttpTypes } from "@medusajs/types"
+} from "@medusajs/ui";
 
-type ProductMedisaSectionProps = {
-  product: HttpTypes.AdminProduct
-}
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 
-export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const [selection, setSelection] = useState<Record<string, boolean>>({})
+import { ActionMenu } from "@components/common/action-menu";
 
-  const media = getMedia(product)
+import { useUpdateProduct } from "@hooks/api";
+
+type ProductMedusaSectionProps = {
+  product: HttpTypes.AdminProduct;
+};
+
+export const ProductMediaSection = ({ product }: ProductMedusaSectionProps) => {
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const [selection, setSelection] = useState<Record<string, boolean>>({});
+
+  const media = getMedia(product);
 
   const handleCheckedChange = (id: string) => {
     setSelection((prev) => {
       if (prev[id]) {
-        const { [id]: _, ...rest } = prev
-        return rest
-      } else {
-        return { ...prev, [id]: true }
-      }
-    })
-  }
+        const { [id]: _, ...rest } = prev;
 
-  const { mutateAsync } = useUpdateProduct(product.id)
+        return rest;
+      } else {
+        return { ...prev, [id]: true };
+      }
+    });
+  };
+
+  const { mutateAsync } = useUpdateProduct(product.id);
 
   const handleDelete = async () => {
-    const ids = Object.keys(selection)
+    const ids = Object.keys(selection);
     const includingThumbnail = ids.some(
-      (id) => media.find((m) => m.id === id)?.isThumbnail
-    )
+      (id) => media.find((m) => m.id === id)?.isThumbnail,
+    );
 
     const res = await prompt({
       title: t("general.areYouSure"),
@@ -58,15 +63,15 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
           }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     const mediaToKeep = product.images
       .filter((i) => !ids.includes(i.id))
-      .map((i) => ({ url: i.url}))
+      .map((i) => ({ url: i.url }));
 
     await mutateAsync(
       {
@@ -75,11 +80,11 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       },
       {
         onSuccess: () => {
-          setSelection({})
+          setSelection({});
         },
-      }
-    )
-  }
+      },
+    );
+  };
 
   return (
     <Container className="divide-y p-0">
@@ -102,19 +107,19 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
       {media.length > 0 ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(96px,1fr))] gap-4 px-6 py-4">
           {media.map((i, index) => {
-            const isSelected = selection[i.id]
+            const isSelected = selection[i.id];
 
             return (
               <div
-                className="shadow-elevation-card-rest hover:shadow-elevation-card-hover transition-fg group relative aspect-square size-full cursor-pointer overflow-hidden rounded-[8px]"
+                className="group relative aspect-square size-full cursor-pointer overflow-hidden rounded-[8px] shadow-elevation-card-rest transition-fg hover:shadow-elevation-card-hover"
                 key={i.id}
               >
                 <div
                   className={clx(
-                    "transition-fg invisible absolute right-2 top-2 opacity-0 group-hover:visible group-hover:opacity-100",
+                    "invisible absolute right-2 top-2 opacity-0 transition-fg group-hover:visible group-hover:opacity-100",
                     {
                       "visible opacity-100": isSelected,
-                    }
+                    },
                   )}
                 >
                   <Checkbox
@@ -129,7 +134,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
                     </Tooltip>
                   </div>
                 )}
-                <Link to={`media`} state={{ curr: index }}>
+                <Link to="media" state={{ curr: index }}>
                   <img
                     src={i.url}
                     alt={`${product.title} image`}
@@ -137,7 +142,7 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
                   />
                 </Link>
               </div>
-            )
+            );
           })}
         </div>
       ) : (
@@ -178,31 +183,31 @@ export const ProductMediaSection = ({ product }: ProductMedisaSectionProps) => {
         </CommandBar.Bar>
       </CommandBar>
     </Container>
-  )
-}
+  );
+};
 
 type Media = {
-  id: string
-  url: string
-  isThumbnail: boolean
-}
+  id: string;
+  url: string;
+  isThumbnail: boolean;
+};
 
 const getMedia = (product: Product) => {
-  const { images = [], thumbnail } = product
+  const { images = [], thumbnail } = product;
 
   const media: Media[] = images.map((image) => ({
     id: image.id,
     url: image.url,
     isThumbnail: image.url === thumbnail,
-  }))
+  }));
 
   if (thumbnail && !media.some((mediaItem) => mediaItem.url === thumbnail)) {
     media.unshift({
       id: "img_thumbnail",
       url: thumbnail,
       isThumbnail: true,
-    })
+    });
   }
 
-  return media
-}
+  return media;
+};

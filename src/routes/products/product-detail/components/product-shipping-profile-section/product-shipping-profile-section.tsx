@@ -1,23 +1,24 @@
-import { PencilSquare, ShoppingBag } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
-import { Container, Heading } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
+import { PencilSquare, ShoppingBag } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Container, Heading } from "@medusajs/ui";
 
-import { SidebarLink } from "../../../../../components/common/sidebar-link/sidebar-link"
-import { ActionMenu } from "../../../../../components/common/action-menu"
+import { useTranslation } from "react-i18next";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { SidebarLink } from "@components/common/sidebar-link/sidebar-link.tsx";
 
 type ProductShippingProfileSectionProps = {
   product: HttpTypes.AdminProduct & {
-    shipping_profile: HttpTypes.AdminShippingProfile
-  }
-}
+    shipping_profile: HttpTypes.AdminShippingProfile;
+  };
+};
 
 export const ProductShippingProfileSection = ({
   product,
 }: ProductShippingProfileSectionProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
-  const shippingProfile = product.shipping_profile
+  const shippingProfile = product.shipping_profile;
 
   return (
     <Container className="p-0">
@@ -47,5 +48,5 @@ export const ProductShippingProfileSection = ({
         />
       )}
     </Container>
-  )
-}
+  );
+};

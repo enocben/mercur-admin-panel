@@ -4,7 +4,11 @@ export const AttributeSelect = ({
   values,
   field,
 }: {
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   values: any[];
+  // @todo fix any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   field: any;
 }) => {
   const handleChange = (value: string) => {

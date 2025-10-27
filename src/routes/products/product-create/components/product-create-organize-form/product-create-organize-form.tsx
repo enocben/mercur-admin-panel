@@ -1,20 +1,24 @@
-import { UseFormReturn } from "react-hook-form"
+import type { UseFormReturn } from "react-hook-form";
 
-import { StackedFocusModal } from "../../../../../components/modals"
-import { FormExtensionZone } from "../../../../../dashboard-app"
-import { useExtension } from "../../../../../providers/extension-provider"
-import { ProductCreateSchemaType } from "../../types"
-import { ProductCreateOrganizationSection } from "./components/product-create-organize-section"
-import { ProductCreateSalesChannelStackedModal } from "./components/product-create-sales-channel-stacked-modal"
-import { SC_STACKED_MODAL_ID } from "./constants"
+import { StackedFocusModal } from "@components/modals";
+
+import { ProductCreateOrganizationSection } from "@routes/products/product-create/components/product-create-organize-form/components/product-create-organize-section";
+import { ProductCreateSalesChannelStackedModal } from "@routes/products/product-create/components/product-create-organize-form/components/product-create-sales-channel-stacked-modal";
+import type { ProductCreateSchemaType } from "@routes/products/product-create/types.ts";
+
+import { useExtension } from "@providers/extension-provider";
+
+import { FormExtensionZone } from "@/dashboard-app";
+
+import { SC_STACKED_MODAL_ID } from "./constants";
 
 type ProductAttributesProps = {
-  form: UseFormReturn<ProductCreateSchemaType>
-}
+  form: UseFormReturn<ProductCreateSchemaType>;
+};
 
 export const ProductCreateOrganizeForm = ({ form }: ProductAttributesProps) => {
-  const { getFormFields } = useExtension()
-  const fields = getFormFields("product", "create", "organize")
+  const { getFormFields } = useExtension();
+  const fields = getFormFields("product", "create", "organize");
 
   return (
     <StackedFocusModal id={SC_STACKED_MODAL_ID}>
@@ -29,5 +33,5 @@ export const ProductCreateOrganizeForm = ({ form }: ProductAttributesProps) => {
       </div>
       <ProductCreateSalesChannelStackedModal form={form} />
     </StackedFocusModal>
-  )
-}
+  );
+};

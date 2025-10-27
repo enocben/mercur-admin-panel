@@ -1,38 +1,40 @@
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { createDataTableFilterHelper } from "@medusajs/ui"
-import { HttpTypes } from "@medusajs/types"
-import { useDataTableDateFilters } from "../../../../../components/data-table/helpers/general/use-data-table-date-filters"
-import { useProductTypes } from "../../../../../hooks/api/product-types"
-import { useProductTags } from "../../../../../hooks/api"
-import { useSalesChannels } from "../../../../../hooks/api/sales-channels"
+import { useMemo } from "react";
 
-const filterHelper = createDataTableFilterHelper<HttpTypes.AdminProduct>()
+import type { HttpTypes } from "@medusajs/types";
+import { createDataTableFilterHelper } from "@medusajs/ui";
+
+import { useTranslation } from "react-i18next";
+
+import { useDataTableDateFilters } from "@components/data-table/helpers/general";
+
+import { useProductTags, useProductTypes, useSalesChannels } from "@hooks/api";
+
+const filterHelper = createDataTableFilterHelper<HttpTypes.AdminProduct>();
 
 /**
  * Hook to create filters in the format expected by @medusajs/ui DataTable
  */
 export const useProductTableFilters = () => {
-  const { t } = useTranslation()
-  const dateFilters = useDataTableDateFilters()
+  const { t } = useTranslation();
+  const dateFilters = useDataTableDateFilters();
 
   const { product_types } = useProductTypes({
     limit: 1000,
     offset: 0,
-  })
+  });
 
   const { product_tags } = useProductTags({
     limit: 1000,
     offset: 0,
-  })
+  });
 
   const { sales_channels } = useSalesChannels({
     limit: 1000,
     fields: "id,name",
-  })
+  });
 
   return useMemo(() => {
-    const filters = [...dateFilters]
+    const filters = [...dateFilters];
 
     if (product_types?.length) {
       filters.push(
@@ -43,8 +45,8 @@ export const useProductTableFilters = () => {
             label: t.value,
             value: t.id,
           })),
-        })
-      )
+        }),
+      );
     }
 
     if (product_tags?.length) {
@@ -56,8 +58,8 @@ export const useProductTableFilters = () => {
             label: t.value,
             value: t.id,
           })),
-        })
-      )
+        }),
+      );
     }
 
     if (sales_channels?.length) {
@@ -69,8 +71,8 @@ export const useProductTableFilters = () => {
             label: s.name,
             value: s.id,
           })),
-        })
-      )
+        }),
+      );
     }
 
     // Status filter
@@ -96,9 +98,9 @@ export const useProductTableFilters = () => {
             value: "rejected",
           },
         ],
-      })
-    )
+      }),
+    );
 
-    return filters
-  }, [product_types, product_tags, sales_channels, dateFilters, t])
-}
+    return filters;
+  }, [product_types, product_tags, sales_channels, dateFilters, t]);
+};

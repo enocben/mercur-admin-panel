@@ -1,19 +1,20 @@
-import { useCallback } from "react"
-import { UseFormReturn } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
-import {
-  FileType,
-  FileUpload,
-} from "../../../../../components/common/file-upload"
-import { Form } from "../../../../../components/common/form"
-import { MediaSchema } from "../../../product-create/constants"
-import {
+import { useCallback } from "react";
+
+import type { UseFormReturn } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
+
+import type { FileType } from "@components/common/file-upload";
+import { FileUpload } from "@components/common/file-upload";
+import { Form } from "@components/common/form";
+
+import type { MediaSchema } from "@routes/products/product-create/constants";
+import type {
   EditProductMediaSchemaType,
   ProductCreateSchemaType,
-} from "../../../product-create/types"
+} from "@routes/products/product-create/types";
 
-type Media = z.infer<typeof MediaSchema>
+type Media = z.infer<typeof MediaSchema>;
 
 const SUPPORTED_FORMATS = [
   "image/jpeg",
@@ -22,7 +23,7 @@ const SUPPORTED_FORMATS = [
   "image/webp",
   "image/heic",
   "image/svg+xml",
-]
+];
 
 const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
   ".jpeg",
@@ -31,7 +32,7 @@ const SUPPORTED_FORMATS_FILE_EXTENSIONS = [
   ".webp",
   ".heic",
   ".svg",
-]
+];
 
 export const UploadMediaFormItem = ({
   form,
@@ -40,17 +41,17 @@ export const UploadMediaFormItem = ({
 }: {
   form:
     | UseFormReturn<ProductCreateSchemaType>
-    | UseFormReturn<EditProductMediaSchemaType>
-  append: (value: Media) => void
-  showHint?: boolean
+    | UseFormReturn<EditProductMediaSchemaType>;
+  append: (value: Media) => void;
+  showHint?: boolean;
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const hasInvalidFiles = useCallback(
     (fileList: FileType[]) => {
       const invalidFile = fileList.find(
-        (f) => !SUPPORTED_FORMATS.includes(f.file.type)
-      )
+        (f) => !SUPPORTED_FORMATS.includes(f.file.type),
+      );
 
       if (invalidFile) {
         form.setError("media", {
@@ -59,27 +60,27 @@ export const UploadMediaFormItem = ({
             name: invalidFile.file.name,
             types: SUPPORTED_FORMATS_FILE_EXTENSIONS.join(", "),
           }),
-        })
+        });
 
-        return true
+        return true;
       }
 
-      return false
+      return false;
     },
-    [form, t]
-  )
+    [form, t],
+  );
 
   const onUploaded = useCallback(
     (files: FileType[]) => {
-      form.clearErrors("media")
+      form.clearErrors("media");
       if (hasInvalidFiles(files)) {
-        return
+        return;
       }
 
-      files.forEach((f) => append({ ...f, isThumbnail: false }))
+      files.forEach((f) => append({ ...f, isThumbnail: false }));
     },
-    [form, append, hasInvalidFiles]
-  )
+    [form, append, hasInvalidFiles],
+  );
 
   return (
     <Form.Field
@@ -87,30 +88,28 @@ export const UploadMediaFormItem = ({
         form.control as UseFormReturn<EditProductMediaSchemaType>["control"]
       }
       name="media"
-      render={() => {
-        return (
-          <Form.Item>
-            <div className="flex flex-col gap-y-2">
-              <div className="flex flex-col gap-y-1">
-                <Form.Label optional>{t("products.media.label")}</Form.Label>
-                {showHint && (
-                  <Form.Hint>{t("products.media.editHint")}</Form.Hint>
-                )}
-              </div>
-              <Form.Control>
-                <FileUpload
-                  label={t("products.media.uploadImagesLabel")}
-                  hint={t("products.media.uploadImagesHint")}
-                  hasError={!!form.formState.errors.media}
-                  formats={SUPPORTED_FORMATS}
-                  onUploaded={onUploaded}
-                />
-              </Form.Control>
-              <Form.ErrorMessage />
+      render={() => (
+        <Form.Item>
+          <div className="flex flex-col gap-y-2">
+            <div className="flex flex-col gap-y-1">
+              <Form.Label optional>{t("products.media.label")}</Form.Label>
+              {showHint && (
+                <Form.Hint>{t("products.media.editHint")}</Form.Hint>
+              )}
             </div>
-          </Form.Item>
-        )
-      }}
+            <Form.Control>
+              <FileUpload
+                label={t("products.media.uploadImagesLabel")}
+                hint={t("products.media.uploadImagesHint")}
+                hasError={!!form.formState.errors.media}
+                formats={SUPPORTED_FORMATS}
+                onUploaded={onUploaded}
+              />
+            </Form.Control>
+            <Form.ErrorMessage />
+          </div>
+        </Form.Item>
+      )}
     />
-  )
-}
+  );
+};

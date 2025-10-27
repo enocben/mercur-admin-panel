@@ -1,43 +1,46 @@
-import { PencilSquare, Trash } from "@medusajs/icons"
-import { Button, Container, Heading, toast, usePrompt } from "@medusajs/ui"
-import { keepPreviousData } from "@tanstack/react-query"
-import { createColumnHelper } from "@tanstack/react-table"
-import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
-import { Link, Outlet, useLoaderData, useLocation } from "react-router-dom"
+import { useMemo } from "react";
 
-import { HttpTypes } from "@medusajs/types"
-import { ActionMenu } from "../../../../../components/common/action-menu"
-import { _DataTable } from "../../../../../components/table/data-table"
-import {
-  useDeleteProduct,
-  useProducts,
-} from "../../../../../hooks/api/products"
-import { useProductTableColumns } from "../../../../../hooks/table/columns/use-product-table-columns"
-import { useProductTableFilters } from "../../../../../hooks/table/filters/use-product-table-filters"
-import { useProductTableQuery } from "../../../../../hooks/table/query/use-product-table-query"
-import { useDataTable } from "../../../../../hooks/use-data-table"
-import { productsLoader } from "../../loader"
-import { useFeatureFlag } from "../../../../../providers/feature-flag-provider"
-import { ConfigurableProductListTable } from "./configurable-product-list-table"
+import { PencilSquare, Trash } from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Container, Heading, toast, usePrompt } from "@medusajs/ui";
 
-const PAGE_SIZE = 20
+import { keepPreviousData } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useTranslation } from "react-i18next";
+import { Link, Outlet, useLoaderData, useLocation } from "react-router-dom";
+
+import { ActionMenu } from "@components/common/action-menu";
+import { _DataTable } from "@components/table/data-table";
+
+import { useDeleteProduct, useProducts } from "@hooks/api";
+import { useProductTableColumns } from "@hooks/table/columns";
+import { useProductTableFilters } from "@hooks/table/filters";
+import { useProductTableQuery } from "@hooks/table/query";
+import { useDataTable } from "@hooks/use-data-table";
+
+import type { productsLoader } from "@routes/products/product-list/loader";
+
+import { useFeatureFlag } from "@providers/feature-flag-provider";
+
+import { ConfigurableProductListTable } from "./configurable-product-list-table";
+
+const PAGE_SIZE = 20;
 
 export const ProductListTable = () => {
-  const { t } = useTranslation()
-  const location = useLocation()
-  const isViewConfigEnabled = useFeatureFlag("view_configurations")
+  const { t } = useTranslation();
+  const location = useLocation();
+  const isViewConfigEnabled = useFeatureFlag("view_configurations");
 
   // If feature flag is enabled, use the new configurable table
   if (isViewConfigEnabled) {
-    return <ConfigurableProductListTable />
+    return <ConfigurableProductListTable />;
   }
 
   const initialData = useLoaderData() as Awaited<
     ReturnType<ReturnType<typeof productsLoader>>
-  >
+  >;
 
-  const { searchParams, raw } = useProductTableQuery({ pageSize: PAGE_SIZE })
+  const { searchParams, raw } = useProductTableQuery({ pageSize: PAGE_SIZE });
   const { products, count, isLoading, isError, error } = useProducts(
     {
       ...searchParams,
@@ -46,11 +49,11 @@ export const ProductListTable = () => {
     {
       initialData,
       placeholderData: keepPreviousData,
-    }
-  )
+    },
+  );
 
-  const filters = useProductTableFilters()
-  const columns = useColumns()
+  const filters = useProductTableFilters();
+  const columns = useColumns();
 
   const { table } = useDataTable({
     data: (products ?? []) as HttpTypes.AdminProduct[],
@@ -59,10 +62,10 @@ export const ProductListTable = () => {
     enablePagination: true,
     pageSize: PAGE_SIZE,
     getRowId: (row) => row.id,
-  })
+  });
 
   if (isError) {
-    throw error
+    throw error;
   }
 
   return (
@@ -103,13 +106,13 @@ export const ProductListTable = () => {
       />
       <Outlet />
     </Container>
-  )
-}
+  );
+};
 
 const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync } = useDeleteProduct(product.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync } = useDeleteProduct(product.id);
 
   const handleDelete = async () => {
     const res = await prompt({
@@ -119,10 +122,10 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
       }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     await mutateAsync(undefined, {
@@ -131,15 +134,15 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
           description: t("products.toasts.delete.success.description", {
             title: product.title,
           }),
-        })
+        });
       },
       onError: (e) => {
         toast.error(t("products.toasts.delete.error.header"), {
           description: e.message,
-        })
+        });
       },
-    })
-  }
+    });
+  };
 
   return (
     <ActionMenu
@@ -164,26 +167,22 @@ const ProductActions = ({ product }: { product: HttpTypes.AdminProduct }) => {
         },
       ]}
     />
-  )
-}
+  );
+};
 
-const columnHelper = createColumnHelper<HttpTypes.AdminProduct>()
+const columnHelper = createColumnHelper<HttpTypes.AdminProduct>();
 
 const useColumns = () => {
-  const base = useProductTableColumns()
+  const base = useProductTableColumns();
 
-  const columns = useMemo(
+  return useMemo(
     () => [
       ...base,
       columnHelper.display({
         id: "actions",
-        cell: ({ row }) => {
-          return <ProductActions product={row.original} />
-        },
+        cell: ({ row }) => <ProductActions product={row.original} />,
       }),
     ],
-    [base]
-  )
-
-  return columns
-}
+    [base],
+  );
+};

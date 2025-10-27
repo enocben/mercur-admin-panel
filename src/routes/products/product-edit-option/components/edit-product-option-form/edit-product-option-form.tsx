@@ -1,30 +1,32 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, Input } from "@medusajs/ui"
-import { useForm } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, Input } from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { Form } from "../../../../../components/common/form"
-import { ChipInput } from "../../../../../components/inputs/chip-input"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useUpdateProductOption } from "../../../../../hooks/api/products"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { z } from "zod";
+
+import { Form } from "@components/common/form";
+import { ChipInput } from "@components/inputs/chip-input";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateProductOption } from "@hooks/api";
 
 type EditProductOptionFormProps = {
-  option: HttpTypes.AdminProductOption
-}
+  option: HttpTypes.AdminProductOption;
+};
 
 const CreateProductOptionSchema = z.object({
   title: z.string().min(1),
   values: z.array(z.string()).optional(),
-})
+});
 
 export const CreateProductOptionForm = ({
   option,
 }: EditProductOptionFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
 
   const form = useForm<z.infer<typeof CreateProductOptionSchema>>({
     defaultValues: {
@@ -32,12 +34,12 @@ export const CreateProductOptionForm = ({
       values: option.values.map((v: any) => v.value),
     },
     resolver: zodResolver(CreateProductOptionSchema),
-  })
+  });
 
   const { mutateAsync, isPending } = useUpdateProductOption(
     option.product_id,
-    option.id
-  )
+    option.id,
+  );
 
   const handleSubmit = form.handleSubmit(async (values) => {
     mutateAsync(
@@ -47,11 +49,11 @@ export const CreateProductOptionForm = ({
       },
       {
         onSuccess: () => {
-          handleSuccess()
+          handleSuccess();
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -63,46 +65,42 @@ export const CreateProductOptionForm = ({
           <Form.Field
             control={form.control}
             name="title"
-            render={({ field }) => {
-              return (
-                <Form.Item>
-                  <Form.Label>
-                    {t("products.fields.options.optionTitle")}
-                  </Form.Label>
-                  <Form.Control>
-                    <Input
-                      {...field}
-                      placeholder={t(
-                        "products.fields.options.optionTitlePlaceholder"
-                      )}
-                    />
-                  </Form.Control>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              )
-            }}
+            render={({ field }) => (
+              <Form.Item>
+                <Form.Label>
+                  {t("products.fields.options.optionTitle")}
+                </Form.Label>
+                <Form.Control>
+                  <Input
+                    {...field}
+                    placeholder={t(
+                      "products.fields.options.optionTitlePlaceholder",
+                    )}
+                  />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )}
           />
           <Form.Field
             control={form.control}
             name="values"
-            render={({ field: { ...field } }) => {
-              return (
-                <Form.Item>
-                  <Form.Label>
-                    {t("products.fields.options.variations")}
-                  </Form.Label>
-                  <Form.Control>
-                    <ChipInput
-                      {...field}
-                      placeholder={t(
-                        "products.fields.options.variantionsPlaceholder"
-                      )}
-                    />
-                  </Form.Control>
-                  <Form.ErrorMessage />
-                </Form.Item>
-              )
-            }}
+            render={({ field: { ...field } }) => (
+              <Form.Item>
+                <Form.Label>
+                  {t("products.fields.options.variations")}
+                </Form.Label>
+                <Form.Control>
+                  <ChipInput
+                    {...field}
+                    placeholder={t(
+                      "products.fields.options.variantionsPlaceholder",
+                    )}
+                  />
+                </Form.Control>
+                <Form.ErrorMessage />
+              </Form.Item>
+            )}
           />
         </RouteDrawer.Body>
         <RouteDrawer.Footer>
@@ -119,5 +117,5 @@ export const CreateProductOptionForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};

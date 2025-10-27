@@ -1,26 +1,30 @@
-import { HttpTypes } from "@medusajs/types"
-import { useMemo } from "react"
-import { UseFormReturn, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
+import { useMemo } from "react";
+
+import type { HttpTypes } from "@medusajs/types";
+
+import type { UseFormReturn } from "react-hook-form";
+import { useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 import {
+  DataGrid,
   createDataGridHelper,
   createDataGridPriceColumns,
-  DataGrid,
-} from "../../../../../components/data-grid"
-import { useRouteModal } from "../../../../../components/modals"
-import {
+} from "@components/data-grid";
+import { useRouteModal } from "@components/modals";
+
+import type {
   ProductCreateOptionSchema,
   ProductCreateVariantSchema,
-} from "../../constants"
-import { ProductCreateSchemaType } from "../../types"
+} from "@routes/products/product-create/constants.ts";
+import type { ProductCreateSchemaType } from "@routes/products/product-create/types.ts";
 
 type ProductCreateVariantsFormProps = {
-  form: UseFormReturn<ProductCreateSchemaType>
-  regions: HttpTypes.AdminRegion[]
-  store: HttpTypes.AdminStore
-  pricePreferences: HttpTypes.AdminPricePreference[]
-}
+  form: UseFormReturn<ProductCreateSchemaType>;
+  regions: HttpTypes.AdminRegion[];
+  store: HttpTypes.AdminStore;
+  pricePreferences: HttpTypes.AdminPricePreference[];
+};
 
 export const ProductCreateVariantsForm = ({
   form,
@@ -28,24 +32,24 @@ export const ProductCreateVariantsForm = ({
   store,
   pricePreferences,
 }: ProductCreateVariantsFormProps) => {
-  const { setCloseOnEscape } = useRouteModal()
+  const { setCloseOnEscape } = useRouteModal();
 
   const currencyCodes = useMemo(
     () => store?.supported_currencies?.map((c) => c.currency_code) || [],
-    [store]
-  )
+    [store],
+  );
 
   const variants = useWatch({
     control: form.control,
     name: "variants",
     defaultValue: [],
-  })
+  });
 
   const options = useWatch({
     control: form.control,
     name: "options",
     defaultValue: [],
-  })
+  });
 
   /**
    * NOTE: anything that goes to the datagrid component needs to be memoised otherwise DataGrid will rerender and inputs will loose focus
@@ -55,19 +59,19 @@ export const ProductCreateVariantsForm = ({
     currencies: currencyCodes,
     regions,
     pricePreferences,
-  })
+  });
 
   const variantData = useMemo(() => {
-    const ret = []
+    const ret = [];
 
     variants.forEach((v, i) => {
       if (v.should_create) {
-        ret.push({ ...v, originalIndex: i })
+        ret.push({ ...v, originalIndex: i });
       }
-    })
+    });
 
-    return ret
-  }, [variants])
+    return ret;
+  }, [variants]);
 
   return (
     <div className="flex size-full flex-col divide-y overflow-hidden">
@@ -78,13 +82,13 @@ export const ProductCreateVariantsForm = ({
         onEditingChange={(editing) => setCloseOnEscape(!editing)}
       />
     </div>
-  )
-}
+  );
+};
 
 const columnHelper = createDataGridHelper<
   ProductCreateVariantSchema,
   ProductCreateSchemaType
->()
+>();
 
 const useColumns = ({
   options,
@@ -92,12 +96,12 @@ const useColumns = ({
   regions = [],
   pricePreferences = [],
 }: {
-  options: ProductCreateOptionSchema[]
-  currencies?: string[]
-  regions?: HttpTypes.AdminRegion[]
-  pricePreferences?: HttpTypes.AdminPricePreference[]
+  options: ProductCreateOptionSchema[];
+  currencies?: string[];
+  regions?: HttpTypes.AdminRegion[];
+  pricePreferences?: HttpTypes.AdminPricePreference[];
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return useMemo(
     () => [
@@ -117,7 +121,7 @@ const useColumns = ({
                 .map((o) => context.row.original.options[o.title])
                 .join(" / ")}
             </DataGrid.ReadonlyCell>
-          )
+          );
         },
         disableHiding: true,
       }),
@@ -129,7 +133,7 @@ const useColumns = ({
           `variants.${context.row.original.originalIndex}.title`,
         type: "text",
         cell: (context) => {
-          return <DataGrid.TextCell context={context} />
+          return <DataGrid.TextCell context={context} />;
         },
       }),
       columnHelper.column({
@@ -140,7 +144,7 @@ const useColumns = ({
           `variants.${context.row.original.originalIndex}.sku`,
         type: "text",
         cell: (context) => {
-          return <DataGrid.TextCell context={context} />
+          return <DataGrid.TextCell context={context} />;
         },
       }),
       columnHelper.column({
@@ -151,7 +155,7 @@ const useColumns = ({
           `variants.${context.row.original.originalIndex}.manage_inventory`,
         type: "boolean",
         cell: (context) => {
-          return <DataGrid.BooleanCell context={context} />
+          return <DataGrid.BooleanCell context={context} />;
         },
       }),
       columnHelper.column({
@@ -162,7 +166,7 @@ const useColumns = ({
           `variants.${context.row.original.originalIndex}.allow_backorder`,
         type: "boolean",
         cell: (context) => {
-          return <DataGrid.BooleanCell context={context} />
+          return <DataGrid.BooleanCell context={context} />;
         },
       }),
 
@@ -179,7 +183,7 @@ const useColumns = ({
               context={context}
               disabled={!context.row.original.manage_inventory}
             />
-          )
+          );
         },
       }),
 
@@ -192,13 +196,14 @@ const useColumns = ({
         pricePreferences,
         getFieldName: (context, value) => {
           if (context.column.id?.startsWith("currency_prices")) {
-            return `variants.${context.row.original.originalIndex}.prices.${value}`
+            return `variants.${context.row.original.originalIndex}.prices.${value}`;
           }
-          return `variants.${context.row.original.originalIndex}.prices.${value}`
+
+          return `variants.${context.row.original.originalIndex}.prices.${value}`;
         },
         t,
       }),
     ],
-    [currencies, regions, options, pricePreferences, t]
-  )
-}
+    [currencies, regions, options, pricePreferences, t],
+  );
+};

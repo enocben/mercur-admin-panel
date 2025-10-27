@@ -1,32 +1,40 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button, ProgressStatus, ProgressTabs, toast } from "@medusajs/ui"
-import { useEffect, useMemo, useState } from "react"
-import { useFieldArray, useForm, useWatch } from "react-hook-form"
-import { useTranslation } from "react-i18next"
-import { z } from "zod"
+import { useEffect, useMemo, useState } from "react";
 
-import { AdminCreateProductVariantPrice, HttpTypes } from "@medusajs/types"
+import type {
+  AdminCreateProductVariantPrice,
+  HttpTypes,
+} from "@medusajs/types";
+import type { ProgressStatus } from "@medusajs/ui";
+import { Button, ProgressTabs, toast } from "@medusajs/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import type { z } from "zod";
+
 import {
   RouteDrawer,
   RouteFocusModal,
   useRouteModal,
-} from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import { useRegions } from "../../../../../hooks/api"
-import { useCreateProductVariant } from "../../../../../hooks/api/products"
-import { castNumber } from "../../../../../lib/cast-number"
-import { partialFormValidation } from "../../../../../lib/validation"
+} from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useCreateProductVariant, useRegions } from "@hooks/api";
+import { useDocumentDirection } from "@hooks/use-document-direction";
+
+import { castNumber } from "@lib/cast-number";
+import { partialFormValidation } from "@lib/validation";
+
 import {
   CreateProductVariantSchema,
   CreateVariantDetailsFields,
   CreateVariantDetailsSchema,
   CreateVariantPriceFields,
   CreateVariantPriceSchema,
-} from "./constants"
-import DetailsTab from "./details-tab"
-import InventoryKitTab from "./inventory-kit-tab"
-import PricingTab from "./pricing-tab"
-import { useDocumentDirection } from "../../../../../hooks/use-document-direction"
+} from "./constants";
+import DetailsTab from "./details-tab";
+import InventoryKitTab from "./inventory-kit-tab";
+import PricingTab from "./pricing-tab";
 
 enum Tab {
   DETAIL = "detail",
@@ -34,26 +42,26 @@ enum Tab {
   INVENTORY = "inventory",
 }
 
-type TabState = Record<Tab, ProgressStatus>
+type TabState = Record<Tab, ProgressStatus>;
 
 const initialTabState: TabState = {
   [Tab.DETAIL]: "in-progress",
   [Tab.PRICE]: "not-started",
   [Tab.INVENTORY]: "not-started",
-}
+};
 
 type CreateProductVariantFormProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 export const CreateProductVariantForm = ({
   product,
 }: CreateProductVariantFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const direction = useDocumentDirection()
-  const [tab, setTab] = useState<Tab>(Tab.DETAIL)
-  const [tabState, setTabState] = useState<TabState>(initialTabState)
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const direction = useDocumentDirection();
+  const [tab, setTab] = useState<Tab>(Tab.DETAIL);
+  const [tabState, setTabState] = useState<TabState>(initialTabState);
 
   const form = useForm<z.infer<typeof CreateProductVariantSchema>>({
     defaultValues: {
@@ -65,80 +73,82 @@ export const CreateProductVariantForm = ({
       options: {},
     },
     resolver: zodResolver(CreateProductVariantSchema),
-  })
+  });
 
-  const { mutateAsync, isPending } = useCreateProductVariant(product.id)
+  const { mutateAsync, isPending } = useCreateProductVariant(product.id);
 
-  const { regions } = useRegions({ limit: 9999 })
+  const { regions } = useRegions({ limit: 9999 });
 
   const regionsCurrencyMap = useMemo(() => {
     if (!regions?.length) {
-      return {}
+      return {};
     }
 
     return regions.reduce(
       (acc, reg) => {
-        acc[reg.id] = reg.currency_code
-        return acc
+        acc[reg.id] = reg.currency_code;
+
+        return acc;
       },
-      {} as Record<string, string>
-    )
-  }, [regions])
+      {} as Record<string, string>,
+    );
+  }, [regions]);
 
   const isManageInventoryEnabled = useWatch({
     control: form.control,
     name: "manage_inventory",
-  })
+  });
 
   const isInventoryKitEnabled = useWatch({
     control: form.control,
     name: "inventory_kit",
-  })
+  });
 
   const inventoryField = useFieldArray({
     control: form.control,
     name: `inventory`,
-  })
+  });
 
-  const inventoryTabEnabled = isManageInventoryEnabled && isInventoryKitEnabled
+  const inventoryTabEnabled = isManageInventoryEnabled && isInventoryKitEnabled;
 
   const tabOrder = useMemo(() => {
     if (inventoryTabEnabled) {
-      return [Tab.DETAIL, Tab.PRICE, Tab.INVENTORY] as const
+      return [Tab.DETAIL, Tab.PRICE, Tab.INVENTORY] as const;
     }
 
-    return [Tab.DETAIL, Tab.PRICE] as const
-  }, [inventoryTabEnabled])
+    return [Tab.DETAIL, Tab.PRICE] as const;
+  }, [inventoryTabEnabled]);
 
   useEffect(() => {
     if (isInventoryKitEnabled && inventoryField.fields.length === 0) {
       inventoryField.append({
         inventory_item_id: "",
         required_quantity: undefined,
-      })
+      });
     }
-  }, [isInventoryKitEnabled])
+  }, [isInventoryKitEnabled]);
 
   const handleChangeTab = (update: Tab) => {
     if (tab === update) {
-      return
+      return;
     }
 
     if (tabOrder.indexOf(update) < tabOrder.indexOf(tab)) {
-      const isCurrentTabDirty = false // isTabDirty(tab) TODO
+      const isCurrentTabDirty = false; // isTabDirty(tab) TODO
 
       setTabState((prev) => ({
         ...prev,
         [tab]: isCurrentTabDirty ? prev[tab] : "not-started",
         [update]: "in-progress",
-      }))
+      }));
 
-      setTab(update)
-      return
+      setTab(update);
+
+      return;
     }
 
     // get the tabs from the current tab to the update tab including the current tab
-    const tabs = tabOrder.slice(0, tabOrder.indexOf(update))
+    const tabs = tabOrder.slice(0, tabOrder.indexOf(update));
 
     // validate all the tabs from the current tab to the update tab if it fails on any of tabs then set that tab as current tab
     for (const tab of tabs) {
@@ -147,42 +157,43 @@ export const CreateProductVariantForm = ({
           !partialFormValidation<z.infer<typeof CreateProductVariantSchema>>(
             form,
             CreateVariantDetailsFields,
-            CreateVariantDetailsSchema
+            CreateVariantDetailsSchema,
           )
         ) {
           setTabState((prev) => ({
             ...prev,
             [tab]: "in-progress",
-          }))
-          setTab(tab)
-          return
+          }));
+          setTab(tab);
+
+          return;
         }
 
         setTabState((prev) => ({
           ...prev,
           [tab]: "completed",
-        }))
+        }));
       } else if (tab === Tab.PRICE) {
         if (
           !partialFormValidation<z.infer<typeof CreateProductVariantSchema>>(
             form,
             CreateVariantPriceFields,
-            CreateVariantPriceSchema
+            CreateVariantPriceSchema,
           )
         ) {
           setTabState((prev) => ({
             ...prev,
             [tab]: "in-progress",
-          }))
-          setTab(tab)
+          }));
+          setTab(tab);
 
-          return
+          return;
         }
 
         setTabState((prev) => ({
           ...prev,
           [tab]: "completed",
-        }))
+        }));
       }
     }
 
@@ -190,21 +201,21 @@ export const CreateProductVariantForm = ({
       ...prev,
       [tab]: "completed",
       [update]: "in-progress",
-    }))
-    setTab(update)
-  }
+    }));
+    setTab(update);
+  };
 
   const handleNextTab = (tab: Tab) => {
     if (tabOrder.indexOf(tab) + 1 >= tabOrder.length) {
-      return
+      return;
     }
 
-    const nextTab = tabOrder[tabOrder.indexOf(tab) + 1]
-    handleChangeTab(nextTab)
-  }
+    const nextTab = tabOrder[tabOrder.indexOf(tab) + 1];
+    handleChangeTab(nextTab);
+  };
 
   const handleSubmit = form.handleSubmit(async (data) => {
-    const { allow_backorder, manage_inventory, sku, title } = data
+    const { allow_backorder, manage_inventory, sku, title } = data;
 
     await mutateAsync(
       {
@@ -216,47 +227,47 @@ export const CreateProductVariantForm = ({
         prices: Object.entries(data.prices ?? {})
           .map(([currencyOrRegion, value]) => {
             if (value === "" || value === undefined) {
-              return undefined
+              return undefined;
             }
 
-            const ret: AdminCreateProductVariantPrice = {}
-            const amount = castNumber(value)
+            const ret: AdminCreateProductVariantPrice = {};
+            const amount = castNumber(value);
 
             if (currencyOrRegion.startsWith("reg_")) {
-              ret.rules = { region_id: currencyOrRegion }
-              ret.currency_code = regionsCurrencyMap[currencyOrRegion]
+              ret.rules = { region_id: currencyOrRegion };
+              ret.currency_code = regionsCurrencyMap[currencyOrRegion];
             } else {
-              ret.currency_code = currencyOrRegion
+              ret.currency_code = currencyOrRegion;
             }
 
-            ret.amount = amount
+            ret.amount = amount;
 
-            return ret
+            return ret;
           })
           .filter(Boolean),
         inventory_items: (data.inventory || [])
           .map((i) => {
             if (!i.required_quantity || !i.inventory_item_id) {
-              return false
+              return false;
             }
 
             return {
               ...i,
               required_quantity: castNumber(i.required_quantity),
-            }
+            };
           })
           .filter(Boolean),
       },
       {
         onSuccess: () => {
-          handleSuccess()
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteFocusModal.Form form={form}>
@@ -338,15 +349,15 @@ export const CreateProductVariantForm = ({
         </KeyboundForm>
       </ProgressTabs>
     </RouteFocusModal.Form>
-  )
-}
+  );
+};
 
 type PrimaryButtonProps = {
-  tab: Tab
-  next: (tab: Tab) => void
-  isLoading?: boolean
-  inventoryTabEnabled: boolean
-}
+  tab: Tab;
+  next: (tab: Tab) => void;
+  isLoading?: boolean;
+  inventoryTabEnabled: boolean;
+};
 
 const PrimaryButton = ({
   tab,
@@ -354,7 +365,7 @@ const PrimaryButton = ({
   isLoading,
   inventoryTabEnabled,
 }: PrimaryButtonProps) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (
     (inventoryTabEnabled && tab === Tab.INVENTORY) ||
@@ -370,7 +381,7 @@ const PrimaryButton = ({
       >
         {t("actions.save")}
       </Button>
-    )
+    );
   }
 
   return (
@@ -383,5 +394,5 @@ const PrimaryButton = ({
     >
       {t("actions.continue")}
     </Button>
-  )
-}
+  );
+};

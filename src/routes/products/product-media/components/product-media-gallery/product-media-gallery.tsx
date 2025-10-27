@@ -1,78 +1,88 @@
+import { useCallback, useEffect, useState } from "react";
+
 import {
   ArrowDownTray,
   ThumbnailBadge,
   Trash,
   TriangleLeftMini,
   TriangleRightMini,
-} from "@medusajs/icons"
-import { Button, IconButton, Text, Tooltip, clx, usePrompt } from "@medusajs/ui"
-import { useCallback, useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Link, useLocation } from "react-router-dom"
+} from "@medusajs/icons";
+import type { HttpTypes } from "@medusajs/types";
+import {
+  Button,
+  IconButton,
+  Text,
+  Tooltip,
+  clx,
+  usePrompt,
+} from "@medusajs/ui";
 
-import { HttpTypes } from "@medusajs/types"
-import { RouteFocusModal } from "../../../../../components/modals"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
+import { useTranslation } from "react-i18next";
+import { Link, useLocation } from "react-router-dom";
+
+import { RouteFocusModal } from "@components/modals";
+
+import { useUpdateProduct } from "@hooks/api";
 
 type ProductMediaGalleryProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
-  const { state } = useLocation()
-  const [curr, setCurr] = useState<number>(state?.curr || 0)
+  const { state } = useLocation();
+  const [curr, setCurr] = useState<number>(state?.curr || 0);
 
-  const { t } = useTranslation()
-  const prompt = usePrompt()
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { t } = useTranslation();
+  const prompt = usePrompt();
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
-  const media = getMedia(product.images, product.thumbnail)
+  const media = getMedia(product.images, product.thumbnail);
 
   const next = useCallback(() => {
     if (isPending) {
-      return
+      return;
     }
 
-    setCurr((prev) => (prev + 1) % media.length)
-  }, [media, isPending])
+    setCurr((prev) => (prev + 1) % media.length);
+  }, [media, isPending]);
 
   const prev = useCallback(() => {
     if (isPending) {
-      return
+      return;
     }
 
-    setCurr((prev) => (prev - 1 + media.length) % media.length)
-  }, [media, isPending])
+    setCurr((prev) => (prev - 1 + media.length) % media.length);
+  }, [media, isPending]);
 
   const goTo = useCallback(
     (index: number) => {
       if (isPending) {
-        return
+        return;
       }
 
-      setCurr(index)
+      setCurr(index);
     },
-    [isPending]
-  )
+    [isPending],
+  );
 
   const handleDownloadCurrent = () => {
     if (isPending) {
-      return
+      return;
     }
 
     const a = document.createElement("a") as HTMLAnchorElement & {
-      download: string
-    }
+      download: string;
+    };
 
-    a.href = media[curr].url
-    a.download = "image"
-    a.target = "_blank"
+    a.href = media[curr].url;
+    a.download = "image";
+    a.target = "_blank";
 
-    a.click()
-  }
+    a.click();
+  };
 
   const handleDeleteCurrent = async () => {
-    const current = media[curr]
+    const current = media[curr];
 
     const res = await prompt({
       title: t("general.areYouSure"),
@@ -81,44 +91,44 @@ export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
         : t("products.media.deleteWarning", { count: 1 }),
       confirmText: t("actions.delete"),
       cancelText: t("actions.cancel"),
-    })
+    });
 
     if (!res) {
-      return
+      return;
     }
 
     const mediaToKeep =
       product.images
         ?.filter((i) => i.id !== current.id)
-        .map((i) => ({ url: i.url })) || []
+        .map((i) => ({ url: i.url })) || [];
 
     if (curr === media.length - 1) {
-      setCurr((prev) => prev - 1)
+      setCurr((prev) => prev - 1);
     }
 
     await mutateAsync({
       images: mediaToKeep,
       thumbnail: current.isThumbnail ? "" : undefined,
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowRight") {
-        next()
+        next();
       } else if (e.key === "ArrowLeft") {
-        prev()
+        prev();
       }
-    }
+    };
 
-    document.addEventListener("keydown", handleKeyDown)
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [next, prev])
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [next, prev]);
 
-  const noMedia = !media.length
+  const noMedia = !media.length;
 
   return (
     <div className="flex size-full flex-col overflow-hidden">
@@ -164,15 +174,15 @@ export const ProductMediaGallery = ({ product }: ProductMediaGalleryProps) => {
         />
       </RouteFocusModal.Body>
     </div>
-  )
-}
+  );
+};
 
 const Canvas = ({ media, curr }: { media: Media[]; curr: number }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   if (media.length === 0) {
     return (
-      <div className="bg-ui-bg-subtle flex size-full flex-col items-center justify-center gap-y-4 pb-8 pt-6">
+      <div className="flex size-full flex-col items-center justify-center gap-y-4 bg-ui-bg-subtle pb-8 pt-6">
         <div className="flex flex-col items-center">
           <Text
             size="small"
@@ -190,11 +200,11 @@ const Canvas = ({ media, curr }: { media: Media[]; curr: number }) => {
           <Link to="?view=edit">{t("products.media.emptyState.action")}</Link>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="bg-ui-bg-subtle relative size-full overflow-hidden">
+    <div className="relative size-full overflow-hidden bg-ui-bg-subtle">
       <div className="flex size-full items-center justify-center p-6">
         <div className="relative inline-block max-h-full max-w-full">
           {media[curr].isThumbnail && (
@@ -207,15 +217,15 @@ const Canvas = ({ media, curr }: { media: Media[]; curr: number }) => {
           <img
             src={media[curr].url}
             alt=""
-            className="object-fit shadow-elevation-card-rest max-h-[calc(100vh-200px)] w-auto rounded-xl object-contain"
+            className="object-fit max-h-[calc(100vh-200px)] w-auto rounded-xl object-contain shadow-elevation-card-rest"
           />
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-const MAX_VISIBLE_ITEMS = 8
+const MAX_VISIBLE_ITEMS = 8;
 
 const Preview = ({
   media,
@@ -224,33 +234,33 @@ const Preview = ({
   next,
   goTo,
 }: {
-  media: Media[]
-  curr: number
-  prev: () => void
-  next: () => void
-  goTo: (index: number) => void
+  media: Media[];
+  curr: number;
+  prev: () => void;
+  next: () => void;
+  goTo: (index: number) => void;
 }) => {
   if (!media.length) {
-    return null
+    return null;
   }
 
   const getVisibleItems = (media: Media[], index: number) => {
     if (media.length <= MAX_VISIBLE_ITEMS) {
-      return media
+      return media;
     }
 
-    const half = Math.floor(MAX_VISIBLE_ITEMS / 2)
-    const start = (index - half + media.length) % media.length
-    const end = (start + MAX_VISIBLE_ITEMS) % media.length
+    const half = Math.floor(MAX_VISIBLE_ITEMS / 2);
+    const start = (index - half + media.length) % media.length;
+    const end = (start + MAX_VISIBLE_ITEMS) % media.length;
 
     if (end < start) {
-      return [...media.slice(start), ...media.slice(0, end)]
+      return [...media.slice(start), ...media.slice(0, end)];
     } else {
-      return media.slice(start, end)
+      return media.slice(start, end);
     }
-  }
+  };
 
-  const visibleItems = getVisibleItems(media, curr)
+  const visibleItems = getVisibleItems(media, curr);
 
   return (
     <div className="flex shrink-0 items-center justify-center gap-x-2 border-t p-3">
@@ -265,24 +275,24 @@ const Preview = ({
       </IconButton>
       <div className="flex items-center gap-x-2">
         {visibleItems.map((item) => {
-          const isCurrentImage = item.id === media[curr].id
-          const originalIndex = media.findIndex((i) => i.id === item.id)
+          const isCurrentImage = item.id === media[curr].id;
+          const originalIndex = media.findIndex((i) => i.id === item.id);
 
           return (
             <button
               type="button"
               onClick={() => goTo(originalIndex)}
               className={clx(
-                "transition-fg size-7 overflow-hidden rounded-[4px] outline-none",
+                "size-7 overflow-hidden rounded-[4px] outline-none transition-fg",
                 {
                   "shadow-borders-focus": isCurrentImage,
-                }
+                },
               )}
               key={item.id}
             >
               <img src={item.url} alt="" className="size-full object-cover" />
             </button>
-          )
+          );
         })}
       </div>
       <IconButton
@@ -295,33 +305,33 @@ const Preview = ({
         <TriangleRightMini className="rtl:rotate-180" />
       </IconButton>
     </div>
-  )
-}
+  );
+};
 
 type Media = {
-  id: string
-  url: string
-  isThumbnail: boolean
-}
+  id: string;
+  url: string;
+  isThumbnail: boolean;
+};
 
 const getMedia = (
   images: HttpTypes.AdminProductImage[] | null,
-  thumbnail: string | null
+  thumbnail: string | null,
 ) => {
   const media: Media[] =
     images?.map((image) => ({
       id: image.id,
       url: image.url,
       isThumbnail: image.url === thumbnail,
-    })) || []
+    })) || [];
 
   if (thumbnail && !media.some((mediaItem) => mediaItem.isThumbnail)) {
     media.unshift({
       id: "thumbnail_only",
       url: thumbnail,
       isThumbnail: true,
-    })
+    });
   }
 
-  return media
-}
+  return media;
+};

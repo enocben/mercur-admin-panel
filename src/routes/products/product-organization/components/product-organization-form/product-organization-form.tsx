@@ -1,42 +1,45 @@
-import { HttpTypes } from "@medusajs/types"
-import { Button, toast } from "@medusajs/ui"
-import { useTranslation } from "react-i18next"
-import * as zod from "zod"
+import type { HttpTypes } from "@medusajs/types";
+import { Button, toast } from "@medusajs/ui";
 
-import { Form } from "../../../../../components/common/form"
-import { Combobox } from "../../../../../components/inputs/combobox"
-import { RouteDrawer, useRouteModal } from "../../../../../components/modals"
-import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
-import {
-  FormExtensionZone,
-  useExtendableForm,
-} from "../../../../../dashboard-app"
-import { useUpdateProduct } from "../../../../../hooks/api/products"
-import { useComboboxData } from "../../../../../hooks/use-combobox-data"
-import { sdk } from "../../../../../lib/client"
-import { useExtension } from "../../../../../providers/extension-provider"
-import { CategoryCombobox } from "../../../common/components/category-combobox"
+import { useTranslation } from "react-i18next";
+import * as zod from "zod";
+
+import { Form } from "@components/common/form";
+import { Combobox } from "@components/inputs/combobox";
+import { RouteDrawer, useRouteModal } from "@components/modals";
+import { KeyboundForm } from "@components/utilities/keybound-form";
+
+import { useUpdateProduct } from "@hooks/api";
+import { useComboboxData } from "@hooks/use-combobox-data";
+
+import { sdk } from "@lib/client";
+
+import { CategoryCombobox } from "@routes/products/common/components/category-combobox";
+
+import { useExtension } from "@providers/extension-provider";
+
+import { FormExtensionZone, useExtendableForm } from "@/dashboard-app";
 
 type ProductOrganizationFormProps = {
-  product: HttpTypes.AdminProduct
-}
+  product: HttpTypes.AdminProduct;
+};
 
 const ProductOrganizationSchema = zod.object({
   type_id: zod.string().nullable(),
   collection_id: zod.string().nullable(),
   category_ids: zod.array(zod.string()),
   tag_ids: zod.array(zod.string()),
-})
+});
 
 export const ProductOrganizationForm = ({
   product,
 }: ProductOrganizationFormProps) => {
-  const { t } = useTranslation()
-  const { handleSuccess } = useRouteModal()
-  const { getFormConfigs, getFormFields } = useExtension()
+  const { t } = useTranslation();
+  const { handleSuccess } = useRouteModal();
+  const { getFormConfigs, getFormFields } = useExtension();
 
-  const configs = getFormConfigs("product", "organize")
-  const fields = getFormFields("product", "organize")
+  const configs = getFormConfigs("product", "organize");
+  const fields = getFormFields("product", "organize");
 
   const collections = useComboboxData({
     queryKey: ["product_collections"],
@@ -46,7 +49,7 @@ export const ProductOrganizationForm = ({
         label: collection.title!,
         value: collection.id!,
       })),
-  })
+  });
 
   const types = useComboboxData({
     queryKey: ["product_types"],
@@ -56,7 +59,7 @@ export const ProductOrganizationForm = ({
         label: type.value,
         value: type.id,
       })),
-  })
+  });
 
   const tags = useComboboxData({
     queryKey: ["product_tags"],
@@ -66,7 +69,7 @@ export const ProductOrganizationForm = ({
         label: tag.value,
         value: tag.id,
       })),
-  })
+  });
 
   const form = useExtendableForm({
     defaultValues: {
@@ -78,9 +81,9 @@ export const ProductOrganizationForm = ({
     schema: ProductOrganizationSchema,
     configs: configs,
     data: product,
-  })
+  });
 
-  const { mutateAsync, isPending } = useUpdateProduct(product.id)
+  const { mutateAsync, isPending } = useUpdateProduct(product.id);
 
   const handleSubmit = form.handleSubmit(async (data) => {
     await mutateAsync(
@@ -95,16 +98,16 @@ export const ProductOrganizationForm = ({
           toast.success(
             t("products.organization.edit.toasts.success", {
               title: product.title,
-            })
-          )
-          handleSuccess()
+            }),
+          );
+          handleSuccess();
         },
         onError: (error) => {
-          toast.error(error.message)
+          toast.error(error.message);
         },
-      }
-    )
-  })
+      },
+    );
+  });
 
   return (
     <RouteDrawer.Form form={form}>
@@ -114,88 +117,80 @@ export const ProductOrganizationForm = ({
             <Form.Field
               control={form.control}
               name="type_id"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.type.label")}
-                    </Form.Label>
-                    <Form.Control>
-                      <Combobox
-                        {...field}
-                        options={types.options}
-                        searchValue={types.searchValue}
-                        onSearchValueChange={types.onSearchValueChange}
-                        fetchNextPage={types.fetchNextPage}
-                      />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional>
+                    {t("products.fields.type.label")}
+                  </Form.Label>
+                  <Form.Control>
+                    <Combobox
+                      {...field}
+                      options={types.options}
+                      searchValue={types.searchValue}
+                      onSearchValueChange={types.onSearchValueChange}
+                      fetchNextPage={types.fetchNextPage}
+                    />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="collection_id"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.collection.label")}
-                    </Form.Label>
-                    <Form.Control>
-                      <Combobox
-                        {...field}
-                        multiple={false}
-                        options={collections.options}
-                        onSearchValueChange={collections.onSearchValueChange}
-                        searchValue={collections.searchValue}
-                      />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional>
+                    {t("products.fields.collection.label")}
+                  </Form.Label>
+                  <Form.Control>
+                    <Combobox
+                      {...field}
+                      multiple={false}
+                      options={collections.options}
+                      onSearchValueChange={collections.onSearchValueChange}
+                      searchValue={collections.searchValue}
+                    />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="category_ids"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.categories.label")}
-                    </Form.Label>
-                    <Form.Control>
-                      <CategoryCombobox {...field} />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional>
+                    {t("products.fields.categories.label")}
+                  </Form.Label>
+                  <Form.Control>
+                    <CategoryCombobox {...field} />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <Form.Field
               control={form.control}
               name="tag_ids"
-              render={({ field }) => {
-                return (
-                  <Form.Item>
-                    <Form.Label optional>
-                      {t("products.fields.tags.label")}
-                    </Form.Label>
-                    <Form.Control>
-                      <Combobox
-                        {...field}
-                        multiple
-                        options={tags.options}
-                        onSearchValueChange={tags.onSearchValueChange}
-                        searchValue={tags.searchValue}
-                      />
-                    </Form.Control>
-                    <Form.ErrorMessage />
-                  </Form.Item>
-                )
-              }}
+              render={({ field }) => (
+                <Form.Item>
+                  <Form.Label optional>
+                    {t("products.fields.tags.label")}
+                  </Form.Label>
+                  <Form.Control>
+                    <Combobox
+                      {...field}
+                      multiple
+                      options={tags.options}
+                      onSearchValueChange={tags.onSearchValueChange}
+                      searchValue={tags.searchValue}
+                    />
+                  </Form.Control>
+                  <Form.ErrorMessage />
+                </Form.Item>
+              )}
             />
             <FormExtensionZone fields={fields} form={form} />
           </div>
@@ -214,5 +209,5 @@ export const ProductOrganizationForm = ({
         </RouteDrawer.Footer>
       </KeyboundForm>
     </RouteDrawer.Form>
-  )
-}
+  );
+};
