@@ -151,41 +151,44 @@ const sortCustomerGroups = (customerGroups: any[], order: string) => {
 };
 
 export const useSellers = (
-  query?: Record<string, string | number>,
+  query?: Record<string, string | number | string[] | undefined>,
   options?: Omit<
     UseQueryOptions<
-      Record<string, string | number>,
+      { sellers: VendorSeller[]; count?: number },
       Error,
-      { sellers: VendorSeller[] },
+      { sellers: VendorSeller[]; count?: number },
       QueryKey
     >,
     "queryFn" | "queryKey"
-  >,
-  filters?: Record<string, string | number>
+  >
 ) => {
   const { data, ...other } = useQuery<
-    Record<string, string | number>,
+    { sellers: VendorSeller[]; count?: number },
     Error,
-    { sellers: VendorSeller[] }
+    { sellers: VendorSeller[]; count?: number }
   >({
-    queryKey: sellerQueryKeys.list(),
+    queryKey: sellerQueryKeys.list(query),
     queryFn: () =>
       sdk.client.fetch("/admin/sellers", {
         method: "GET",
-        query,
+        query: query?.fields ? { fields: query.fields } : undefined,
       }),
     ...options,
   });
 
   if (!data?.sellers) {
-    return { ...data, ...other };
+    return {
+      sellers: data?.sellers,
+      count: data?.count,
+      ...other,
+    };
   }
 
   let processedSellers = [...data.sellers];
 
   // Apply search filter if present
-  if (filters?.q) {
-    const searchTerm = String(filters.q).toLowerCase();
+  if (query?.q) {
+    const searchTerm = String(query.q).toLowerCase();
     processedSellers = processedSellers.filter(
       (seller) =>
         seller.name?.toLowerCase().includes(searchTerm) ||
@@ -194,8 +197,8 @@ export const useSellers = (
   }
 
   // Apply sorting if present
-  if (filters?.order) {
-    const order = String(filters.order);
+  if (query?.order) {
+    const order = String(query.order);
     const validOrders = [
       "email",
       "-email",
@@ -210,9 +213,14 @@ export const useSellers = (
     }
   }
 
+  // Apply pagination
+  const offset = Number(query?.offset) || 0;
+  const limit = Number(query?.limit) || 20;
+  const paginatedSellers = processedSellers.slice(offset, offset + limit);
+
   return {
-    ...data,
-    sellers: processedSellers,
+    sellers: paginatedSellers,
+    count: processedSellers.length,
     ...other,
   };
 };
