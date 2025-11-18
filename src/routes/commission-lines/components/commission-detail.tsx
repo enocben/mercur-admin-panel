@@ -73,7 +73,7 @@ export function CommissionLineDetail({ line, open, close }: Props) {
                 <Text>{`Type: ${line.rule?.rate?.type ?? '-'}`}</Text>
                 {line.rule?.rate.type === "percentage" && (
                   <>
-                    <Text>{`Rate value: ${line.rule?.rate?.percentage_rate}%`}</Text>
+                    <Text>{`Rate value: ${line.rule?.rate?.percentage_rate ?? '-'} ${line.rule?.rate?.percentage_rate ? '%' : ''}`}</Text>
                     <Text>{`Include tax: ${line.rule?.rate?.include_tax ? "Yes" : "No"}`}</Text>
                   </>
                 )}
