@@ -37,13 +37,13 @@ export const OrderReturnRequestsPage = () => {
     order_return_request: requests,
     isLoading,
     refetch,
-    count,
+    count = 0,
   } = useReturnRequests({
     offset: currentPage * PAGE_SIZE,
     limit: PAGE_SIZE,
     status: currentFilter !== "" ? currentFilter : undefined,
   });
-
+  
   return (
     <Container>
       <div className="flex items-center justify-between px-6 py-4">
@@ -109,7 +109,7 @@ export const OrderReturnRequestsPage = () => {
           </Table.Body>
         </Table>
         <Table.Pagination
-          canNextPage={PAGE_SIZE * (currentPage + 1) < count!}
+          canNextPage={PAGE_SIZE * (currentPage + 1) < count}
           canPreviousPage={currentPage > 0}
           previousPage={() => {
             setCurrentPage(currentPage - 1);
@@ -117,8 +117,8 @@ export const OrderReturnRequestsPage = () => {
           nextPage={() => {
             setCurrentPage(currentPage + 1);
           }}
-          count={count!}
-          pageCount={Math.ceil(count! / PAGE_SIZE)}
+          count={count ?? 0}
+          pageCount={Math.ceil(count / PAGE_SIZE)}
           pageIndex={currentPage}
           pageSize={PAGE_SIZE}
         />

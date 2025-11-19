@@ -35,7 +35,7 @@ export const RequestProductList = () => {
     setDetailOpen(true);
   };
 
-  const { requests, isLoading, count } = useVendorRequests({
+  const { requests, isLoading, count = 0 } = useVendorRequests({
     limit: PAGE_SIZE,
     offset: currentPage * PAGE_SIZE,
     type: "product",
@@ -87,7 +87,7 @@ export const RequestProductList = () => {
           </Table.Body>
         </Table>
         <Table.Pagination
-          canNextPage={PAGE_SIZE * (currentPage + 1) < count!}
+          canNextPage={PAGE_SIZE * (currentPage + 1) < count}
           canPreviousPage={currentPage > 0}
           previousPage={() => {
             setCurrentPage(currentPage - 1);
@@ -95,8 +95,8 @@ export const RequestProductList = () => {
           nextPage={() => {
             setCurrentPage(currentPage + 1);
           }}
-          count={count!}
-          pageCount={Math.ceil(count! / PAGE_SIZE)}
+          count={count ?? 0}
+          pageCount={Math.ceil(count / PAGE_SIZE)}
           pageIndex={currentPage}
           pageSize={PAGE_SIZE}
         />
