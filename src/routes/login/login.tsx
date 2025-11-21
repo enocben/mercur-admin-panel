@@ -74,22 +74,22 @@ export const Login = () => {
   return (
     <div
       className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle"
-      data-test-id="login-page"
+      data-testid="login-page"
     >
       <div
         className="m-4 flex w-full max-w-[280px] flex-col items-center"
-        data-test-id="login-container"
+        data-testid="login-container"
       >
         <AvatarBox />
         <div
           className="mb-4 flex flex-col items-center"
-          data-test-id="login-header"
+          data-testid="login-header"
         >
-          <Heading data-test-id="login-title">{t("login.title")}</Heading>
+          <Heading data-testid="login-title">{t("login.title")}</Heading>
           <Text
             size="small"
             className="text-center text-ui-fg-subtle"
-            data-test-id="login-hint"
+            data-testid="login-hint"
           >
             {t("login.hint")}
           </Text>
@@ -102,7 +102,7 @@ export const Login = () => {
             <form
               onSubmit={handleSubmit}
               className="flex w-full flex-col gap-y-6"
-              data-test-id="login-form"
+              data-testid="login-form"
             >
               <div className="flex flex-col gap-y-1">
                 <Form.Field
@@ -117,7 +117,7 @@ export const Login = () => {
                             {...field}
                             className="bg-ui-bg-field-component"
                             placeholder={t("fields.email")}
-                            data-test-id="login-email-input"
+                            data-testid="login-email-input"
                           />
                         </Form.Control>
                       </Form.Item>
@@ -138,7 +138,7 @@ export const Login = () => {
                             {...field}
                             className="bg-ui-bg-field-component"
                             placeholder={t("fields.password")}
-                            data-test-id="login-password-input"
+                            data-testid="login-password-input"
                           />
                         </Form.Control>
                       </Form.Item>
@@ -149,12 +149,12 @@ export const Login = () => {
               {validationError && (
                 <div
                   className="text-center"
-                  data-test-id="login-validation-error"
+                  data-testid="login-validation-error"
                 >
                   <Hint
                     className="inline-flex"
                     variant={"error"}
-                    data-test-id="login-validation-error-message"
+                    data-testid="login-validation-error-message"
                   >
                     {validationError}
                   </Hint>
@@ -165,7 +165,7 @@ export const Login = () => {
                   className="items-center bg-ui-bg-base p-2"
                   dismissible
                   variant="error"
-                  data-test-id="login-server-error"
+                  data-testid="login-server-error"
                 >
                   {serverError}
                 </Alert>
@@ -174,7 +174,7 @@ export const Login = () => {
                 className="w-full"
                 type="submit"
                 isLoading={isPending}
-                data-test-id="login-submit-button"
+                data-testid="login-submit-button"
               >
                 {t("actions.continueWithEmail")}
               </Button>
@@ -186,7 +186,7 @@ export const Login = () => {
         </div>
         <span
           className="txt-small my-6 text-ui-fg-muted"
-          data-test-id="login-forgot-password-section"
+          data-testid="login-forgot-password-section"
         >
           <Trans
             i18nKey="login.forgotPassword"
@@ -195,7 +195,7 @@ export const Login = () => {
                 key="reset-password-link"
                 to="/reset-password"
                 className="font-medium text-ui-fg-interactive outline-none transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover"
-                data-test-id="login-reset-password-link"
+                data-testid="login-reset-password-link"
               />,
             ]}
           />

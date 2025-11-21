@@ -50,8 +50,8 @@ export const Invite = () => {
   const isValidInvite = invite && validateDecodedInvite(invite)
 
   return (
-    <div className="bg-ui-bg-subtle relative flex min-h-dvh w-dvw items-center justify-center p-4" data-test-id="invite-page">
-      <div className="flex w-full max-w-[360px] flex-col items-center" data-test-id="invite-container">
+    <div className="bg-ui-bg-subtle relative flex min-h-dvh w-dvw items-center justify-center p-4" data-testid="invite-page">
+      <div className="flex w-full max-w-[360px] flex-col items-center" data-testid="invite-container">
         <AvatarBox checked={success} />
         <div className="max-h-[557px] w-full will-change-contents">
           {isValidInvite ? (
@@ -74,7 +74,7 @@ export const Invite = () => {
                     ease: [0, 0.71, 0.2, 1.01],
                   }}
                   className="w-full will-change-transform"
-                  data-test-id="invite-create-account-view"
+                  data-testid="invite-create-account-view"
                 >
                   <motion.div
                     initial={false}
@@ -117,7 +117,7 @@ export const Invite = () => {
                     ease: [0, 0.71, 0.2, 1.01],
                   }}
                   className="w-full"
-                  data-test-id="invite-success-view"
+                  data-testid="invite-success-view"
                 >
                   <SuccessView />
                 </motion.div>
@@ -136,13 +136,13 @@ const LoginLink = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-col items-center" data-test-id="invite-login-link-section">
+    <div className="flex w-full flex-col items-center" data-testid="invite-login-link-section">
       <div className="my-6 h-px w-full border-b border-dotted" />
       <Link
         key="login-link"
         to="/login"
         className="txt-small text-ui-fg-base transition-fg hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover font-medium outline-none"
-        data-test-id="invite-back-to-login-link"
+        data-testid="invite-back-to-login-link"
       >
         {t("invite.backToLogin")}
       </Link>
@@ -154,10 +154,10 @@ const InvalidView = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex flex-col items-center" data-test-id="invite-invalid-view">
-      <div className="flex flex-col items-center gap-y-1" data-test-id="invite-invalid-view-header">
-        <Heading data-test-id="invite-invalid-view-title">{t("invite.invalidTokenTitle")}</Heading>
-        <Text size="small" className="text-ui-fg-subtle text-center" data-test-id="invite-invalid-view-hint">
+    <div className="flex flex-col items-center" data-testid="invite-invalid-view">
+      <div className="flex flex-col items-center gap-y-1" data-testid="invite-invalid-view-header">
+        <Heading data-testid="invite-invalid-view-title">{t("invite.invalidTokenTitle")}</Heading>
+        <Text size="small" className="text-ui-fg-subtle text-center" data-testid="invite-invalid-view-hint">
           {t("invite.invalidTokenHint")}
         </Text>
       </div>
@@ -245,15 +245,15 @@ const CreateView = ({
     form.formState.errors.last_name?.message
 
   return (
-    <div className="flex w-full flex-col items-center" data-test-id="invite-create-view">
-      <div className="mb-4 flex flex-col items-center" data-test-id="invite-create-view-header">
-        <Heading data-test-id="invite-create-view-title">{t("invite.title")}</Heading>
-        <Text size="small" className="text-ui-fg-subtle text-center" data-test-id="invite-create-view-hint">
+    <div className="flex w-full flex-col items-center" data-testid="invite-create-view">
+      <div className="mb-4 flex flex-col items-center" data-testid="invite-create-view-header">
+        <Heading data-testid="invite-create-view-title">{t("invite.title")}</Heading>
+        <Text size="small" className="text-ui-fg-subtle text-center" data-testid="invite-create-view-hint">
           {t("invite.hint")}
         </Text>
       </div>
       <Form {...form}>
-        <form onSubmit={handleSubmit} className="flex w-full flex-col gap-y-6" data-test-id="invite-create-view-form">
+        <form onSubmit={handleSubmit} className="flex w-full flex-col gap-y-6" data-testid="invite-create-view-form">
           <div className="flex flex-col gap-y-2">
             <Form.Field
               control={form.control}
@@ -267,7 +267,7 @@ const CreateView = ({
                         {...field}
                         className="bg-ui-bg-field-component"
                         placeholder={t("fields.email")}
-                        data-test-id="invite-email-input"
+                        data-testid="invite-email-input"
                       />
                     </Form.Control>
                   </Form.Item>
@@ -286,7 +286,7 @@ const CreateView = ({
                         {...field}
                         className="bg-ui-bg-field-component"
                         placeholder={t("fields.firstName")}
-                        data-test-id="invite-first-name-input"
+                        data-testid="invite-first-name-input"
                       />
                     </Form.Control>
                   </Form.Item>
@@ -305,7 +305,7 @@ const CreateView = ({
                         {...field}
                         className="bg-ui-bg-field-component"
                         placeholder={t("fields.lastName")}
-                        data-test-id="invite-last-name-input"
+                        data-testid="invite-last-name-input"
                       />
                     </Form.Control>
                   </Form.Item>
@@ -325,7 +325,7 @@ const CreateView = ({
                         {...field}
                         className="bg-ui-bg-field-component"
                         placeholder={t("fields.password")}
-                        data-test-id="invite-password-input"
+                        data-testid="invite-password-input"
                       />
                     </Form.Control>
                   </Form.Item>
@@ -345,7 +345,7 @@ const CreateView = ({
                         {...field}
                         className="bg-ui-bg-field-component"
                         placeholder={t("fields.repeatPassword")}
-                        data-test-id="invite-repeat-password-input"
+                        data-testid="invite-repeat-password-input"
                       />
                     </Form.Control>
                   </Form.Item>
@@ -353,8 +353,8 @@ const CreateView = ({
               }}
             />
             {validationError && (
-              <div className="mt-6 text-center" data-test-id="invite-validation-error">
-                <Hint className="inline-flex" variant={"error"} data-test-id="invite-validation-error-message">
+              <div className="mt-6 text-center" data-testid="invite-validation-error">
+                <Hint className="inline-flex" variant={"error"} data-testid="invite-validation-error-message">
                   {validationError}
                 </Hint>
               </div>
@@ -364,7 +364,7 @@ const CreateView = ({
                 className="bg-ui-bg-base items-center p-2"
                 dismissible
                 variant="error"
-                data-test-id="invite-server-error"
+                data-testid="invite-server-error"
               >
                 {serverError}
               </Alert>
@@ -375,7 +375,7 @@ const CreateView = ({
             type="submit"
             isLoading={isCreatingAuthUser || isAcceptingInvite}
             disabled={invalid}
-            data-test-id="invite-create-account-button"
+            data-testid="invite-create-account-button"
           >
             {t("invite.createAccount")}
           </Button>
@@ -390,14 +390,14 @@ const SuccessView = () => {
   const { t } = useTranslation()
 
   return (
-    <div className="flex w-full flex-col items-center gap-y-6" data-test-id="invite-success-view-content">
-      <div className="flex flex-col items-center gap-y-1" data-test-id="invite-success-view-header">
-        <Heading className="text-center" data-test-id="invite-success-view-title">{t("invite.successTitle")}</Heading>
-        <Text size="small" className="text-ui-fg-subtle text-center" data-test-id="invite-success-view-hint">
+    <div className="flex w-full flex-col items-center gap-y-6" data-testid="invite-success-view-content">
+      <div className="flex flex-col items-center gap-y-1" data-testid="invite-success-view-header">
+        <Heading className="text-center" data-testid="invite-success-view-title">{t("invite.successTitle")}</Heading>
+        <Text size="small" className="text-ui-fg-subtle text-center" data-testid="invite-success-view-hint">
           {t("invite.successHint")}
         </Text>
       </div>
-      <Button variant="secondary" asChild className="w-full" data-test-id="invite-success-action-button">
+      <Button variant="secondary" asChild className="w-full" data-testid="invite-success-action-button">
         <Link to="/login" replace>
           {t("invite.successAction")}
         </Link>
@@ -407,7 +407,7 @@ const SuccessView = () => {
         key="login-link"
         to="/login"
         className="txt-small text-ui-fg-base transition-fg hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover font-medium outline-none"
-        data-test-id="invite-success-back-to-login-link"
+        data-testid="invite-success-back-to-login-link"
       >
         {t("invite.backToLogin")}
       </Link>

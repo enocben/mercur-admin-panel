@@ -63,24 +63,24 @@ const InvalidResetToken = () => {
   return (
     <div
       className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-base"
-      data-test-id="reset-password-invalid-token-page"
+      data-testid="reset-password-invalid-token-page"
     >
       <div
         className="m-4 flex w-full max-w-[300px] flex-col items-center"
-        data-test-id="reset-password-invalid-token-container"
+        data-testid="reset-password-invalid-token-container"
       >
         <LogoBox className="mb-4" />
         <div
           className="mb-6 flex flex-col items-center"
-          data-test-id="reset-password-invalid-token-header"
+          data-testid="reset-password-invalid-token-header"
         >
-          <Heading data-test-id="reset-password-invalid-token-title">
+          <Heading data-testid="reset-password-invalid-token-title">
             {t("resetPassword.invalidLinkTitle")}
           </Heading>
           <Text
             size="small"
             className="text-center text-ui-fg-subtle"
-            data-test-id="reset-password-invalid-token-hint"
+            data-testid="reset-password-invalid-token-hint"
           >
             {t("resetPassword.invalidLinkHint")}
           </Text>
@@ -90,14 +90,14 @@ const InvalidResetToken = () => {
             onClick={() => navigate("/reset-password", { replace: true })}
             className="w-full"
             type="submit"
-            data-test-id="reset-password-invalid-token-button"
+            data-testid="reset-password-invalid-token-button"
           >
             {t("resetPassword.goToResetPassword")}
           </Button>
         </div>
         <span
           className="txt-small my-6"
-          data-test-id="reset-password-invalid-token-back-to-login-section"
+          data-testid="reset-password-invalid-token-back-to-login-section"
         >
           <Trans
             i18nKey="resetPassword.backToLogin"
@@ -106,7 +106,7 @@ const InvalidResetToken = () => {
                 key="login-link"
                 to="/login"
                 className="text-ui-fg-interactive outline-none transition-fg hover:text-ui-fg-interactive-hover focus-visible:text-ui-fg-interactive-hover"
-                data-test-id="reset-password-invalid-token-back-to-login-link"
+                data-testid="reset-password-invalid-token-back-to-login-link"
               />,
             ]}
           />
@@ -167,24 +167,24 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
   return (
     <div
       className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-subtle"
-      data-test-id="reset-password-choose-new-password-page"
+      data-testid="reset-password-choose-new-password-page"
     >
       <div
         className="m-4 flex w-full max-w-[280px] flex-col items-center"
-        data-test-id="reset-password-choose-new-password-container"
+        data-testid="reset-password-choose-new-password-container"
       >
         <LogoBox className="mb-4" />
         <div
           className="mb-6 flex flex-col items-center"
-          data-test-id="reset-password-choose-new-password-header"
+          data-testid="reset-password-choose-new-password-header"
         >
-          <Heading data-test-id="reset-password-choose-new-password-title">
+          <Heading data-testid="reset-password-choose-new-password-title">
             {t("resetPassword.resetPassword")}
           </Heading>
           <Text
             size="small"
             className="text-center text-ui-fg-subtle"
-            data-test-id="reset-password-choose-new-password-hint"
+            data-testid="reset-password-choose-new-password-hint"
           >
             {t("resetPassword.newPasswordHint")}
           </Text>
@@ -194,14 +194,14 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
             <form
               onSubmit={handleSubmit}
               className="flex w-full flex-col gap-y-6"
-              data-test-id="reset-password-choose-new-password-form"
+              data-testid="reset-password-choose-new-password-form"
             >
               <div className="flex flex-col gap-y-4">
                 <Input
                   type="email"
                   disabled
                   value={invite?.entity_id}
-                  data-test-id="reset-password-email-display"
+                  data-testid="reset-password-email-display"
                 />
                 <Form.Field
                   control={form.control}
@@ -215,7 +215,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                             type="password"
                             {...field}
                             placeholder={t("resetPassword.newPassword")}
-                            data-test-id="reset-password-new-password-input"
+                            data-testid="reset-password-new-password-input"
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
@@ -235,7 +235,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                             type="password"
                             {...field}
                             placeholder={t("resetPassword.repeatNewPassword")}
-                            data-test-id="reset-password-repeat-password-input"
+                            data-testid="reset-password-repeat-password-input"
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
@@ -248,7 +248,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                 <Alert
                   dismissible
                   variant="success"
-                  data-test-id="reset-password-success-alert"
+                  data-testid="reset-password-success-alert"
                 >
                   <div className="flex flex-col">
                     <span className="mb-1 text-ui-fg-base">
@@ -263,7 +263,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                   className="w-full"
                   type="submit"
                   isLoading={isPending}
-                  data-test-id="reset-password-submit-button"
+                  data-testid="reset-password-submit-button"
                 >
                   {t("resetPassword.resetPassword")}
                 </Button>
@@ -273,7 +273,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
         </div>
         <span
           className="txt-small my-6"
-          data-test-id="reset-password-choose-new-password-back-to-login-section"
+          data-testid="reset-password-choose-new-password-back-to-login-section"
         >
           <Trans
             i18nKey="resetPassword.backToLogin"
@@ -282,7 +282,7 @@ const ChooseNewPassword = ({ token }: { token: string }) => {
                 key="login-link"
                 to="/login"
                 className="hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover text-ui-fg-base outline-none transition-fg"
-                data-test-id="reset-password-choose-new-password-back-to-login-link"
+                data-testid="reset-password-choose-new-password-back-to-login-link"
               />,
             ]}
           />
@@ -332,24 +332,24 @@ export const ResetPassword = () => {
   return (
     <div
       className="flex min-h-dvh w-dvw items-center justify-center bg-ui-bg-base"
-      data-test-id="reset-password-page"
+      data-testid="reset-password-page"
     >
       <div
         className="m-4 flex w-full max-w-[300px] flex-col items-center"
-        data-test-id="reset-password-container"
+        data-testid="reset-password-container"
       >
         <LogoBox className="mb-4" />
         <div
           className="mb-4 flex flex-col items-center"
-          data-test-id="reset-password-header"
+          data-testid="reset-password-header"
         >
-          <Heading data-test-id="reset-password-title">
+          <Heading data-testid="reset-password-title">
             {t("resetPassword.resetPassword")}
           </Heading>
           <Text
             size="small"
             className="text-center text-ui-fg-subtle"
-            data-test-id="reset-password-hint"
+            data-testid="reset-password-hint"
           >
             {t("resetPassword.hint")}
           </Text>
@@ -359,7 +359,7 @@ export const ResetPassword = () => {
             <form
               onSubmit={handleSubmit}
               className="flex w-full flex-col gap-y-6"
-              data-test-id="reset-password-form"
+              data-testid="reset-password-form"
             >
               <div className="mt-4 flex flex-col gap-y-3">
                 <Form.Field
@@ -373,7 +373,7 @@ export const ResetPassword = () => {
                             autoComplete="email"
                             {...field}
                             placeholder={t("fields.email")}
-                            data-test-id="reset-password-email-input"
+                            data-testid="reset-password-email-input"
                           />
                         </Form.Control>
                         <Form.ErrorMessage />
@@ -386,7 +386,7 @@ export const ResetPassword = () => {
                 <Alert
                   dismissible
                   variant="success"
-                  data-test-id="reset-password-success-alert"
+                  data-testid="reset-password-success-alert"
                 >
                   <div className="flex flex-col">
                     <span className="mb-1 text-ui-fg-base">
@@ -400,7 +400,7 @@ export const ResetPassword = () => {
                 className="w-full"
                 type="submit"
                 isLoading={isPending}
-                data-test-id="reset-password-submit-button"
+                data-testid="reset-password-submit-button"
               >
                 {t("resetPassword.sendResetInstructions")}
               </Button>
@@ -409,7 +409,7 @@ export const ResetPassword = () => {
         </div>
         <span
           className="txt-small my-6"
-          data-test-id="reset-password-back-to-login-section"
+          data-testid="reset-password-back-to-login-section"
         >
           <Trans
             i18nKey="resetPassword.backToLogin"
@@ -418,7 +418,7 @@ export const ResetPassword = () => {
                 key="login-link"
                 to="/login"
                 className="hover:text-ui-fg-base-hover focus-visible:text-ui-fg-base-hover text-ui-fg-base outline-none transition-fg"
-                data-test-id="reset-password-back-to-login-link"
+                data-testid="reset-password-back-to-login-link"
               />,
             ]}
           />

@@ -14,11 +14,11 @@ export const ProtectedRoute = () => {
     return (
       <div
         className="flex min-h-screen items-center justify-center"
-        data-test-id="protected-route-loading"
+        data-testid="protected-route-loading"
       >
         <Spinner
           className="animate-spin text-ui-fg-interactive"
-          data-test-id="protected-route-spinner"
+          data-testid="protected-route-spinner"
         />
       </div>
     );
