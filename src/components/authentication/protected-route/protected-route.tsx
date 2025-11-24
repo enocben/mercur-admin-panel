@@ -25,7 +25,7 @@ export const ProtectedRoute = () => {
   if (!user) {
     return (
       <Navigate
-        to={`/login${error?.message ? `?reason=${error.message}` : ""}`}
+        to={`/login${error?.message ? `?reason=${encodeURIComponent(error.message)}` : ""}`}
         state={{ from: location }}
         replace
       />
