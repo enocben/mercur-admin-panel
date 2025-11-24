@@ -247,16 +247,17 @@ export const EditPromotionDetailsForm = ({
                   name="value_type"
                   render={({ field }) => {
                     return (
-                      <Form.Item>
-                        <Form.Label>
+                      <Form.Item data-testid="promotion-edit-details-form-value-type-item">
+                        <Form.Label data-testid="promotion-edit-details-form-value-type-label">
                           {t("promotions.fields.value_type")}
                         </Form.Label>
-                        <Form.Control>
+                        <Form.Control data-testid="promotion-edit-details-form-value-type-control">
                           <RadioGroup
                             dir={direction}
                             className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
+                            data-testid="promotion-edit-details-form-value-type-radio-group"
                           >
                             <RadioGroup.ChoiceBox
                               value={"fixed"}
@@ -266,6 +267,7 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.value_type.fixed.description"
                               )}
+                              data-testid="promotion-edit-details-form-value-type-option-fixed"
                             />
 
                             <RadioGroup.ChoiceBox
@@ -276,10 +278,11 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.value_type.percentage.description"
                               )}
+                              data-testid="promotion-edit-details-form-value-type-option-percentage"
                             />
                           </RadioGroup>
                         </Form.Control>
-                        <Form.ErrorMessage />
+                        <Form.ErrorMessage data-testid="promotion-edit-details-form-value-type-error" />
                       </Form.Item>
                     )
                   }}
@@ -295,13 +298,13 @@ export const EditPromotionDetailsForm = ({
                       currencies[currencyCode?.toUpperCase() || "USD"]
 
                     return (
-                      <Form.Item>
-                        <Form.Label>
+                      <Form.Item data-testid="promotion-edit-details-form-value-item">
+                        <Form.Label data-testid="promotion-edit-details-form-value-label">
                           {isFixedValueType
                             ? t("fields.amount")
                             : t("fields.percentage")}
                         </Form.Label>
-                        <Form.Control>
+                        <Form.Control data-testid="promotion-edit-details-form-value-control">
                           {isFixedValueType ? (
                             <CurrencyInput
                               min={0}
@@ -314,6 +317,7 @@ export const EditPromotionDetailsForm = ({
                               symbol={getCurrencySymbol(currencyCode)}
                               {...field}
                               value={field.value}
+                              data-testid="promotion-edit-details-form-value-currency-input"
                             />
                           ) : (
                             <DeprecatedPercentageInput
@@ -329,10 +333,11 @@ export const EditPromotionDetailsForm = ({
                                     : parseFloat(e.target.value)
                                 )
                               }}
+                              data-testid="promotion-edit-details-form-value-percentage-input"
                             />
                           )}
                         </Form.Control>
-                        <Form.ErrorMessage />
+                        <Form.ErrorMessage data-testid="promotion-edit-details-form-value-error" />
                       </Form.Item>
                     )
                   }}
@@ -342,16 +347,17 @@ export const EditPromotionDetailsForm = ({
                   name="allocation"
                   render={({ field }) => {
                     return (
-                      <Form.Item>
-                        <Form.Label>
+                      <Form.Item data-testid="promotion-edit-details-form-allocation-item">
+                        <Form.Label data-testid="promotion-edit-details-form-allocation-label">
                           {t("promotions.fields.allocation")}
                         </Form.Label>
-                        <Form.Control>
+                        <Form.Control data-testid="promotion-edit-details-form-allocation-control">
                           <RadioGroup
                             dir={direction}
                             className="flex-col gap-y-3"
                             {...field}
                             onValueChange={field.onChange}
+                            data-testid="promotion-edit-details-form-allocation-radio-group"
                           >
                             <RadioGroup.ChoiceBox
                               value={"each"}
@@ -359,6 +365,7 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.allocation.each.description"
                               )}
+                              data-testid="promotion-edit-details-form-allocation-option-each"
                             />
 
                             <RadioGroup.ChoiceBox
@@ -369,10 +376,11 @@ export const EditPromotionDetailsForm = ({
                               description={t(
                                 "promotions.form.allocation.across.description"
                               )}
+                              data-testid="promotion-edit-details-form-allocation-option-across"
                             />
                           </RadioGroup>
                         </Form.Control>
-                        <Form.ErrorMessage />
+                        <Form.ErrorMessage data-testid="promotion-edit-details-form-allocation-error" />
                       </Form.Item>
                     )
                   }}

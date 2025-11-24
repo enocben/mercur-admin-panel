@@ -95,6 +95,7 @@ export const PromotionConditionsSection = ({
                 label: t("promotions.conditions.add"),
               }}
               buttonVariant="transparentIconLeft"
+              dataTestId={`promotion-conditions-section-add-condition-button-${ruleType}`}
             />
           </div>
         )}

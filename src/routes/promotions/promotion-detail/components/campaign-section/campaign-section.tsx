@@ -89,6 +89,7 @@ export const CampaignSection = ({
               label: "Add to Campaign",
             }}
             buttonVariant="transparentIconLeft"
+            dataTestId="promotion-campaign-section-add-to-campaign-button"
           />
         </div>
       )}
