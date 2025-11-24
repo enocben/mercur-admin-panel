@@ -42,10 +42,10 @@ export const RequestProductTypeList = () => {
   });
 
   return (
-    <Container>
-      <div className="flex items-center justify-between px-6 py-4">
+    <Container data-testid="request-product-type-list-container">
+      <div className="flex items-center justify-between px-6 py-4" data-testid="request-product-type-list-header">
         <div>
-          <Heading>Product type requests</Heading>
+          <Heading data-testid="request-product-type-list-heading">Product type requests</Heading>
           <ProductTypeRequestDetail
             request={detailRequest}
             open={detailOpen}
@@ -62,36 +62,36 @@ export const RequestProductTypeList = () => {
           />
         </div>
       </div>
-      <div className="flex size-full flex-col overflow-hidden">
-        {isLoading && <Text>Loading...</Text>}
-        <Table>
-          <Table.Header>
+      <div className="flex size-full flex-col overflow-hidden" data-testid="request-product-type-list-content">
+        {isLoading && <Text data-testid="request-product-type-list-loading">Loading...</Text>}
+        <Table data-testid="request-product-type-list-table">
+          <Table.Header data-testid="request-product-type-list-table-header">
             <Table.Row>
-              <Table.HeaderCell>Value</Table.HeaderCell>
-              <Table.HeaderCell>Submitted By</Table.HeaderCell>
-              <Table.HeaderCell>Date</Table.HeaderCell>
-              <Table.HeaderCell>Status</Table.HeaderCell>
-              <Table.HeaderCell>Actions</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-type-list-table-header-value">Value</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-type-list-table-header-submitted-by">Submitted By</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-type-list-table-header-date">Date</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-type-list-table-header-status">Status</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-type-list-table-header-actions">Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
-          <Table.Body>
+          <Table.Body data-testid="request-product-type-list-table-body">
             {requests?.map((request) => {
               const requestData = request.data as ProductTypeDTO;
 
               return (
-                <Table.Row key={request.id}>
-                  <Table.Cell>{requestData.value}</Table.Cell>
-                  <Table.Cell>{request.seller?.name}</Table.Cell>
-                  <Table.Cell>
+                <Table.Row key={request.id} data-testid={`request-product-type-list-table-row-${request.id}`}>
+                  <Table.Cell data-testid={`request-product-type-list-table-row-${request.id}-value`}>{requestData.value}</Table.Cell>
+                  <Table.Cell data-testid={`request-product-type-list-table-row-${request.id}-submitted-by`}>{request.seller?.name}</Table.Cell>
+                  <Table.Cell data-testid={`request-product-type-list-table-row-${request.id}-date`}>
                     <div className="flex items-center gap-2">
                       <History />
                       {formatDate(request.created_at!)}
                     </div>
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell data-testid={`request-product-type-list-table-row-${request.id}-status`}>
                     {getRequestStatusBadge(request.status!)}
                   </Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell data-testid={`request-product-type-list-table-row-${request.id}-actions`}>
                     <RequestMenu
                       handleDetail={handleDetail}
                       request={request}
@@ -115,6 +115,7 @@ export const RequestProductTypeList = () => {
           pageCount={Math.ceil(count / PAGE_SIZE)}
           pageIndex={currentPage}
           pageSize={PAGE_SIZE}
+          data-testid="request-product-type-list-pagination"
         />
       </div>
     </Container>

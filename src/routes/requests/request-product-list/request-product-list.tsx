@@ -43,10 +43,10 @@ export const RequestProductList = () => {
   });
 
   return (
-    <Container>
-      <div className="flex items-center justify-between px-6 py-4">
+    <Container data-testid="request-product-list-container">
+      <div className="flex items-center justify-between px-6 py-4" data-testid="request-product-list-header">
         <div>
-          <Heading>Product requests</Heading>
+          <Heading data-testid="request-product-list-heading">Product requests</Heading>
           <ProductSummaryDetail
             request={detailRequest}
             open={detailOpen}
@@ -61,20 +61,20 @@ export const RequestProductList = () => {
           />
         </div>
       </div>
-      <div className="flex size-full flex-col overflow-hidden">
-        {isLoading && <Text>Loading...</Text>}
-        <Table>
-          <Table.Header>
+      <div className="flex size-full flex-col overflow-hidden" data-testid="request-product-list-content">
+        {isLoading && <Text data-testid="request-product-list-loading">Loading...</Text>}
+        <Table data-testid="request-product-list-table">
+          <Table.Header data-testid="request-product-list-table-header">
             <Table.Row>
-              <Table.HeaderCell>Product</Table.HeaderCell>
-              <Table.HeaderCell>Submitted By</Table.HeaderCell>
-              <Table.HeaderCell>Variants</Table.HeaderCell>
-              <Table.HeaderCell>Date</Table.HeaderCell>
-              <Table.HeaderCell>Status</Table.HeaderCell>
-              <Table.HeaderCell>Actions</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-product">Product</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-submitted-by">Submitted By</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-variants">Variants</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-date">Date</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-status">Status</Table.HeaderCell>
+              <Table.HeaderCell data-testid="request-product-list-table-header-actions">Actions</Table.HeaderCell>
             </Table.Row>
           </Table.Header>
-          <Table.Body>
+          <Table.Body data-testid="request-product-list-table-body">
             {requests?.map((request) => {
               return (
                 <ProductRequestsRow
@@ -99,6 +99,7 @@ export const RequestProductList = () => {
           pageCount={Math.ceil(count / PAGE_SIZE)}
           pageIndex={currentPage}
           pageSize={PAGE_SIZE}
+          data-testid="request-product-list-pagination"
         />
       </div>
     </Container>
@@ -116,21 +117,21 @@ const ProductRequestsRow = ({
   const requestData = request.data as ProductDTO;
 
   return (
-    <Table.Row key={request.id}>
-      <Table.Cell>{requestData.title}</Table.Cell>
-      <Table.Cell>{request.seller?.name}</Table.Cell>
-      <Table.Cell>
+    <Table.Row key={request.id} data-testid={`request-product-list-table-row-${request.id}`}>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-product`}>{requestData.title}</Table.Cell>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-submitted-by`}>{request.seller?.name}</Table.Cell>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-variants`}>
         {requestData.variants?.length || 0}
         {" variant(s)"}
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-date`}>
         <div className="flex items-center gap-2">
           <History />
           {formatDate(request.created_at!)}
         </div>
       </Table.Cell>
-      <Table.Cell>{getRequestStatusBadge(request.status!)}</Table.Cell>
-      <Table.Cell>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-status`}>{getRequestStatusBadge(request.status!)}</Table.Cell>
+      <Table.Cell data-testid={`request-product-list-table-row-${request.id}-actions`}>
         {request.status === "pending" ? (
           <RequestMenu
             handleDetail={() => {
