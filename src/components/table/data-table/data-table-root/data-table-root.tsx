@@ -204,7 +204,7 @@ export const DataTableRoot = <TData,>({
               </Table.Header>
             )}
             <Table.Body className="border-b-0">
-              {table.getRowModel().rows.map((row) => {
+              {table.getRowModel().rows.map((row, rowIndex) => {
                 const to = navigateTo ? navigateTo(row) : undefined;
                 const isRowDisabled = hasSelect && !row.getCanSelect();
 
@@ -216,7 +216,7 @@ export const DataTableRoot = <TData,>({
                   <Table.Row
                     key={row.id}
                     data-selected={row.getIsSelected()}
-                    data-testid={`data-table-row-${row.id}`}
+                    data-testid={`data-table-row-${rowIndex}`}
                     className={clx(
                       "group/row group relative transition-fg [&_td:last-of-type]:w-[1%] [&_td:last-of-type]:whitespace-nowrap",
                       "has-[[data-row-link]:focus-visible]:bg-ui-bg-base-hover",
@@ -267,7 +267,7 @@ export const DataTableRoot = <TData,>({
                       return (
                         <Table.Cell
                           key={cell.id}
-                          data-testid={`data-table-cell-${row.id}-${cell.column.id}`}
+                          data-testid={`data-table-cell-${rowIndex}-${cell.column.id}`}
                           className={clx({
                             "!pe-0 !ps-0": shouldRenderAsLink,
                             "sticky left-0 bg-ui-bg-base transition-fg after:absolute after:inset-y-0 after:right-0 after:h-full after:w-px after:bg-transparent after:content-[''] group-hover/row:bg-ui-bg-base-hover group-has-[[data-row-link]:focus-visible]:bg-ui-bg-base-hover group-data-[selected=true]/row:bg-ui-bg-highlight group-data-[selected=true]/row:group-hover/row:bg-ui-bg-highlight-hover":
@@ -292,7 +292,7 @@ export const DataTableRoot = <TData,>({
                               className="size-full outline-none"
                               data-row-link
                               tabIndex={isTabableLink ? 0 : -1}
-                              data-testid={`data-table-row-link-${row.id}`}
+                              data-testid={`data-table-row-link-${rowIndex}`}
                             >
                               <div
                                 className={clx(
@@ -301,14 +301,14 @@ export const DataTableRoot = <TData,>({
                                     "ps-6": isTabableLink && !hasLeftOffset,
                                   },
                                 )}
-                                data-testid={`data-table-cell-content-${row.id}-${cell.column.id}`}
+                                data-testid={`data-table-cell-content-${rowIndex}-${cell.column.id}`}
                               >
                                 {Inner}
                               </div>
                             </Link>
                           ) : (
                             <div
-                              data-testid={`data-table-cell-content-${row.id}-${cell.column.id}`}
+                              data-testid={`data-table-cell-content-${rowIndex}-${cell.column.id}`}
                             >
                               {Inner}
                             </div>
