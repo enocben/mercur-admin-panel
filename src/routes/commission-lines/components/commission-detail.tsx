@@ -1,10 +1,8 @@
-import { Button, Container, Drawer, Text } from "@medusajs/ui";
+import type { CommissionLine } from '@custom-types/commission';
+import { Button, Container, Drawer, Text } from '@medusajs/ui';
+import { useNavigate } from 'react-router-dom';
 
-import { useNavigate } from "react-router-dom";
-
-import type { CommissionLine } from "@custom-types/commission";
-
-import { formatDate } from "@/lib/date";
+import { formatDate } from '@/lib/date';
 
 type Props = {
   line?: CommissionLine;
@@ -20,17 +18,36 @@ export function CommissionLineDetail({ line, open, close }: Props) {
   }
 
   return (
-    <Drawer open={open} onOpenChange={close} data-testid="commission-line-detail-drawer">
+    <Drawer
+      open={open}
+      onOpenChange={close}
+      data-testid="commission-line-detail-drawer"
+    >
       <Drawer.Content data-testid="commission-line-detail-drawer-content">
         <Drawer.Header data-testid="commission-line-detail-drawer-header">
-          <Drawer.Title data-testid="commission-line-detail-drawer-title">Commission line details</Drawer.Title>
+          <Drawer.Title data-testid="commission-line-detail-drawer-title">
+            Commission line details
+          </Drawer.Title>
         </Drawer.Header>
-        <Drawer.Body className="p-4" data-testid="commission-line-detail-drawer-body">
+        <Drawer.Body
+          className="p-4"
+          data-testid="commission-line-detail-drawer-body"
+        >
           <fieldset data-testid="commission-line-detail-seller-fieldset">
-            <legend className="mb-2" data-testid="commission-line-detail-seller-legend">Seller name</legend>
+            <legend
+              className="mb-2"
+              data-testid="commission-line-detail-seller-legend"
+            >
+              Seller name
+            </legend>
             <Container data-testid="commission-line-detail-seller-container">
-              <div className="flex items-center justify-between" data-testid="commission-line-detail-seller-content">
-                <Text data-testid="commission-line-detail-seller-name">{line.order?.seller?.name ?? "-"}</Text>
+              <div
+                className="flex items-center justify-between"
+                data-testid="commission-line-detail-seller-content"
+              >
+                <Text data-testid="commission-line-detail-seller-name">
+                  {line.order?.seller?.name ?? '-'}
+                </Text>
                 <Button
                   variant="secondary"
                   size="small"
@@ -43,11 +60,24 @@ export function CommissionLineDetail({ line, open, close }: Props) {
               </div>
             </Container>
           </fieldset>
-          <fieldset className="mt-2" data-testid="commission-line-detail-order-fieldset">
-            <legend className="mt-4" data-testid="commission-line-detail-order-legend">Order number</legend>
+          <fieldset
+            className="mt-2"
+            data-testid="commission-line-detail-order-fieldset"
+          >
+            <legend
+              className="mt-4"
+              data-testid="commission-line-detail-order-legend"
+            >
+              Order number
+            </legend>
             <Container data-testid="commission-line-detail-order-container">
-              <div className="flex items-center justify-between" data-testid="commission-line-detail-order-content">
-                <Text data-testid="commission-line-detail-order-number">{line.order?.display_id ? `#${line.order?.display_id}` : "-"}</Text>
+              <div
+                className="flex items-center justify-between"
+                data-testid="commission-line-detail-order-content"
+              >
+                <Text data-testid="commission-line-detail-order-number">
+                  {line.order?.display_id ? `#${line.order?.display_id}` : '-'}
+                </Text>
                 <Button
                   variant="secondary"
                   size="small"
@@ -60,25 +90,47 @@ export function CommissionLineDetail({ line, open, close }: Props) {
               </div>
             </Container>
           </fieldset>
-          <fieldset className="mt-2" data-testid="commission-line-detail-value-fieldset">
-            <legend className="mt-4" data-testid="commission-line-detail-value-legend">Calculated commission value</legend>
+          <fieldset
+            className="mt-2"
+            data-testid="commission-line-detail-value-fieldset"
+          >
+            <legend
+              className="mt-4"
+              data-testid="commission-line-detail-value-legend"
+            >
+              Calculated commission value
+            </legend>
             <Container data-testid="commission-line-detail-value-container">
-              <div className="flex items-center justify-between" data-testid="commission-line-detail-value-content">
+              <div
+                className="flex items-center justify-between"
+                data-testid="commission-line-detail-value-content"
+              >
                 <Text data-testid="commission-line-detail-value-text">{`${line.value === null ? '-' : line.value.toFixed(2)} ${line.currency_code.toUpperCase()}`}</Text>
               </div>
             </Container>
           </fieldset>
-          <fieldset className="mt-2" data-testid="commission-line-detail-rate-fieldset">
-            <legend className="mt-4" data-testid="commission-line-detail-rate-legend">Rate details</legend>
+          <fieldset
+            className="mt-2"
+            data-testid="commission-line-detail-rate-fieldset"
+          >
+            <legend
+              className="mt-4"
+              data-testid="commission-line-detail-rate-legend"
+            >
+              Rate details
+            </legend>
             <Container data-testid="commission-line-detail-rate-container">
-              <div className="flex flex-col gap-2" data-testid="commission-line-detail-rate-content">
+              <div
+                className="flex flex-col gap-2"
+                data-testid="commission-line-detail-rate-content"
+              >
                 <Text data-testid="commission-line-detail-rate-name">{`Rule name: ${line.rule?.name ?? '-'}`}</Text>
                 <Text data-testid="commission-line-detail-rate-reference">{`Reference: ${line.rule?.reference ?? '-'}`}</Text>
                 <Text data-testid="commission-line-detail-rate-type">{`Type: ${line.rule?.rate?.type ?? '-'}`}</Text>
-                {line.rule?.rate.type === "percentage" && (
+                {line.rule?.rate.type === 'percentage' && (
                   <>
                     <Text data-testid="commission-line-detail-rate-value">{`Rate value: ${line.rule?.rate?.percentage_rate ?? '-'} ${line.rule?.rate?.percentage_rate ? '%' : ''}`}</Text>
-                    <Text data-testid="commission-line-detail-rate-include-tax">{`Include tax: ${line.rule?.rate?.include_tax ? "Yes" : "No"}`}</Text>
+                    <Text data-testid="commission-line-detail-rate-include-tax">{`Include tax: ${line.rule?.rate?.include_tax ? 'Yes' : 'No'}`}</Text>
                   </>
                 )}
                 {line.rule?.deleted_at && (
