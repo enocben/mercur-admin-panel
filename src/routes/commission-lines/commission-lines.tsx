@@ -65,7 +65,7 @@ export const CommissionLines = () => {
                 <Table.Row key={line.id} data-testid={`commission-lines-table-row-${line.id}`}>
                   <Table.Cell data-testid={`commission-lines-table-row-${line.id}-seller`}>{line.order?.seller?.name || "-"}</Table.Cell>
                   <Table.Cell data-testid={`commission-lines-table-row-${line.id}-order`}>{line.order?.display_id ? `#${line.order?.display_id}` : "-"}</Table.Cell>
-                  <Table.Cell data-testid={`commission-lines-table-row-${line.id}-value`}>{`${line.value} ${line.currency_code.toUpperCase()}`}</Table.Cell>
+                  <Table.Cell data-testid={`commission-lines-table-row-${line.id}-value`}>{`${line.value.toFixed(2)} ${line.currency_code.toUpperCase()}`}</Table.Cell>
                   <Table.Cell data-testid={`commission-lines-table-row-${line.id}-date`}>
                     <div className="flex items-center gap-2">
                       <History />

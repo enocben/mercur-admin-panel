@@ -15,7 +15,7 @@ import { useCreateRefundReason } from "../../../../../hooks/api";
 
 const RefundReasonCreateSchema = z.object({
   label: z.string().min(1),
-  // code: z.string().min(1),
+  code: z.string().min(1),
   description: z.string().optional(),
 });
 
@@ -26,19 +26,19 @@ export const RefundReasonCreateForm = () => {
   const form = useForm<z.infer<typeof RefundReasonCreateSchema>>({
     defaultValues: {
       label: "",
-      // code: "",
+      code: "",
       description: "",
     },
     resolver: zodResolver(RefundReasonCreateSchema),
   });
 
-  // const generateCodeFromLabel = (label: string) => {
-  //   return label
-  //     .toLowerCase()
-  //     .replace(/[^a-z0-9]/g, "_")
-  //     .replace(/_+/g, "_")
-  //     .replace(/^_|_$/g, "");
-  // };
+  const generateCodeFromLabel = (label: string) => {
+    return label
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_|_$/g, "");
+  };
 
   const { mutateAsync, isPending } = useCreateRefundReason();
 
@@ -59,20 +59,20 @@ export const RefundReasonCreateForm = () => {
   });
 
   return (
-    <RouteFocusModal.Form form={form}>
+    <RouteFocusModal.Form form={form} data-testid="refund-reason-create-form">
       <KeyboundForm
         className="flex size-full flex-col overflow-hidden"
         onSubmit={handleSubmit}
       >
-        <RouteFocusModal.Header />
-        <RouteFocusModal.Body className="flex flex-1 justify-center overflow-auto px-6 py-16">
+        <RouteFocusModal.Header data-testid="refund-reason-create-form-header" />
+        <RouteFocusModal.Body className="flex flex-1 justify-center overflow-auto px-6 py-16" data-testid="refund-reason-create-form-body">
           <div className="flex w-full max-w-[720px] flex-col gap-y-8">
-            <div className="flex flex-col gap-y-1">
+            <div className="flex flex-col gap-y-1" data-testid="refund-reason-create-form-header-section">
               <RouteFocusModal.Title asChild>
-                <Heading>{t("refundReasons.create.header")}</Heading>
+                <Heading data-testid="refund-reason-create-form-heading">{t("refundReasons.create.header")}</Heading>
               </RouteFocusModal.Title>
               <RouteFocusModal.Description asChild>
-                <Text size="small" className="text-ui-fg-subtle">
+                <Text size="small" className="text-ui-fg-subtle" data-testid="refund-reason-create-form-subtitle">
                   {t("refundReasons.create.subtitle")}
                 </Text>
               </RouteFocusModal.Description>
@@ -83,37 +83,38 @@ export const RefundReasonCreateForm = () => {
                 name="label"
                 render={({ field }) => {
                   return (
-                    <Form.Item>
-                      <Form.Label>
+                    <Form.Item data-testid="refund-reason-create-form-label-item">
+                      <Form.Label data-testid="refund-reason-create-form-label-label">
                         {t("refundReasons.fields.label.label")}
                       </Form.Label>
-                      <Form.Control>
+                      <Form.Control data-testid="refund-reason-create-form-label-control">
                         <Input
                           {...field}
                           placeholder={t(
                             "refundReasons.fields.label.placeholder",
                           )}
-                          // onChange={(e) => {
-                          //   if (
-                          //     !form.getFieldState("code").isTouched ||
-                          //     !form.getValues("code")
-                          //   ) {
-                          //     form.setValue(
-                          //       "code",
-                          //       generateCodeFromLabel(e.target.value),
-                          //     );
-                          //   }
-                          //   field.onChange(e);
-                          // }}
+                          data-testid="refund-reason-create-form-label-input"
+                          onChange={(e) => {
+                            if (
+                              !form.getFieldState("code").isTouched ||
+                              !form.getValues("code")
+                            ) {
+                              form.setValue(
+                                "code",
+                                generateCodeFromLabel(e.target.value),
+                              );
+                            }
+                            field.onChange(e);
+                          }}
                         />
                       </Form.Control>
-                      <Form.ErrorMessage />
+                      <Form.ErrorMessage data-testid="refund-reason-create-form-label-error" />
                     </Form.Item>
                   );
                 }}
               />
             </div>
-            {/* <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <Form.Field
                 control={form.control}
                 name="code"
@@ -136,39 +137,40 @@ export const RefundReasonCreateForm = () => {
                   );
                 }}
               />
-            </div> */}
+            </div>
             <Form.Field
               control={form.control}
               name="description"
               render={({ field }) => {
                 return (
-                  <Form.Item>
-                    <Form.Label optional>
+                  <Form.Item data-testid="refund-reason-create-form-description-item">
+                    <Form.Label optional data-testid="refund-reason-create-form-description-label">
                       {t("refundReasons.fields.description.label")}
                     </Form.Label>
-                    <Form.Control>
+                    <Form.Control data-testid="refund-reason-create-form-description-control">
                       <Textarea
                         {...field}
                         placeholder={t(
                           "refundReasons.fields.description.placeholder",
                         )}
+                        data-testid="refund-reason-create-form-description-input"
                       />
                     </Form.Control>
-                    <Form.ErrorMessage />
+                    <Form.ErrorMessage data-testid="refund-reason-create-form-description-error" />
                   </Form.Item>
                 );
               }}
             />
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer>
+        <RouteFocusModal.Footer data-testid="refund-reason-create-form-footer">
           <div className="flex items-center justify-end gap-2">
             <RouteFocusModal.Close asChild>
-              <Button size="small" variant="secondary" type="button">
+              <Button size="small" variant="secondary" type="button" data-testid="refund-reason-create-form-cancel-button">
                 {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
-            <Button size="small" type="submit" isLoading={isPending}>
+            <Button size="small" type="submit" isLoading={isPending} data-testid="refund-reason-create-form-save-button">
               {t("actions.save")}
             </Button>
           </div>

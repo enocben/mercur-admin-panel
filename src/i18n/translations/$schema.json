@@ -1524,6 +1524,9 @@
         "domain": {
           "type": "string"
         },
+        "additionalAttributes": {
+          "type": "string"
+        },
         "list": {
           "type": "object",
           "properties": {
@@ -2724,6 +2727,7 @@
       },
       "required": [
         "domain",
+        "additionalAttributes",
         "list",
         "edit",
         "create",
@@ -3216,9 +3220,16 @@
                 },
                 "quantityOutOfRange": {
                   "type": "string"
+                },
+                "idRequired": {
+                  "type": "string"
                 }
               },
-              "required": ["noAvaliableQuantity", "quantityOutOfRange"],
+              "required": [
+                "noAvaliableQuantity",
+                "quantityOutOfRange",
+                "idRequired"
+              ],
               "additionalProperties": false
             }
           },
@@ -4287,6 +4298,9 @@
             "createSuccessToast": {
               "type": "string"
             },
+            "duplicateItemErrorToast": {
+              "type": "string"
+            },
             "activeChangeError": {
               "type": "string"
             },
@@ -4344,6 +4358,7 @@
             "noteHint",
             "cancelSuccessToast",
             "createSuccessToast",
+            "duplicateItemErrorToast",
             "activeChangeError",
             "panel",
             "toast",

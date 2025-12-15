@@ -1,8 +1,9 @@
 import { PencilSquare, Plus, Trash } from "@medusajs/icons"
-import { HttpTypes } from "@medusajs/types"
+import type { HttpTypes } from "@medusajs/types"
 import { Checkbox, Container, Heading, toast, usePrompt } from "@medusajs/ui"
 import { keepPreviousData } from "@tanstack/react-query"
-import { RowSelectionState, createColumnHelper } from "@tanstack/react-table"
+import type { RowSelectionState } from "@tanstack/react-table"
+import { createColumnHelper } from "@tanstack/react-table"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
@@ -111,9 +112,9 @@ export const PriceListProductSection = ({
   }
 
   return (
-    <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
-        <Heading>{t("priceLists.products.header")}</Heading>
+    <Container className="divide-y p-0" data-testid="price-list-product-section-container">
+      <div className="flex items-center justify-between px-6 py-4" data-testid="price-list-product-section-header">
+        <Heading data-testid="price-list-product-section-heading">{t("priceLists.products.header")}</Heading>
         <ActionMenu
           groups={[
             {
@@ -131,6 +132,7 @@ export const PriceListProductSection = ({
               ],
             },
           ]}
+          data-testid="price-list-product-section-action-menu"
         />
       </div>
       <_DataTable
@@ -162,6 +164,7 @@ export const PriceListProductSection = ({
         search
         prefix={PREFIX}
         queryObject={raw}
+        data-testid="price-list-product-section-table"
       />
     </Container>
   )
