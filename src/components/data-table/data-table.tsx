@@ -22,6 +22,7 @@ import { useQueryParams } from "../../hooks/use-query-params"
 import { ActionMenu } from "../common/action-menu"
 import { ViewPills } from "../table/view-selector"
 import { useFeatureFlag } from "../../providers/feature-flag-provider"
+import { DataTableTableWithTestIds } from "./components/data-table-table-with-test-ids"
 
 // Types for column visibility and ordering
 type VisibilityState = Record<string, boolean>
@@ -426,7 +427,7 @@ export const DataTable = <TData,>({
         </div>
       </UiDataTable.Toolbar>
       <div data-testid="data-table-table">
-        <UiDataTable.Table emptyState={emptyState} />
+        <DataTableTableWithTestIds instance={instance} emptyState={emptyState} />
       </div>
       {enablePagination && (
         <div data-testid="data-table-pagination">

@@ -14,6 +14,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SingleColumnLayout } from "../../../components/layout/single-column";
 import { useAttributeTableColumns } from "../../../hooks/table/columns/use-attribute-table-columns";
+import { DataTableTableWithTestIds } from "../../../components/data-table/components/data-table-table-with-test-ids";
 
 import { useAttributes } from "../../../hooks/api/attributes";
 import { AttributeDTO } from "../../../types";
@@ -424,7 +425,7 @@ export const AttributeList = () => {
                 </DropdownMenu>
               </div>
             </DataTable.Toolbar>
-            <DataTable.Table data-testid="attribute-list-table-content" />
+            <DataTableTableWithTestIds instance={table} />
             <DataTable.Pagination data-testid="attribute-list-table-pagination" />
           </DataTable>
         </div>
