@@ -50,31 +50,32 @@ export function EditOrderEmailForm({ order }: EditOrderEmailFormProps) {
       <KeyboundForm
         onSubmit={handleSubmit}
         className="flex size-full flex-col overflow-hidden"
+        data-testid="order-edit-email-form"
       >
-        <RouteDrawer.Body className="flex-1 overflow-auto">
+        <RouteDrawer.Body className="flex-1 overflow-auto" data-testid="order-edit-email-form-body">
           <Form.Field
             control={form.control}
             name="email"
             render={({ field }) => {
               return (
-                <Form.Item>
-                  <Form.Label>{t("fields.email")}</Form.Label>
+                <Form.Item data-testid="order-edit-email-form-email-item">
+                  <Form.Label data-testid="order-edit-email-form-email-label">{t("fields.email")}</Form.Label>
 
-                  <Form.Control>
-                    <Input type="email" {...field} />
+                  <Form.Control data-testid="order-edit-email-form-email-control">
+                    <Input type="email" {...field} data-testid="order-edit-email-form-email-input" />
                   </Form.Control>
 
-                  <Form.ErrorMessage />
+                  <Form.ErrorMessage data-testid="order-edit-email-form-email-error" />
                 </Form.Item>
               )
             }}
           />
         </RouteDrawer.Body>
 
-        <RouteDrawer.Footer>
-          <div className="flex items-center justify-end gap-x-2">
+        <RouteDrawer.Footer data-testid="order-edit-email-form-footer">
+          <div className="flex items-center justify-end gap-x-2" data-testid="order-edit-email-form-footer-actions">
             <RouteDrawer.Close asChild>
-              <Button variant="secondary" size="small">
+              <Button variant="secondary" size="small" data-testid="order-edit-email-form-cancel-button">
                 {t("actions.cancel")}
               </Button>
             </RouteDrawer.Close>
@@ -84,6 +85,7 @@ export function EditOrderEmailForm({ order }: EditOrderEmailFormProps) {
               type="submit"
               variant="primary"
               size="small"
+              data-testid="order-edit-email-form-save-button"
             >
               {t("actions.save")}
             </Button>

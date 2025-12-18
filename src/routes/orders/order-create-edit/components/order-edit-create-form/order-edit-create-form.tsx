@@ -99,42 +99,42 @@ export const OrderEditCreateForm = ({
         }
       }}
     >
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
-        <RouteFocusModal.Header />
+      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col" data-testid="order-create-edit-form">
+        <RouteFocusModal.Header data-testid="order-create-edit-form-header" />
 
-        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto">
-          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0">
-            <Heading level="h1">{t("orders.edits.create")}</Heading>
+        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto" data-testid="order-create-edit-form-body">
+          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0" data-testid="order-create-edit-form-content">
+            <Heading level="h1" data-testid="order-create-edit-form-heading">{t("orders.edits.create")}</Heading>
 
             <OrderEditItemsSection preview={preview} order={order} />
 
             {/* TOTALS SECTION*/}
-            <div className="mt-8 border-y border-dotted py-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+            <div className="mt-8 border-y border-dotted py-4" data-testid="order-create-edit-form-totals-section">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-edit-form-current-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-edit-form-current-total-label">
                   {t("orders.edits.currentTotal")}
                 </span>
 
-                <span className="txt-small text-ui-fg-subtle">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-edit-form-current-total-value">
                   {getStylizedAmount(order.total, order.currency_code)}
                 </span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-edit-form-new-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-edit-form-new-total-label">
                   {t("orders.edits.newTotal")}
                 </span>
 
-                <span className="txt-small text-ui-fg-subtle">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-edit-form-new-total-value">
                   {getStylizedAmount(preview.total, order.currency_code)}
                 </span>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4">
-                <span className="txt-small font-medium">
+              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4" data-testid="order-create-edit-form-refund-amount-row">
+                <span className="txt-small font-medium" data-testid="order-create-edit-form-refund-amount-label">
                   {t("orders.exchanges.refundAmount")}
                 </span>
-                <span className="txt-small font-medium">
+                <span className="txt-small font-medium" data-testid="order-create-edit-form-refund-amount-value">
                   {getStylizedAmount(
                     preview.summary.pending_difference,
                     order.currency_code
@@ -149,53 +149,55 @@ export const OrderEditCreateForm = ({
               name="note"
               render={({ field }) => {
                 return (
-                  <Form.Item>
+                  <Form.Item data-testid="order-create-edit-form-note-item">
                     <div className="mt-8 flex">
                       <div className="block flex-1">
-                        <Form.Label>{t("fields.note")}</Form.Label>
-                        <Form.Hint className="!mt-1">
+                        <Form.Label data-testid="order-create-edit-form-note-label">{t("fields.note")}</Form.Label>
+                        <Form.Hint className="!mt-1" data-testid="order-create-edit-form-note-hint">
                           {t("orders.edits.noteHint")}
                         </Form.Hint>
                       </div>
                       <div className="w-full flex-1 flex-grow">
-                        <Form.Control>
-                          <Input {...field} placeholder={t("fields.note")} />
+                        <Form.Control data-testid="order-create-edit-form-note-control">
+                          <Input {...field} placeholder={t("fields.note")} data-testid="order-create-edit-form-note-input" />
                         </Form.Control>
                       </div>
                     </div>
+                    <Form.ErrorMessage data-testid="order-create-edit-form-note-error" />
                   </Form.Item>
                 )
               }}
             />
 
             {/* SEND NOTIFICATION*/}
-            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4">
+            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4" data-testid="order-create-edit-form-notification-section">
               <Form.Field
                 control={form.control}
                 name="send_notification"
                 render={({ field: { onChange, value, ...field } }) => {
                   return (
-                    <Form.Item>
-                      <div className="flex items-center">
-                        <Form.Control className="mr-4 self-start">
+                    <Form.Item data-testid="order-create-edit-form-notification-item">
+                      <div className="flex items-center" data-testid="order-create-edit-form-notification-control">
+                        <Form.Control className="mr-4 self-start" data-testid="order-create-edit-form-notification-switch-control">
                           <Switch
                             dir="ltr"
                             className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}
+                            data-testid="order-create-edit-form-notification-switch"
                           />
                         </Form.Control>
                         <div className="block">
-                          <Form.Label>
+                          <Form.Label data-testid="order-create-edit-form-notification-label">
                             {t("orders.returns.sendNotification")}
                           </Form.Label>
-                          <Form.Hint className="!mt-1">
+                          <Form.Hint className="!mt-1" data-testid="order-create-edit-form-notification-hint">
                             {t("orders.returns.sendNotificationHint")}
                           </Form.Hint>
                         </div>
                       </div>
-                      <Form.ErrorMessage />
+                      <Form.ErrorMessage data-testid="order-create-edit-form-notification-error" />
                     </Form.Item>
                   )
                 }}
@@ -205,11 +207,11 @@ export const OrderEditCreateForm = ({
             <div className="p-8" />
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer>
-          <div className="flex w-full items-center justify-end gap-x-4">
+        <RouteFocusModal.Footer data-testid="order-create-edit-form-footer">
+          <div className="flex w-full items-center justify-end gap-x-4" data-testid="order-create-edit-form-footer-actions">
             <div className="flex items-center justify-end gap-x-2">
               <RouteFocusModal.Close asChild>
-                <Button type="button" variant="secondary" size="small">
+                <Button type="button" variant="secondary" size="small" data-testid="order-create-edit-form-cancel-button">
                   {t("orders.edits.cancel")}
                 </Button>
               </RouteFocusModal.Close>
@@ -219,6 +221,7 @@ export const OrderEditCreateForm = ({
                 variant="primary"
                 size="small"
                 isLoading={isRequestRunning}
+                data-testid="order-create-edit-form-confirm-button"
               >
                 {t("orders.edits.confirm")}
               </Button>

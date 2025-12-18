@@ -55,21 +55,21 @@ export const OrderGeneralSection = ({ order }: OrderGeneralSectionProps) => {
   }
 
   return (
-    <Container className="flex items-center justify-between px-6 py-4">
-      <div>
+    <Container className="flex items-center justify-between px-6 py-4" data-testid="order-general-section">
+      <div data-testid="order-general-info">
         <div className="flex items-center gap-x-1">
-          <Heading>#{order.display_id}</Heading>
-          <Copy content={`#${order.display_id}`} className="text-ui-fg-muted" />
+          <Heading data-testid="order-display-id">#{order.display_id}</Heading>
+          <Copy content={`#${order.display_id}`} className="text-ui-fg-muted" data-testid="order-display-id-copy" />
         </div>
-        <Text size="small" className="text-ui-fg-subtle">
+        <Text size="small" className="text-ui-fg-subtle" data-testid="order-date-channel">
           {t("orders.onDateFromSalesChannel", {
             date: getFullDate({ date: order.created_at, includeTime: true }),
             salesChannel: order.sales_channel?.name,
           })}
         </Text>
       </div>
-      <div className="flex items-center gap-x-4">
-        <div className="flex items-center gap-x-1.5">
+      <div className="flex items-center gap-x-4" data-testid="order-general-actions">
+        <div className="flex items-center gap-x-1.5" data-testid="order-status-badges">
           <OrderBadge order={order} />
           <PaymentBadge order={order} />
           <FulfillmentBadge order={order} />
@@ -87,6 +87,7 @@ export const OrderGeneralSection = ({ order }: OrderGeneralSectionProps) => {
               ],
             },
           ]}
+          data-testid="order-actions-menu"
         />
       </div>
     </Container>
@@ -102,7 +103,7 @@ const FulfillmentBadge = ({ order }: { order: HttpTypes.AdminOrder }) => {
   )
 
   return (
-    <StatusBadge color={color} className="text-nowrap">
+    <StatusBadge color={color} className="text-nowrap" data-testid="order-fulfillment-status">
       {label}
     </StatusBadge>
   )
@@ -114,7 +115,7 @@ const PaymentBadge = ({ order }: { order: HttpTypes.AdminOrder }) => {
   const { label, color } = getOrderPaymentStatus(t, order.payment_status)
 
   return (
-    <StatusBadge color={color} className="text-nowrap">
+    <StatusBadge color={color} className="text-nowrap" data-testid="order-payment-status">
       {label}
     </StatusBadge>
   )
@@ -129,7 +130,7 @@ const OrderBadge = ({ order }: { order: HttpTypes.AdminOrder }) => {
   }
 
   return (
-    <StatusBadge color={orderStatus.color} className="text-nowrap">
+    <StatusBadge color={orderStatus.color} className="text-nowrap" data-testid="order-status">
       {orderStatus.label}
     </StatusBadge>
   )

@@ -43,7 +43,7 @@ export const OrderPaymentSection = ({
     .filter(Boolean) as HttpTypes.AdminRefund[]
 
   return (
-    <Container className="divide-y divide-dashed p-0">
+    <Container className="divide-y divide-dashed p-0" data-testid="order-payment-section">
       <Header order={order} />
 
       <PaymentBreakdown
@@ -64,10 +64,10 @@ const Header = ({ order }: { order: HttpTypes.AdminOrder }) => {
   const { label, color } = getOrderPaymentStatus(t, order.payment_status)
 
   return (
-    <div className="flex items-center justify-between px-6 py-4">
-      <Heading level="h2">{t("orders.payment.title")}</Heading>
+    <div className="flex items-center justify-between px-6 py-4" data-testid="order-payment-header">
+      <Heading level="h2" data-testid="order-payment-heading">{t("orders.payment.title")}</Heading>
 
-      <StatusBadge color={color} className="text-nowrap">
+      <StatusBadge color={color} className="text-nowrap" data-testid="order-payment-status-badge">
         {label}
       </StatusBadge>
     </div>
@@ -99,23 +99,23 @@ const Refund = ({
   )
 
   return (
-    <div className="bg-ui-bg-subtle text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4">
-      <div className="flex flex-row">
+    <div className="bg-ui-bg-subtle text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4" data-testid={`order-refund-${refund.id}`}>
+      <div className="flex flex-row" data-testid={`order-refund-${refund.id}-info`}>
         <div className="self-center pr-3">
           <ArrowDownRightMini className="text-ui-fg-muted" />
         </div>
         <div>
-          <Text size="small" leading="compact" weight="plus">
+          <Text size="small" leading="compact" weight="plus" data-testid={`order-refund-${refund.id}-label`}>
             {t("orders.payment.refund")} {RefundNoteIndicator}
           </Text>
-          <Text size="small" leading="compact">
+          <Text size="small" leading="compact" data-testid={`order-refund-${refund.id}-date`}>
             {format(new Date(refund.created_at), "dd MMM, yyyy, HH:mm:ss")}
           </Text>
         </div>
       </div>
-      <div className="flex items-center justify-end">{RefundReasonBadge}</div>
-      <div className="flex items-center justify-end">
-        <Text size="small" leading="compact">
+      <div className="flex items-center justify-end" data-testid={`order-refund-${refund.id}-reason`}>{RefundReasonBadge}</div>
+      <div className="flex items-center justify-end" data-testid={`order-refund-${refund.id}-amount`}>
+        <Text size="small" leading="compact" data-testid={`order-refund-${refund.id}-amount-value`}>
           - {getLocaleAmount(refund.amount as number, currencyCode)}
         </Text>
       </div>
@@ -194,18 +194,19 @@ const Payment = ({
   ) ?? 0
 
   return (
-    <div className="divide-y divide-dashed">
+    <div className="divide-y divide-dashed" data-testid={`order-payment-${payment.id}`}>
       <div className="text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4 sm:grid-cols-[1fr_1fr_1fr_1fr_20px]">
-        <div className="w-full min-w-[60px] overflow-hidden">
+        <div className="w-full min-w-[60px] overflow-hidden" data-testid={`order-payment-${payment.id}-info`}>
           <Text
             size="small"
             leading="compact"
             weight="plus"
             className="truncate"
+            data-testid={`order-payment-${payment.id}-id`}
           >
             <DisplayId id={payment.id} />
           </Text>
-          <Text size="small" leading="compact">
+          <Text size="small" leading="compact" data-testid={`order-payment-${payment.id}-date`}>
             {payment.created_at ? (
               format(
                 new Date(payment.created_at),
@@ -216,18 +217,18 @@ const Payment = ({
             )}
           </Text>
         </div>
-        <div className="hidden items-center justify-end sm:flex">
-          <Text size="small" leading="compact" className="capitalize">
+        <div className="hidden items-center justify-end sm:flex" data-testid={`order-payment-${payment.id}-provider`}>
+          <Text size="small" leading="compact" className="capitalize" data-testid={`order-payment-${payment.id}-provider-value`}>
             {payment.provider_id}
           </Text>
         </div>
-        <div className="flex items-center justify-end">
-          <StatusBadge color={color} className="text-nowrap">
+        <div className="flex items-center justify-end" data-testid={`order-payment-${payment.id}-status`}>
+          <StatusBadge color={color} className="text-nowrap" data-testid={`order-payment-${payment.id}-status-badge`}>
             {status}
           </StatusBadge>
         </div>
-        <div className="flex items-center justify-end">
-          <Text size="small" leading="compact">
+        <div className="flex items-center justify-end" data-testid={`order-payment-${payment.id}-amount`}>
+          <Text size="small" leading="compact" data-testid={`order-payment-${payment.id}-amount-value`}>
             {getLocaleAmount(payment.amount as number, payment.currency_code)}
           </Text>
         </div>
@@ -443,13 +444,13 @@ const Total = ({ order }: { order: AdminOrder }) => {
   const totalPending = getTotalPending(order.payment_collections)
 
   return (
-    <div className="flex flex-col gap-y-4 px-6 py-4">
-      <div className="flex items-center justify-between">
-        <Text size="small" weight="plus" leading="compact">
+    <div className="flex flex-col gap-y-4 px-6 py-4" data-testid="order-payment-total">
+      <div className="flex items-center justify-between" data-testid="order-payment-total-paid">
+        <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-paid-label">
           {t("orders.payment.totalPaidByCustomer")}
         </Text>
 
-        <Text size="small" weight="plus" leading="compact">
+        <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-paid-value">
           {getStylizedAmount(
             getTotalCaptured(order.payment_collections),
             order.currency_code
@@ -458,12 +459,12 @@ const Total = ({ order }: { order: AdminOrder }) => {
       </div>
 
       {order.status !== "canceled" && totalPending > 0 && (
-        <div className="flex items-center justify-between">
-          <Text size="small" weight="plus" leading="compact">
+        <div className="flex items-center justify-between" data-testid="order-payment-total-pending">
+          <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-pending-label">
             Total pending
           </Text>
 
-          <Text size="small" weight="plus" leading="compact">
+          <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-pending-value">
             {getStylizedAmount(totalPending, order.currency_code)}
           </Text>
         </div>

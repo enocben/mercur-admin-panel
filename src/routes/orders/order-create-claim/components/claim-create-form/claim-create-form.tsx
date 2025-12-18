@@ -588,11 +588,11 @@ export const ClaimCreateForm = ({
 
   return (
     <RouteFocusModal.Form form={form}>
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
-        <RouteFocusModal.Header />
-        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto">
-          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0">
-            <Heading level="h1">{t("orders.claims.create")}</Heading>
+      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col" data-testid="order-create-claim-form">
+        <RouteFocusModal.Header data-testid="order-create-claim-form-header" />
+        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto" data-testid="order-create-claim-form-body">
+          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0" data-testid="order-create-claim-form-content">
+            <Heading level="h1" data-testid="order-create-claim-form-heading">{t("orders.claims.create")}</Heading>
             <div className="mt-8 flex items-center justify-between">
               <Heading level="h2">{t("orders.returns.inbound")}</Heading>
 
@@ -813,13 +813,13 @@ export const ClaimCreateForm = ({
             />
 
             {/* TOTALS SECTION*/}
-            <div className="mt-8 border-y border-dotted py-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+            <div className="mt-8 border-y border-dotted py-4" data-testid="order-create-claim-form-totals-section">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-claim-form-inbound-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-claim-form-inbound-total-label">
                   {t("orders.returns.inboundTotal")}
                 </span>
 
-                <span className="txt-small text-ui-fg-subtle">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-claim-form-inbound-total-value">
                   {getStylizedAmount(
                     inboundPreviewItems.reduce((acc, item) => {
                       const action = item.actions?.find(
@@ -834,12 +834,12 @@ export const ClaimCreateForm = ({
                 </span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-claim-form-outbound-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-claim-form-outbound-total-label">
                   {t("orders.claims.outboundTotal")}
                 </span>
 
-                <span className="txt-small text-ui-fg-subtle">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-claim-form-outbound-total-value">
                   {getStylizedAmount(
                     outboundPreviewItems.reduce((acc, item) => {
                       const action = item.actions?.find(
@@ -1005,11 +1005,11 @@ export const ClaimCreateForm = ({
                 </span>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4">
-                <span className="txt-small font-medium">
+              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4" data-testid="order-create-claim-form-refund-amount-row">
+                <span className="txt-small font-medium" data-testid="order-create-claim-form-refund-amount-label">
                   {t("orders.claims.refundAmount")}
                 </span>
-                <span className="txt-small font-medium">
+                <span className="txt-small font-medium" data-testid="order-create-claim-form-refund-amount-value">
                   {getStylizedAmount(
                     preview.summary.pending_difference,
                     order.currency_code
@@ -1018,33 +1018,34 @@ export const ClaimCreateForm = ({
               </div>
             </div>
             {/* SEND NOTIFICATION*/}
-            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4">
+            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4" data-testid="order-create-claim-form-notification-section">
               <Form.Field
                 control={form.control}
                 name="send_notification"
                 render={({ field: { onChange, value, ...field } }) => {
                   return (
-                    <Form.Item>
-                      <div className="flex items-center">
-                        <Form.Control className="mr-4 self-start">
+                    <Form.Item data-testid="order-create-claim-form-notification-item">
+                      <div className="flex items-center" data-testid="order-create-claim-form-notification-control">
+                        <Form.Control className="mr-4 self-start" data-testid="order-create-claim-form-notification-switch-control">
                           <Switch
                             dir="ltr"
                             className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}
+                            data-testid="order-create-claim-form-notification-switch"
                           />
                         </Form.Control>
                         <div className="block">
-                          <Form.Label>
+                          <Form.Label data-testid="order-create-claim-form-notification-label">
                             {t("orders.returns.sendNotification")}
                           </Form.Label>
-                          <Form.Hint className="!mt-1">
+                          <Form.Hint className="!mt-1" data-testid="order-create-claim-form-notification-hint">
                             {t("orders.returns.sendNotificationHint")}
                           </Form.Hint>
                         </div>
                       </div>
-                      <Form.ErrorMessage />
+                      <Form.ErrorMessage data-testid="order-create-claim-form-notification-error" />
                     </Form.Item>
                   )
                 }}
@@ -1054,8 +1055,8 @@ export const ClaimCreateForm = ({
             <div className="p-8" />
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer>
-          <div className="flex w-full items-center justify-end gap-x-4">
+        <RouteFocusModal.Footer data-testid="order-create-claim-form-footer">
+          <div className="flex w-full items-center justify-end gap-x-4" data-testid="order-create-claim-form-footer-actions">
             <div className="flex items-center justify-end gap-x-2">
               <RouteFocusModal.Close asChild>
                 <Button
@@ -1063,6 +1064,7 @@ export const ClaimCreateForm = ({
                   onClick={() => (IS_CANCELING = true)}
                   variant="secondary"
                   size="small"
+                  data-testid="order-create-claim-form-cancel-button"
                 >
                   {t("orders.claims.cancel.title")}
                 </Button>
@@ -1073,6 +1075,7 @@ export const ClaimCreateForm = ({
                 variant="primary"
                 size="small"
                 isLoading={isRequestLoading}
+                data-testid="order-create-claim-form-confirm-button"
               >
                 {t("orders.claims.confirm")}
               </Button>

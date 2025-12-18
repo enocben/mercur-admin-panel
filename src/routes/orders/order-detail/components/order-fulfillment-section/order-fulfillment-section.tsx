@@ -42,7 +42,7 @@ export const OrderFulfillmentSection = ({
   const fulfillments = order.fulfillments || []
 
   return (
-    <div className="flex flex-col gap-y-3">
+    <div className="flex flex-col gap-y-3" data-testid="order-fulfillment-section">
       <UnfulfilledItemBreakdown order={order} />
       {fulfillments.map((f, index) => (
         <Fulfillment key={f.id} index={index} fulfillment={f} order={order} />
@@ -62,45 +62,47 @@ const UnfulfilledItem = ({
     <div
       key={item.id}
       className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4"
+      data-testid={`order-unfulfilled-item-${item.id}`}
     >
-      <div className="flex items-start gap-x-4">
-        <Thumbnail src={item.thumbnail} />
+      <div className="flex items-start gap-x-4" data-testid={`order-unfulfilled-item-${item.id}-info`}>
+        <Thumbnail src={item.thumbnail} data-testid={`order-unfulfilled-item-${item.id}-thumbnail`} />
         <div>
           <Text
             size="small"
             leading="compact"
             weight="plus"
             className="text-ui-fg-base"
+            data-testid={`order-unfulfilled-item-${item.id}-title`}
           >
             {item.title}
           </Text>
           {item.variant_sku && (
-            <div className="flex items-center gap-x-1">
-              <Text size="small">{item.variant_sku}</Text>
-              <Copy content={item.variant_sku} className="text-ui-fg-muted" />
+            <div className="flex items-center gap-x-1" data-testid={`order-unfulfilled-item-${item.id}-sku`}>
+              <Text size="small" data-testid={`order-unfulfilled-item-${item.id}-sku-value`}>{item.variant_sku}</Text>
+              <Copy content={item.variant_sku} className="text-ui-fg-muted" data-testid={`order-unfulfilled-item-${item.id}-sku-copy`} />
             </div>
           )}
-          <Text size="small">
+          <Text size="small" data-testid={`order-unfulfilled-item-${item.id}-variant-options`}>
             {item.variant?.options?.map((o) => o.value).join(" · ")}
           </Text>
         </div>
       </div>
-      <div className="grid grid-cols-3 items-center gap-x-4">
-        <div className="flex items-center justify-end">
-          <Text size="small">
+      <div className="grid grid-cols-3 items-center gap-x-4" data-testid={`order-unfulfilled-item-${item.id}-pricing`}>
+        <div className="flex items-center justify-end" data-testid={`order-unfulfilled-item-${item.id}-unit-price`}>
+          <Text size="small" data-testid={`order-unfulfilled-item-${item.id}-unit-price-value`}>
             {getLocaleAmount(item.unit_price, currencyCode)}
           </Text>
         </div>
-        <div className="flex items-center justify-end">
-          <Text>
+        <div className="flex items-center justify-end" data-testid={`order-unfulfilled-item-${item.id}-quantity`}>
+          <Text data-testid={`order-unfulfilled-item-${item.id}-quantity-value`}>
             <span className="tabular-nums">
               {item.quantity - item.detail.fulfilled_quantity}
             </span>
             x
           </Text>
         </div>
-        <div className="flex items-center justify-end">
-          <Text size="small">
+        <div className="flex items-center justify-end" data-testid={`order-unfulfilled-item-${item.id}-subtotal`}>
+          <Text size="small" data-testid={`order-unfulfilled-item-${item.id}-subtotal-value`}>
             {getLocaleAmount(item.subtotal || 0, currencyCode)}
           </Text>
         </div>
@@ -156,18 +158,18 @@ const UnfulfilledItemDisplay = ({
   }
 
   return (
-    <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">{t("orders.fulfillment.unfulfilledItems")}</Heading>
+    <Container className="divide-y p-0" data-testid="order-unfulfilled-items-section">
+      <div className="flex items-center justify-between px-6 py-4" data-testid="order-unfulfilled-items-header">
+        <Heading level="h2" data-testid="order-unfulfilled-items-heading">{t("orders.fulfillment.unfulfilledItems")}</Heading>
 
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4" data-testid="order-unfulfilled-items-badges">
           {requiresShipping && (
-            <StatusBadge color="red" className="text-nowrap">
+            <StatusBadge color="red" className="text-nowrap" data-testid="order-unfulfilled-items-requires-shipping-badge">
               {t("orders.fulfillment.requiresShipping")}
             </StatusBadge>
           )}
 
-          <StatusBadge color="red" className="text-nowrap">
+          <StatusBadge color="red" className="text-nowrap" data-testid="order-unfulfilled-items-awaiting-badge">
             {t("orders.fulfillment.awaitingFulfillmentBadge")}
           </StatusBadge>
 
@@ -323,21 +325,21 @@ const Fulfillment = ({
   const isValidUrl = (url?: string) => url && url.length > 0 && url !== "#"
 
   return (
-    <Container className="divide-y p-0">
-      <div className="flex items-center justify-between px-6 py-4">
-        <Heading level="h2">
+    <Container className="divide-y p-0" data-testid={`order-fulfillment-${fulfillment.id}`}>
+      <div className="flex items-center justify-between px-6 py-4" data-testid={`order-fulfillment-${fulfillment.id}-header`}>
+        <Heading level="h2" data-testid={`order-fulfillment-${fulfillment.id}-heading`}>
           {t("orders.fulfillment.number", {
             number: index + 1,
           })}
         </Heading>
-        <div className="flex items-center gap-x-4">
+        <div className="flex items-center gap-x-4" data-testid={`order-fulfillment-${fulfillment.id}-status`}>
           <Tooltip
             content={format(
               new Date(statusTimestamp),
               "dd MMM, yyyy, HH:mm:ss"
             )}
           >
-            <StatusBadge color={statusColor} className="text-nowrap">
+            <StatusBadge color={statusColor} className="text-nowrap" data-testid={`order-fulfillment-${fulfillment.id}-status-badge`}>
               {statusText}
             </StatusBadge>
           </Tooltip>
@@ -360,14 +362,14 @@ const Fulfillment = ({
           />
         </div>
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
-        <Text size="small" leading="compact" weight="plus">
+      <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4" data-testid={`order-fulfillment-${fulfillment.id}-items`}>
+        <Text size="small" leading="compact" weight="plus" data-testid={`order-fulfillment-${fulfillment.id}-items-label`}>
           {t("orders.fulfillment.itemsLabel")}
         </Text>
-        <ul>
+        <ul data-testid={`order-fulfillment-${fulfillment.id}-items-list`}>
           {fulfillment.items.map((f_item) => (
-            <li key={f_item.line_item_id}>
-              <Text size="small" leading="compact">
+            <li key={f_item.line_item_id} data-testid={`order-fulfillment-${fulfillment.id}-item-${f_item.line_item_id}`}>
+              <Text size="small" leading="compact" data-testid={`order-fulfillment-${fulfillment.id}-item-${f_item.line_item_id}-text`}>
                 {f_item.quantity}x {f_item.title}
               </Text>
             </li>
@@ -375,38 +377,39 @@ const Fulfillment = ({
         </ul>
       </div>
       {showLocation && (
-        <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
-          <Text size="small" leading="compact" weight="plus">
+        <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4" data-testid={`order-fulfillment-${fulfillment.id}-location`}>
+          <Text size="small" leading="compact" weight="plus" data-testid={`order-fulfillment-${fulfillment.id}-location-label`}>
             {t("orders.fulfillment.shippingFromLabel")}
           </Text>
           {stock_location ? (
             <Link
               to={`/settings/locations/${stock_location.id}`}
               className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover transition-fg"
+              data-testid={`order-fulfillment-${fulfillment.id}-location-link`}
             >
-              <Text size="small" leading="compact">
+              <Text size="small" leading="compact" data-testid={`order-fulfillment-${fulfillment.id}-location-name`}>
                 {stock_location.name}
               </Text>
             </Link>
           ) : (
-            <Skeleton className="w-16" />
+            <Skeleton className="w-16" data-testid={`order-fulfillment-${fulfillment.id}-location-skeleton`} />
           )}
         </div>
       )}
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4">
-        <Text size="small" leading="compact" weight="plus">
+      <div className="text-ui-fg-subtle grid grid-cols-2 items-center px-6 py-4" data-testid={`order-fulfillment-${fulfillment.id}-provider`}>
+        <Text size="small" leading="compact" weight="plus" data-testid={`order-fulfillment-${fulfillment.id}-provider-label`}>
           {t("fields.provider")}
         </Text>
 
-        <Text size="small" leading="compact">
+        <Text size="small" leading="compact" data-testid={`order-fulfillment-${fulfillment.id}-provider-value`}>
           {formatProvider(fulfillment.provider_id)}
         </Text>
       </div>
-      <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4">
-        <Text size="small" leading="compact" weight="plus">
+      <div className="text-ui-fg-subtle grid grid-cols-2 items-start px-6 py-4" data-testid={`order-fulfillment-${fulfillment.id}-tracking`}>
+        <Text size="small" leading="compact" weight="plus" data-testid={`order-fulfillment-${fulfillment.id}-tracking-label`}>
           {t("orders.fulfillment.trackingLabel")}
         </Text>
-        <div>
+        <div data-testid={`order-fulfillment-${fulfillment.id}-tracking-list`}>
           {fulfillment.labels && fulfillment.labels.length > 0 ? (
             <ul>
               {fulfillment.labels.map((tlink) => {
@@ -415,15 +418,16 @@ const Fulfillment = ({
 
                 if (hasTrackingUrl || hasLabelUrl) {
                   return (
-                    <li key={tlink.tracking_number}>
+                    <li key={tlink.tracking_number} data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}`}>
                       {hasTrackingUrl && (
                         <a
                           href={tlink.tracking_url}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover transition-fg"
+                          data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}-link`}
                         >
-                          <Text size="small" leading="compact" as="span">
+                          <Text size="small" leading="compact" as="span" data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}-number`}>
                             {tlink.tracking_number}
                           </Text>
                         </a>
@@ -435,8 +439,9 @@ const Fulfillment = ({
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-ui-fg-interactive hover:text-ui-fg-interactive-hover transition-fg"
+                          data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}-label-link`}
                         >
-                          <Text size="small" leading="compact" as="span">
+                          <Text size="small" leading="compact" as="span" data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}-label`}>
                             Label
                           </Text>
                         </a>
@@ -446,8 +451,8 @@ const Fulfillment = ({
                 }
 
                 return (
-                  <li key={tlink.tracking_number}>
-                    <Text size="small" leading="compact">
+                  <li key={tlink.tracking_number} data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}`}>
+                    <Text size="small" leading="compact" data-testid={`order-fulfillment-${fulfillment.id}-tracking-${tlink.tracking_number}-number`}>
                       {tlink.tracking_number}
                     </Text>
                   </li>
@@ -455,7 +460,7 @@ const Fulfillment = ({
               })}
             </ul>
           ) : (
-            <Text size="small" leading="compact">
+            <Text size="small" leading="compact" data-testid={`order-fulfillment-${fulfillment.id}-tracking-empty`}>
               -
             </Text>
           )}

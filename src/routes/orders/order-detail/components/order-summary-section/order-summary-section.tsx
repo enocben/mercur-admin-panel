@@ -188,7 +188,7 @@ export const OrderSummarySection = ({
   }
 
   return (
-    <Container className="divide-y divide-dashed p-0">
+    <Container className="divide-y divide-dashed p-0" data-testid="order-summary-section">
       <Header order={order} orderPreview={orderPreview} />
       <ItemBreakdown order={order} reservations={reservations!} />
       <CostBreakdown order={order} />
@@ -306,8 +306,8 @@ const Header = ({
     orderPreview?.order_change?.status === "pending"
 
   return (
-    <div className="flex items-center justify-between px-6 py-4">
-      <Heading level="h2">{t("fields.summary")}</Heading>
+    <div className="flex items-center justify-between px-6 py-4" data-testid="order-summary-header">
+      <Heading level="h2" data-testid="order-summary-heading">{t("fields.summary")}</Heading>
       <ActionMenu
         groups={[
           {
@@ -408,36 +408,37 @@ const Item = ({
       <div
         key={item.id}
         className="text-ui-fg-subtle grid grid-cols-2 items-center gap-x-4 px-6 py-4"
+        data-testid={`order-item-${item.id}`}
       >
-        <div className="flex items-start gap-x-4">
-          <Thumbnail src={item.thumbnail} />
+        <div className="flex items-start gap-x-4" data-testid={`order-item-${item.id}-info`}>
+          <Thumbnail src={item.thumbnail} data-testid={`order-item-${item.id}-thumbnail`} />
           <div>
-            <Text size="small" leading="compact" className="text-ui-fg-base">
+            <Text size="small" leading="compact" className="text-ui-fg-base" data-testid={`order-item-${item.id}-title`}>
               {item.title}
             </Text>
 
             {item.variant_sku && (
-              <div className="flex items-center gap-x-1">
-                <Text size="small">{item.variant_sku}</Text>
-                <Copy content={item.variant_sku} className="text-ui-fg-muted" />
+              <div className="flex items-center gap-x-1" data-testid={`order-item-${item.id}-sku`}>
+                <Text size="small" data-testid={`order-item-${item.id}-sku-value`}>{item.variant_sku}</Text>
+                <Copy content={item.variant_sku} className="text-ui-fg-muted" data-testid={`order-item-${item.id}-sku-copy`} />
               </div>
             )}
-            <Text size="small">
+            <Text size="small" data-testid={`order-item-${item.id}-variant-options`}>
               {item.variant?.options?.map((o) => o.value).join(" · ")}
             </Text>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 items-center gap-x-4">
-          <div className="flex items-center justify-end gap-x-4">
-            <Text size="small">
+        <div className="grid grid-cols-3 items-center gap-x-4" data-testid={`order-item-${item.id}-pricing`}>
+          <div className="flex items-center justify-end gap-x-4" data-testid={`order-item-${item.id}-unit-price`}>
+            <Text size="small" data-testid={`order-item-${item.id}-unit-price-value`}>
               {getLocaleAmount(item.unit_price, currencyCode)}
             </Text>
           </div>
 
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-2" data-testid={`order-item-${item.id}-quantity`}>
             <div className="w-fit min-w-[27px]">
-              <Text size="small">
+              <Text size="small" data-testid={`order-item-${item.id}-quantity-value`}>
                 <span className="tabular-nums">{item.quantity}</span>x
               </Text>
             </div>
@@ -447,7 +448,7 @@ const Item = ({
                 <StatusBadge
                   color={reservation ? "green" : "orange"}
                   className="text-nowrap"
-                  data-testid={reservation ? "order-item-allocated-badge" : "order-item-not-allocated-warning-badge"}
+                  data-testid={reservation ? `order-item-${item.id}-allocated-badge` : `order-item-${item.id}-not-allocated-badge`}
                 >
                   {reservation
                     ? t("orders.reservations.allocatedLabel")
@@ -457,8 +458,8 @@ const Item = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-end">
-            <Text size="small" className="pt-[1px]">
+          <div className="flex items-center justify-end" data-testid={`order-item-${item.id}-subtotal`}>
+            <Text size="small" className="pt-[1px]" data-testid={`order-item-${item.id}-subtotal-value`}>
               {getLocaleAmount(item.subtotal || 0, currencyCode)}
             </Text>
           </div>
@@ -539,23 +540,25 @@ const Cost = ({
   value,
   secondaryValue,
   tooltip,
+  testId,
 }: {
   label: ReactNode
   value: string | number
   secondaryValue?: string
   tooltip?: ReactNode
+  testId?: string
 }) => (
-  <div className="grid grid-cols-3 items-center">
-    <Text size="small" leading="compact">
+  <div className="grid grid-cols-3 items-center" data-testid={testId}>
+    <Text size="small" leading="compact" data-testid={testId ? `${testId}-label` : undefined}>
       {label} {tooltip}
     </Text>
-    <div className="text-right">
-      <Text size="small" leading="compact">
+    <div className="text-right" data-testid={testId ? `${testId}-secondary` : undefined}>
+      <Text size="small" leading="compact" data-testid={testId ? `${testId}-secondary-value` : undefined}>
         {secondaryValue}
       </Text>
     </div>
-    <div className="text-right">
-      <Text size="small" leading="compact">
+    <div className="text-right" data-testid={testId ? `${testId}-value` : undefined}>
+      <Text size="small" leading="compact" data-testid={testId ? `${testId}-value-text` : undefined}>
         {value}
       </Text>
     </div>
@@ -602,16 +605,18 @@ const CostBreakdown = ({
   const hasTaxes = !!Object.keys(taxCodes).length
 
   return (
-    <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
+    <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4" data-testid="order-cost-breakdown">
       <Cost
         label={t("orders.summary.itemSubtotal")}
         value={getLocaleAmount(order.item_subtotal, order.currency_code)}
+        testId="order-item-subtotal"
       />
       <Cost
         label={
           <div
             onClick={() => setIsShippingOpen((o) => !o)}
             className="flex cursor-pointer items-center gap-1"
+            data-testid="order-shipping-subtotal-toggle"
           >
             <span>{t("orders.summary.shippingSubtotal")}</span>
             <TriangleDownMini
@@ -622,10 +627,11 @@ const CostBreakdown = ({
           </div>
         }
         value={getLocaleAmount(order.shipping_subtotal, order.currency_code)}
+        testId="order-shipping-subtotal"
       />
 
       {isShippingOpen && (
-        <div className="flex flex-col gap-1 pl-5">
+        <div className="flex flex-col gap-1 pl-5" data-testid="order-shipping-methods">
           {(order.shipping_methods || [])
             .sort((m1, m2) =>
               (m1.created_at as string).localeCompare(m2.created_at as string)
@@ -635,8 +641,9 @@ const CostBreakdown = ({
                 <div
                   key={sm.id}
                   className="flex items-center justify-between gap-x-2"
+                  data-testid={`order-shipping-method-${sm.id}`}
                 >
-                  <div>
+                  <div data-testid={`order-shipping-method-${sm.id}-name`}>
                     <span className="txt-small">
                       {sm.name}
                       {sm.detail.return_id &&
@@ -647,7 +654,7 @@ const CostBreakdown = ({
                   <div className="relative flex-1">
                     <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
                   </div>
-                  <span className="txt-small text-ui-fg-muted">
+                  <span className="txt-small text-ui-fg-muted" data-testid={`order-shipping-method-${sm.id}-amount`}>
                     {getLocaleAmount(sm.subtotal, order.currency_code)}
                   </span>
                 </div>
@@ -683,23 +690,24 @@ const CostBreakdown = ({
           </div>
         </div>
         {isTaxOpen && (
-          <div className="flex flex-col gap-1 pl-5">
+          <div className="flex flex-col gap-1 pl-5" data-testid="order-tax-codes">
             {Object.entries(taxCodes).map(([code, { total, rate }]) => {
               return (
                 <div
                   key={code}
                   className="flex items-center justify-between gap-x-2"
+                  data-testid={`order-tax-code-${code}`}
                 >
-                  <div className="flex gap-1">
-                    <span className="txt-small">{code}</span>
-                    <span className="txt-small">
+                  <div className="flex gap-1" data-testid={`order-tax-code-${code}-info`}>
+                    <span className="txt-small" data-testid={`order-tax-code-${code}-name`}>{code}</span>
+                    <span className="txt-small" data-testid={`order-tax-code-${code}-rate`}>
                       ({formatPercentage(rate)})
                     </span>
                   </div>
                   <div className="relative flex-1">
                     <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
                   </div>
-                  <span className="txt-small text-ui-fg-muted">
+                  <span className="txt-small text-ui-fg-muted" data-testid={`order-tax-code-${code}-amount`}>
                     {getLocaleAmount(total, order.currency_code)}
                   </span>
                 </div>
@@ -708,14 +716,15 @@ const CostBreakdown = ({
           </div>
         )}
       </>
-      <div className="text-ui-fg-base flex items-center justify-between">
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+      <div className="text-ui-fg-base flex items-center justify-between" data-testid="order-original-total">
+        <Text className="text-ui-fg-subtle" size="small" leading="compact" data-testid="order-original-total-label">
           {t("fields.total")}
         </Text>
         <Text
           className="text-ui-fg-subtle text-bold"
           size="small"
           leading="compact"
+          data-testid="order-original-total-value"
         >
           {getLocaleAmount(order.original_total, order.currency_code)}
         </Text>
@@ -777,7 +786,7 @@ const DiscountAndTotalBreakdown = ({
   const hasCreditLines = creditLines.length > 0
 
   return (
-    <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4">
+    <div className="text-ui-fg-subtle flex flex-col gap-y-2 px-6 py-4" data-testid="order-discount-breakdown">
       <Cost
         label={
           <div
@@ -785,6 +794,7 @@ const DiscountAndTotalBreakdown = ({
             className={clx("flex items-center gap-1", {
               "cursor-pointer": hasDiscount,
             })}
+            data-testid="order-discount-total-toggle"
           >
             <span>{t("orders.summary.discountTotal")}</span>
             {hasDiscount && (
@@ -797,23 +807,25 @@ const DiscountAndTotalBreakdown = ({
           </div>
         }
         value={getLocaleAmount(order.discount_total, order.currency_code)}
+        testId="order-discount-total"
       />
       {isDiscountOpen && (
-        <div className="flex flex-col gap-1 pl-5">
+        <div className="flex flex-col gap-1 pl-5" data-testid="order-discounts">
           {discounts.map(({ type, total, codes }) => {
             return (
               <div
                 key={type}
                 className="flex items-center justify-between gap-x-2"
+                data-testid={`order-discount-${type}`}
               >
-                <div className="flex gap-1">
-                  <span className="txt-small">{t(`fields.${type}`)}</span>
-                  <span className="txt-small">({codes.join(", ")})</span>
+                <div className="flex gap-1" data-testid={`order-discount-${type}-info`}>
+                  <span className="txt-small" data-testid={`order-discount-${type}-label`}>{t(`fields.${type}`)}</span>
+                  <span className="txt-small" data-testid={`order-discount-${type}-codes`}>({codes.join(", ")})</span>
                 </div>
                 <div className="relative flex-1">
                   <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
                 </div>
-                <span className="txt-small text-ui-fg-muted">
+                <span className="txt-small text-ui-fg-muted" data-testid={`order-discount-${type}-amount`}>
                   {getLocaleAmount(total, order.currency_code)}
                 </span>
               </div>
@@ -848,7 +860,7 @@ const DiscountAndTotalBreakdown = ({
             )}
           />
           {isCreditLinesOpen && (
-            <div className="flex flex-col gap-1 pl-5">
+            <div className="flex flex-col gap-1 pl-5" data-testid="order-credit-lines">
               {creditLines.map((creditLine) => {
                 const prettyReference = creditLine.reference
                   ?.split("_")
@@ -860,13 +872,15 @@ const DiscountAndTotalBreakdown = ({
                   <div
                     key={creditLine.id}
                     className="flex items-center justify-between gap-x-2"
+                    data-testid={`order-credit-line-${creditLine.id}`}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center" data-testid={`order-credit-line-${creditLine.id}-info`}>
                       <Text
                         size="small"
                         leading="compact"
                         weight="plus"
                         className="txt-small text-ui-fg-subtle font-medium"
+                        data-testid={`order-credit-line-${creditLine.id}-id`}
                       >
                         <DisplayId id={creditLine.id} />
                       </Text>
@@ -883,6 +897,7 @@ const DiscountAndTotalBreakdown = ({
                           size="small"
                           leading="compact"
                           className="txt-small text-ui-fg-subtle"
+                          data-testid={`order-credit-line-${creditLine.id}-date`}
                         >
                           {format(
                             new Date(creditLine.created_at),
@@ -897,6 +912,7 @@ const DiscountAndTotalBreakdown = ({
                         size="small"
                         leading="compact"
                         className="txt-small text-ui-fg-subtle capitalize"
+                        data-testid={`order-credit-line-${creditLine.id}-reference`}
                       >
                         ({prettyReference})
                       </Text>
@@ -904,7 +920,7 @@ const DiscountAndTotalBreakdown = ({
                     <div className="relative flex-1">
                       <div className="bottom-[calc(50% - 2px)] absolute h-[1px] w-full border-b border-dashed" />
                     </div>
-                    <span className="txt-small text-ui-fg-muted">
+                    <span className="txt-small text-ui-fg-muted" data-testid={`order-credit-line-${creditLine.id}-amount`}>
                       {getLocaleAmount(
                         creditLine.amount as number,
                         order.currency_code
@@ -918,14 +934,15 @@ const DiscountAndTotalBreakdown = ({
         </>
       )}
 
-      <div className="text-ui-fg-base flex items-center justify-between">
-        <Text className="text-ui-fg-subtle" size="small" leading="compact">
+      <div className="text-ui-fg-base flex items-center justify-between" data-testid="order-total-after-discount">
+        <Text className="text-ui-fg-subtle" size="small" leading="compact" data-testid="order-total-after-discount-label">
           {t("orders.summary.totalAfterDiscount")}
         </Text>
         <Text
           className="text-ui-fg-subtle text-bold"
           size="small"
           leading="compact"
+          data-testid="order-total-after-discount-value"
         >
           {getLocaleAmount(order.total, order.currency_code)}
         </Text>

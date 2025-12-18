@@ -411,16 +411,16 @@ export const ReturnCreateForm = ({
         }
       }}
     >
-      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col">
-        <RouteFocusModal.Header />
-        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto">
-          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0">
-            <Heading level="h1">{t("orders.returns.create")}</Heading>
-            <div className="mt-8 flex items-center justify-between">
-              <Heading level="h2">{t("orders.returns.inbound")}</Heading>
+      <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col" data-testid="order-create-return-form">
+        <RouteFocusModal.Header data-testid="order-create-return-form-header" />
+        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto" data-testid="order-create-return-form-body">
+          <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0" data-testid="order-create-return-form-content">
+            <Heading level="h1" data-testid="order-create-return-form-heading">{t("orders.returns.create")}</Heading>
+            <div className="mt-8 flex items-center justify-between" data-testid="order-create-return-form-inbound-header">
+              <Heading level="h2" data-testid="order-create-return-form-inbound-heading">{t("orders.returns.inbound")}</Heading>
               <StackedFocusModal id="items">
                 <StackedFocusModal.Trigger asChild>
-                  <a className="focus-visible:shadow-borders-focus transition-fg txt-compact-small-plus cursor-pointer text-blue-500 outline-none hover:text-blue-400">
+                  <a className="focus-visible:shadow-borders-focus transition-fg txt-compact-small-plus cursor-pointer text-blue-500 outline-none hover:text-blue-400" data-testid="order-create-return-form-add-items-button">
                     {t("actions.addItems")}
                   </a>
                 </StackedFocusModal.Trigger>
@@ -515,12 +515,12 @@ export const ReturnCreateForm = ({
                 />
               ))}
             {!showPlaceholder && (
-              <div className="mt-8 flex flex-col gap-y-4">
+              <div className="mt-8 flex flex-col gap-y-4" data-testid="order-create-return-form-shipping-section">
                 {/* LOCATION*/}
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2" data-testid="order-create-return-form-location-field">
                   <div>
-                    <Form.Label>{t("orders.returns.location")}</Form.Label>
-                    <Form.Hint className="!mt-1">
+                    <Form.Label data-testid="order-create-return-form-location-label">{t("orders.returns.location")}</Form.Label>
+                    <Form.Hint className="!mt-1" data-testid="order-create-return-form-location-hint">
                       {t("orders.returns.locationHint")}
                     </Form.Hint>
                   </div>
@@ -530,8 +530,8 @@ export const ReturnCreateForm = ({
                     name="location_id"
                     render={({ field: { value, onChange, ...field } }) => {
                       return (
-                        <Form.Item>
-                          <Form.Control>
+                        <Form.Item data-testid="order-create-return-form-location-item">
+                          <Form.Control data-testid="order-create-return-form-location-control">
                             <Combobox
                               value={value}
                               onChange={(v) => {
@@ -545,6 +545,7 @@ export const ReturnCreateForm = ({
                                   value: stockLocation.id,
                                 })
                               )}
+                              data-testid="order-create-return-form-location-combobox"
                             />
                           </Form.Control>
                         </Form.Item>
@@ -554,9 +555,9 @@ export const ReturnCreateForm = ({
                 </div>
 
                 {/* INBOUND SHIPPING*/}
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2" data-testid="order-create-return-form-shipping-option-field">
                   <div>
-                    <Form.Label>
+                    <Form.Label data-testid="order-create-return-form-shipping-option-label">
                       {t("orders.returns.inboundShipping")}
                       <Text
                         size="small"
@@ -567,7 +568,7 @@ export const ReturnCreateForm = ({
                       </Text>
                     </Form.Label>
 
-                    <Form.Hint className="!mt-1">
+                    <Form.Hint className="!mt-1" data-testid="order-create-return-form-shipping-option-hint">
                       {t("orders.returns.inboundShippingHint")}
                     </Form.Hint>
                   </div>
@@ -577,8 +578,8 @@ export const ReturnCreateForm = ({
                     name="option_id"
                     render={({ field: { value, onChange, ...field } }) => {
                       return (
-                        <Form.Item>
-                          <Form.Control>
+                        <Form.Item data-testid="order-create-return-form-shipping-option-item">
+                          <Form.Control data-testid="order-create-return-form-shipping-option-control">
                             <Combobox
                               allowClear
                               value={value}
@@ -608,6 +609,7 @@ export const ReturnCreateForm = ({
                               noResultsPlaceholder={
                                 <ReturnShippingPlaceholder />
                               }
+                              data-testid="order-create-return-form-shipping-option-combobox"
                             />
                           </Form.Control>
                         </Form.Item>
@@ -630,12 +632,12 @@ export const ReturnCreateForm = ({
             )}
 
             {/* TOTALS SECTION*/}
-            <div className="mt-8 border-y border-dotted py-4">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+            <div className="mt-8 border-y border-dotted py-4" data-testid="order-create-return-form-totals-section">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-return-form-return-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-return-form-return-total-label">
                   {t("orders.returns.returnTotal")}
                 </span>
-                <span className="txt-small text-ui-fg-subtle">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-return-form-return-total-value">
                   {getStylizedAmount(
                     returnTotal ? -1 * returnTotal : returnTotal,
                     order.currency_code
@@ -643,17 +645,18 @@ export const ReturnCreateForm = ({
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="txt-small text-ui-fg-subtle">
+              <div className="flex items-center justify-between" data-testid="order-create-return-form-shipping-total-row">
+                <span className="txt-small text-ui-fg-subtle" data-testid="order-create-return-form-shipping-total-label">
                   {t("orders.returns.inboundShipping")}
                 </span>
-                <span className="txt-small text-ui-fg-subtle flex items-center">
+                <span className="txt-small text-ui-fg-subtle flex items-center" data-testid="order-create-return-form-shipping-total-value">
                   {!isShippingPriceEdit && (
                     <IconButton
                       onClick={() => setIsShippingPriceEdit(true)}
                       variant="transparent"
                       className="text-ui-fg-muted"
                       disabled={showPlaceholder || !shippingOptionId}
+                      data-testid="order-create-return-form-shipping-edit-button"
                     >
                       <PencilSquare />
                     </IconButton>
@@ -695,6 +698,7 @@ export const ReturnCreateForm = ({
                       }
                       value={customShippingAmount.value}
                       disabled={showPlaceholder}
+                      data-testid="order-create-return-form-shipping-amount-input"
                     />
                   ) : (
                     getStylizedAmount(shippingTotal, order.currency_code)
@@ -702,11 +706,11 @@ export const ReturnCreateForm = ({
                 </span>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4">
-                <span className="txt-small font-medium">
+              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4" data-testid="order-create-return-form-difference-row">
+                <span className="txt-small font-medium" data-testid="order-create-return-form-difference-label">
                   {t("orders.returns.estDifference")}
                 </span>
-                <span className="txt-small font-medium">
+                <span className="txt-small font-medium" data-testid="order-create-return-form-difference-value">
                   {getStylizedAmount(
                     preview.summary.pending_difference,
                     order.currency_code
@@ -716,33 +720,34 @@ export const ReturnCreateForm = ({
             </div>
 
             {/* SEND NOTIFICATION*/}
-            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4">
+            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4" data-testid="order-create-return-form-notification-section">
               <Form.Field
                 control={form.control}
                 name="send_notification"
                 render={({ field: { onChange, value, ...field } }) => {
                   return (
-                    <Form.Item>
-                      <div className="flex items-center">
-                        <Form.Control className="mr-4 self-start">
+                    <Form.Item data-testid="order-create-return-form-notification-item">
+                      <div className="flex items-center" data-testid="order-create-return-form-notification-control">
+                        <Form.Control className="mr-4 self-start" data-testid="order-create-return-form-notification-switch-control">
                           <Switch
                             dir="ltr"
                             className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}
+                            data-testid="order-create-return-form-notification-switch"
                           />
                         </Form.Control>
                         <div className="block">
-                          <Form.Label>
+                          <Form.Label data-testid="order-create-return-form-notification-label">
                             {t("orders.returns.sendNotification")}
                           </Form.Label>
-                          <Form.Hint className="!mt-1">
+                          <Form.Hint className="!mt-1" data-testid="order-create-return-form-notification-hint">
                             {t("orders.returns.sendNotificationHint")}
                           </Form.Hint>
                         </div>
                       </div>
-                      <Form.ErrorMessage />
+                      <Form.ErrorMessage data-testid="order-create-return-form-notification-error" />
                     </Form.Item>
                   )
                 }}
@@ -752,11 +757,11 @@ export const ReturnCreateForm = ({
             <div className="p-8" />
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer>
-          <div className="flex w-full items-center justify-end gap-x-4">
+        <RouteFocusModal.Footer data-testid="order-create-return-form-footer">
+          <div className="flex w-full items-center justify-end gap-x-4" data-testid="order-create-return-form-footer-actions">
             <div className="flex items-center justify-end gap-x-2">
               <RouteFocusModal.Close asChild>
-                <Button type="button" variant="secondary" size="small">
+                <Button type="button" variant="secondary" size="small" data-testid="order-create-return-form-cancel-button">
                   {t("orders.returns.cancel.title")}
                 </Button>
               </RouteFocusModal.Close>
@@ -766,6 +771,7 @@ export const ReturnCreateForm = ({
                 variant="primary"
                 size="small"
                 isLoading={isRequestLoading}
+                data-testid="order-create-return-form-confirm-button"
               >
                 {t("orders.returns.confirm")}
               </Button>

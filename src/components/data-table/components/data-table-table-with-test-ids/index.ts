@@ -1,3 +1,1 @@
-export { DataTableTableWithTestIds } from "./data-table-table-with-test-ids"
-
-
+export { DataTableTableWithTestIds } from './data-table-table-with-test-ids';
