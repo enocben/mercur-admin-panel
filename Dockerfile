@@ -6,17 +6,17 @@ FROM node:22 as builder
 # Set working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
+RUN yarn install --frozen-lockfile
 
 # Copy the rest of the app’s source code
 COPY . .
 
 # Build the app
-RUN npm run build
+RUN yarn build:preview
 
 
 # Step 2: Use an Nginx image to serve the static files
