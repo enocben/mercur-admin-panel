@@ -1,11 +1,32 @@
-FROM node:24-alpine AS builder
+# Dockerfile
+
+# Step 1: Use a Node.js image to build the app
+FROM node:22 as builder
+
+# Set working directory inside the container
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the app’s source code
 COPY . .
+
+# Build the app
 RUN npm run build
 
-FROM busybox:1.30 AS runner
-WORKDIR /app
-COPY --from=builder /app/dist .
-CMD ["busybox", "httpd", "-f", "-v", "-p", "8080"]
+
+# Step 2: Use an Nginx image to serve the static files
+FROM nginx:alpine
+
+# Copy the build files from the builder stage to the Nginx web directory
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
