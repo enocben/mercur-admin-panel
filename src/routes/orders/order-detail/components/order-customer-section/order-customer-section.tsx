@@ -62,6 +62,7 @@ const Header = () => {
             ],
           },
         ]}
+        data-testid="order-customer-action-menu"
       />
     </div>
   )

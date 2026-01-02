@@ -99,23 +99,23 @@ const Refund = ({
   )
 
   return (
-    <div className="bg-ui-bg-subtle text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4" data-testid={`order-refund-${refund.id}`}>
-      <div className="flex flex-row" data-testid={`order-refund-${refund.id}-info`}>
+    <div className="bg-ui-bg-subtle text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4">
+      <div className="flex flex-row">
         <div className="self-center pr-3">
           <ArrowDownRightMini className="text-ui-fg-muted" />
         </div>
         <div>
-          <Text size="small" leading="compact" weight="plus" data-testid={`order-refund-${refund.id}-label`}>
+          <Text size="small" leading="compact" weight="plus">
             {t("orders.payment.refund")} {RefundNoteIndicator}
           </Text>
-          <Text size="small" leading="compact" data-testid={`order-refund-${refund.id}-date`}>
+          <Text size="small" leading="compact">
             {format(new Date(refund.created_at), "dd MMM, yyyy, HH:mm:ss")}
           </Text>
         </div>
       </div>
-      <div className="flex items-center justify-end" data-testid={`order-refund-${refund.id}-reason`}>{RefundReasonBadge}</div>
-      <div className="flex items-center justify-end" data-testid={`order-refund-${refund.id}-amount`}>
-        <Text size="small" leading="compact" data-testid={`order-refund-${refund.id}-amount-value`}>
+      <div className="flex items-center justify-end">{RefundReasonBadge}</div>
+      <div className="flex items-center justify-end">
+        <Text size="small" leading="compact">
           - {getLocaleAmount(refund.amount as number, currencyCode)}
         </Text>
       </div>
@@ -195,8 +195,8 @@ const Payment = ({
 
   return (
     <div className="divide-y divide-dashed" data-testid={`order-payment-${payment.id}`}>
-      <div className="text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4 sm:grid-cols-[1fr_1fr_1fr_1fr_20px]">
-        <div className="w-full min-w-[60px] overflow-hidden" data-testid={`order-payment-${payment.id}-info`}>
+      <div className="text-ui-fg-subtle grid grid-cols-[1fr_1fr_1fr_20px] items-center gap-x-4 px-6 py-4 sm:grid-cols-[1fr_1fr_1fr_1fr_20px]" data-testid={`order-payment-${payment.id}-row`}>
+        <div className="w-full min-w-[60px] overflow-hidden">
           <Text
             size="small"
             leading="compact"
@@ -217,18 +217,18 @@ const Payment = ({
             )}
           </Text>
         </div>
-        <div className="hidden items-center justify-end sm:flex" data-testid={`order-payment-${payment.id}-provider`}>
-          <Text size="small" leading="compact" className="capitalize" data-testid={`order-payment-${payment.id}-provider-value`}>
+        <div className="hidden items-center justify-end sm:flex">
+          <Text size="small" leading="compact" className="capitalize" data-testid={`order-payment-${payment.id}-provider`}>
             {payment.provider_id}
           </Text>
         </div>
-        <div className="flex items-center justify-end" data-testid={`order-payment-${payment.id}-status`}>
-          <StatusBadge color={color} className="text-nowrap" data-testid={`order-payment-${payment.id}-status-badge`}>
+        <div className="flex items-center justify-end">
+          <StatusBadge color={color} className="text-nowrap" data-testid={`order-payment-${payment.id}-status`}>
             {status}
           </StatusBadge>
         </div>
-        <div className="flex items-center justify-end" data-testid={`order-payment-${payment.id}-amount`}>
-          <Text size="small" leading="compact" data-testid={`order-payment-${payment.id}-amount-value`}>
+        <div className="flex items-center justify-end">
+          <Text size="small" leading="compact" data-testid={`order-payment-${payment.id}-amount`}>
             {getLocaleAmount(payment.amount as number, payment.currency_code)}
           </Text>
         </div>
@@ -248,10 +248,11 @@ const Payment = ({
               ],
             },
           ]}
+          data-testid={`order-payment-${payment.id}-action-menu`}
         />
       </div>
       {showCapture && (
-        <div className="bg-ui-bg-subtle flex items-center justify-between px-6 py-4">
+        <div className="bg-ui-bg-subtle flex items-center justify-between px-6 py-4" data-testid={`order-payment-${payment.id}-capture-section`}>
           <div className="flex items-center gap-x-2">
             <ArrowDownRightMini className="text-ui-fg-muted shrink-0" />
             <Text size="small" leading="compact">
@@ -267,6 +268,7 @@ const Payment = ({
             size="small"
             variant="secondary"
             onClick={handleCapture}
+            data-testid={`order-payment-${payment.id}-capture-button`}
           >
             <span className="hidden sm:block">
               {t("orders.payment.capture")}
@@ -401,7 +403,7 @@ const PaymentBreakdown = ({
   )[]
 
   return (
-    <div className="flex flex-col divide-y divide-dashed">
+    <div className="flex flex-col divide-y divide-dashed" data-testid="order-payment-breakdown">
       {entries.map(({ type, event }) => {
         switch (type) {
           case "payment":
@@ -446,11 +448,11 @@ const Total = ({ order }: { order: AdminOrder }) => {
   return (
     <div className="flex flex-col gap-y-4 px-6 py-4" data-testid="order-payment-total">
       <div className="flex items-center justify-between" data-testid="order-payment-total-paid">
-        <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-paid-label">
+        <Text size="small" weight="plus" leading="compact">
           {t("orders.payment.totalPaidByCustomer")}
         </Text>
 
-        <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-paid-value">
+        <Text size="small" weight="plus" leading="compact">
           {getStylizedAmount(
             getTotalCaptured(order.payment_collections),
             order.currency_code
@@ -460,11 +462,11 @@ const Total = ({ order }: { order: AdminOrder }) => {
 
       {order.status !== "canceled" && totalPending > 0 && (
         <div className="flex items-center justify-between" data-testid="order-payment-total-pending">
-          <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-pending-label">
+          <Text size="small" weight="plus" leading="compact">
             Total pending
           </Text>
 
-          <Text size="small" weight="plus" leading="compact" data-testid="order-payment-total-pending-value">
+          <Text size="small" weight="plus" leading="compact">
             {getStylizedAmount(totalPending, order.currency_code)}
           </Text>
         </div>

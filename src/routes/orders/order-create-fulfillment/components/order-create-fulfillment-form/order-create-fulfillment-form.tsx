@@ -224,34 +224,34 @@ export function OrderCreateFulfillmentForm({
     order.shipping_methods?.[0]?.shipping_option_id !== shippingOptionId
 
   return (
-    <RouteFocusModal.Form form={form}>
+    <RouteFocusModal.Form form={form} data-testid="order-create-fulfillment-form">
       <KeyboundForm
         onSubmit={handleSubmit}
         className="flex h-full flex-col overflow-hidden"
         data-testid="order-create-fulfillment-form"
       >
-        <RouteFocusModal.Header data-testid="order-create-fulfillment-form-header" />
+        <RouteFocusModal.Header data-testid="order-create-fulfillment-header" />
 
-        <RouteFocusModal.Body className="flex h-full w-full flex-col items-center divide-y overflow-y-auto" data-testid="order-create-fulfillment-form-body">
+        <RouteFocusModal.Body className="flex h-full w-full flex-col items-center divide-y overflow-y-auto" data-testid="order-create-fulfillment-body">
           <div className="flex size-full flex-col items-center overflow-auto p-16" data-testid="order-create-fulfillment-form-content">
             <div className="flex w-full max-w-[736px] flex-col justify-center px-2 pb-2">
               <div className="flex flex-col divide-y divide-dashed">
-                <div className="pb-8" data-testid="order-create-fulfillment-form-location-section">
+                <div className="pb-8" data-testid="order-create-fulfillment-location-section">
                   <Form.Field
                     control={form.control}
                     name="location_id"
                     render={({ field: { ...field } }) => {
                       return (
-                        <Form.Item data-testid="order-create-fulfillment-form-location-item">
+                        <Form.Item data-testid="order-create-fulfillment-location-item">
                           <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
                             <div className="flex-1">
-                              <Form.Label data-testid="order-create-fulfillment-form-location-label">{t("fields.location")}</Form.Label>
-                              <Form.Hint data-testid="order-create-fulfillment-form-location-hint">
+                              <Form.Label data-testid="order-create-fulfillment-location-label">{t("fields.location")}</Form.Label>
+                              <Form.Hint data-testid="order-create-fulfillment-location-hint">
                                 {t("orders.fulfillment.locationDescription")}
                               </Form.Hint>
                             </div>
                             <div className="flex-1">
-                              <Form.Control data-testid="order-create-fulfillment-form-location-control">
+                              <Form.Control data-testid="order-create-fulfillment-location-control">
                                 <Combobox
                                   {...field}
                                   options={stockLocations.options}
@@ -260,47 +260,47 @@ export function OrderCreateFulfillmentForm({
                                     stockLocations.onSearchValueChange
                                   }
                                   disabled={stockLocations.disabled}
-                                  data-testid="order-create-fulfillment-form-location-combobox"
+                                  data-testid="order-create-fulfillment-location-combobox"
                                 />
                               </Form.Control>
                             </div>
                           </div>
-                          <Form.ErrorMessage data-testid="order-create-fulfillment-form-location-error" />
+                          <Form.ErrorMessage data-testid="order-create-fulfillment-location-error" />
                         </Form.Item>
                       )
                     }}
                   />
                 </div>
 
-                <div className="py-8" data-testid="order-create-fulfillment-form-shipping-section">
+                <div className="py-8" data-testid="order-create-fulfillment-shipping-section">
                   <Form.Field
                     control={form.control}
                     name="shipping_option_id"
                     render={({ field: { onChange, ref, ...field } }) => {
                       return (
-                        <Form.Item data-testid="order-create-fulfillment-form-shipping-item">
+                        <Form.Item data-testid="order-create-fulfillment-shipping-item">
                           <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
                             <div className="flex-1">
-                              <Form.Label data-testid="order-create-fulfillment-form-shipping-label">
+                              <Form.Label data-testid="order-create-fulfillment-shipping-label">
                                 {t("fields.shippingMethod")}
                               </Form.Label>
-                              <Form.Hint data-testid="order-create-fulfillment-form-shipping-hint">
+                              <Form.Hint data-testid="order-create-fulfillment-shipping-hint">
                                 {t("orders.fulfillment.methodDescription")}
                               </Form.Hint>
                             </div>
                             <div className="flex-1">
-                              <Form.Control data-testid="order-create-fulfillment-form-shipping-control">
+                              <Form.Control data-testid="order-create-fulfillment-shipping-control">
                                 <Select
                                   dir={direction}
                                   onValueChange={onChange}
                                   {...field}
                                   disabled={!selectedLocationId}
-                                  data-testid="order-create-fulfillment-form-shipping-select"
+                                  data-testid="order-create-fulfillment-shipping-select"
                                 >
                                   <Select.Trigger
                                     className="bg-ui-bg-base"
                                     ref={ref}
-                                    data-testid="order-create-fulfillment-form-shipping-select-trigger"
+                                    data-testid="order-create-fulfillment-shipping-trigger"
                                   >
                                     {isShippingOptionsLoading ? (
                                       <span className="text-right" data-testid="order-create-fulfillment-form-shipping-select-loading">
@@ -310,9 +310,9 @@ export function OrderCreateFulfillmentForm({
                                       <Select.Value data-testid="order-create-fulfillment-form-shipping-select-value" />
                                     )}
                                   </Select.Trigger>
-                                  <Select.Content data-testid="order-create-fulfillment-form-shipping-select-content">
+                                  <Select.Content data-testid="order-create-fulfillment-shipping-content">
                                     {shipping_options.map((o) => (
-                                      <Select.Item key={o.id} value={o.id} data-testid={`order-create-fulfillment-form-shipping-select-option-${o.id}`}>
+                                      <Select.Item key={o.id} value={o.id} data-testid={`order-create-fulfillment-shipping-option-${o.id}`}>
                                         {o.name}
                                       </Select.Item>
                                     ))}
@@ -321,14 +321,14 @@ export function OrderCreateFulfillmentForm({
                               </Form.Control>
                             </div>
                           </div>
-                          <Form.ErrorMessage data-testid="order-create-fulfillment-form-shipping-error" />
+                          <Form.ErrorMessage data-testid="order-create-fulfillment-shipping-error" />
                         </Form.Item>
                       )
                     }}
                   />
 
                   {differentOptionSelected && (
-                    <Alert className="mt-4 p-4" variant="warning" data-testid="order-create-fulfillment-form-shipping-warning">
+                    <Alert className="mt-4 p-4" variant="warning" data-testid="order-create-fulfillment-shipping-warning">
                       <span className="-mt-[3px] block font-medium" data-testid="order-create-fulfillment-form-shipping-warning-title">
                         {t("labels.beaware")}
                       </span>
@@ -338,16 +338,16 @@ export function OrderCreateFulfillmentForm({
                     </Alert>
                   )}
                 </div>
-                <div data-testid="order-create-fulfillment-form-items-section">
-                  <Form.Item className="mt-8" data-testid="order-create-fulfillment-form-items-item">
-                    <Form.Label data-testid="order-create-fulfillment-form-items-label">
+                <div data-testid="order-create-fulfillment-items-section">
+                  <Form.Item className="mt-8" data-testid="order-create-fulfillment-items-item">
+                    <Form.Label data-testid="order-create-fulfillment-items-label">
                       {t("orders.fulfillment.itemsToFulfill")}
                     </Form.Label>
-                    <Form.Hint data-testid="order-create-fulfillment-form-items-hint">
+                    <Form.Hint data-testid="order-create-fulfillment-items-hint">
                       {t("orders.fulfillment.itemsToFulfillDesc")}
                     </Form.Hint>
 
-                    <div className="flex flex-col gap-y-1" data-testid="order-create-fulfillment-form-items-list">
+                    <div className="flex flex-col gap-y-1" data-testid="order-create-fulfillment-items-list">
                       {fulfillableItems.map((item) => {
                         const isShippingProfileMatching =
                           shipping_options.find(
@@ -376,25 +376,25 @@ export function OrderCreateFulfillmentForm({
                       dismissible={false}
                       className="flex items-center"
                       classNameInner="flex justify-between flex-1 items-center"
-                      data-testid="order-create-fulfillment-form-items-error"
+                      data-testid="order-create-fulfillment-items-error"
                     >
                       {form.formState.errors.root.message}
                     </Alert>
                   )}
                 </div>
 
-                <div className="mt-8 pt-8 " data-testid="order-create-fulfillment-form-notification-section">
+                <div className="mt-8 pt-8 " data-testid="order-create-fulfillment-notification-section">
                   <Form.Field
                     control={form.control}
                     name="send_notification"
                     render={({ field: { onChange, value, ...field } }) => {
                       return (
-                        <Form.Item data-testid="order-create-fulfillment-form-notification-item">
+                        <Form.Item data-testid="order-create-fulfillment-notification-item">
                           <div className="flex items-center justify-between" data-testid="order-create-fulfillment-form-notification-control">
-                            <Form.Label data-testid="order-create-fulfillment-form-notification-label">
+                            <Form.Label data-testid="order-create-fulfillment-notification-label">
                               {t("orders.returns.sendNotification")}
                             </Form.Label>
-                            <Form.Control data-testid="order-create-fulfillment-form-notification-switch-control">
+                            <Form.Control data-testid="order-create-fulfillment-notification-control">
                               <Form.Control>
                                 <Switch
                                   dir="ltr"
@@ -402,15 +402,15 @@ export function OrderCreateFulfillmentForm({
                                   checked={!!value}
                                   onCheckedChange={onChange}
                                   {...field}
-                                  data-testid="order-create-fulfillment-form-notification-switch"
+                                  data-testid="order-create-fulfillment-notification-switch"
                                 />
                               </Form.Control>
                             </Form.Control>
                           </div>
-                          <Form.Hint className="!mt-1" data-testid="order-create-fulfillment-form-notification-hint">
+                          <Form.Hint className="!mt-1" data-testid="order-create-fulfillment-notification-hint">
                             {t("orders.fulfillment.sendNotificationHint")}
                           </Form.Hint>
-                          <Form.ErrorMessage data-testid="order-create-fulfillment-form-notification-error" />
+                          <Form.ErrorMessage data-testid="order-create-fulfillment-notification-error" />
                         </Form.Item>
                       )
                     }}
@@ -420,10 +420,10 @@ export function OrderCreateFulfillmentForm({
             </div>
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer data-testid="order-create-fulfillment-form-footer">
+        <RouteFocusModal.Footer data-testid="order-create-fulfillment-footer">
           <div className="flex items-center justify-end gap-x-2" data-testid="order-create-fulfillment-form-footer-actions">
             <RouteFocusModal.Close asChild>
-              <Button size="small" variant="secondary" data-testid="order-create-fulfillment-form-cancel-button">
+              <Button size="small" variant="secondary" data-testid="order-create-fulfillment-cancel-button">
                 {t("actions.cancel")}
               </Button>
             </RouteFocusModal.Close>
@@ -432,7 +432,7 @@ export function OrderCreateFulfillmentForm({
               type="submit"
               isLoading={isMutating}
               disabled={!shippingOptionId}
-              data-testid="order-create-fulfillment-form-create-button"
+              data-testid="order-create-fulfillment-create-button"
             >
               {t("orders.fulfillment.create")}
             </Button>

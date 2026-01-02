@@ -270,13 +270,13 @@ export const ExchangeCreateForm = ({
   }, [preview.shipping_methods])
 
   return (
-    <RouteFocusModal.Form form={form}>
+    <RouteFocusModal.Form form={form} data-testid="order-create-exchange-form">
       <KeyboundForm onSubmit={handleSubmit} className="flex h-full flex-col" data-testid="order-create-exchange-form">
-        <RouteFocusModal.Header data-testid="order-create-exchange-form-header" />
+        <RouteFocusModal.Header data-testid="order-create-exchange-header" />
 
-        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto" data-testid="order-create-exchange-form-body">
+        <RouteFocusModal.Body className="flex size-full justify-center overflow-y-auto" data-testid="order-create-exchange-body">
           <div className="mt-16 w-[720px] max-w-[100%] px-4 md:p-0" data-testid="order-create-exchange-form-content">
-            <Heading level="h1" data-testid="order-create-exchange-form-heading">{t("orders.exchanges.create")}</Heading>
+            <Heading level="h1" data-testid="order-create-exchange-heading">{t("orders.exchanges.create")}</Heading>
 
             <ExchangeInboundSection
               form={form}
@@ -294,8 +294,8 @@ export const ExchangeCreateForm = ({
             />
 
             {/* TOTALS SECTION*/}
-            <div className="mt-8 border-y border-dotted py-4" data-testid="order-create-exchange-form-totals-section">
-              <div className="mb-2 flex items-center justify-between" data-testid="order-create-exchange-form-inbound-total-row">
+            <div className="mt-8 border-y border-dotted py-4" data-testid="order-create-exchange-totals">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-exchange-inbound-total">
                 <span className="txt-small text-ui-fg-subtle" data-testid="order-create-exchange-form-inbound-total-label">
                   {t("orders.returns.inboundTotal")}
                 </span>
@@ -315,7 +315,7 @@ export const ExchangeCreateForm = ({
                 </span>
               </div>
 
-              <div className="mb-2 flex items-center justify-between" data-testid="order-create-exchange-form-outbound-total-row">
+              <div className="mb-2 flex items-center justify-between" data-testid="order-create-exchange-outbound-total">
                 <span className="txt-small text-ui-fg-subtle" data-testid="order-create-exchange-form-outbound-total-label">
                   {t("orders.exchanges.outboundTotal")}
                 </span>
@@ -486,7 +486,7 @@ export const ExchangeCreateForm = ({
                 </span>
               </div>
 
-              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4" data-testid="order-create-exchange-form-refund-amount-row">
+              <div className="mt-4 flex items-center justify-between border-t border-dotted pt-4" data-testid="order-create-exchange-refund-amount">
                 <span className="txt-small font-medium" data-testid="order-create-exchange-form-refund-amount-label">
                   {t("orders.exchanges.refundAmount")}
                 </span>
@@ -499,34 +499,34 @@ export const ExchangeCreateForm = ({
               </div>
             </div>
             {/* SEND NOTIFICATION*/}
-            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4" data-testid="order-create-exchange-form-notification-section">
+            <div className="bg-ui-bg-field mt-8 rounded-lg border py-2 pl-2 pr-4" data-testid="order-create-exchange-notification">
               <Form.Field
                 control={form.control}
                 name="send_notification"
                 render={({ field: { onChange, value, ...field } }) => {
                   return (
-                    <Form.Item data-testid="order-create-exchange-form-notification-item">
+                    <Form.Item data-testid="order-create-exchange-notification-item">
                       <div className="flex items-center" data-testid="order-create-exchange-form-notification-control">
-                        <Form.Control className="mr-4 self-start" data-testid="order-create-exchange-form-notification-switch-control">
+                        <Form.Control className="mr-4 self-start" data-testid="order-create-exchange-notification-control">
                           <Switch
                             dir="ltr"
                             className="mt-[2px] rtl:rotate-180"
                             checked={!!value}
                             onCheckedChange={onChange}
                             {...field}
-                            data-testid="order-create-exchange-form-notification-switch"
+                            data-testid="order-create-exchange-notification-switch"
                           />
                         </Form.Control>
                         <div className="block">
-                          <Form.Label data-testid="order-create-exchange-form-notification-label">
+                          <Form.Label data-testid="order-create-exchange-notification-label">
                             {t("orders.returns.sendNotification")}
                           </Form.Label>
-                          <Form.Hint className="!mt-1" data-testid="order-create-exchange-form-notification-hint">
+                          <Form.Hint className="!mt-1" data-testid="order-create-exchange-notification-hint">
                             {t("orders.returns.sendNotificationHint")}
                           </Form.Hint>
                         </div>
                       </div>
-                      <Form.ErrorMessage data-testid="order-create-exchange-form-notification-error" />
+                      <Form.ErrorMessage data-testid="order-create-exchange-notification-error" />
                     </Form.Item>
                   )
                 }}
@@ -536,7 +536,7 @@ export const ExchangeCreateForm = ({
             <div className="p-8" />
           </div>
         </RouteFocusModal.Body>
-        <RouteFocusModal.Footer data-testid="order-create-exchange-form-footer">
+        <RouteFocusModal.Footer data-testid="order-create-exchange-footer">
           <div className="flex w-full items-center justify-end gap-x-4" data-testid="order-create-exchange-form-footer-actions">
             <div className="flex items-center justify-end gap-x-2">
               <RouteFocusModal.Close asChild>
@@ -545,7 +545,7 @@ export const ExchangeCreateForm = ({
                   onClick={() => (IS_CANCELING = true)}
                   variant="secondary"
                   size="small"
-                  data-testid="order-create-exchange-form-cancel-button"
+                  data-testid="order-create-exchange-cancel-button"
                 >
                   {t("orders.exchanges.cancel.title")}
                 </Button>
@@ -557,7 +557,7 @@ export const ExchangeCreateForm = ({
                 variant="primary"
                 size="small"
                 isLoading={isRequestLoading}
-                data-testid="order-create-exchange-form-confirm-button"
+                data-testid="order-create-exchange-confirm-button"
               >
                 {t("orders.exchanges.confirm")}
               </Button>
